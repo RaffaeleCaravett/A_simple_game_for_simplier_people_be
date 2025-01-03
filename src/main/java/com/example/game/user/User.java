@@ -1,6 +1,6 @@
 package com.example.game.user;
 
-import com.example.game.Citta;
+import com.example.game.citta.Citta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +22,7 @@ public class User {
     private String email;
     private String password;
     private String immagineProfilo;
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @Column(name = "citta_id")
     private Citta citta;
 }
