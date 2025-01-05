@@ -1,6 +1,7 @@
 package com.example.game.citta;
 
 import com.example.game.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +21,6 @@ public class Citta {
     private String nome;
     @OneToMany(mappedBy = "citta",fetch = FetchType.LAZY)
     @Column(name = "user_id")
+    @JsonIgnore
     private User user;
 }
