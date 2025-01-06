@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "cities")
 @NoArgsConstructor
@@ -22,5 +24,5 @@ public class Citta {
     @OneToMany(mappedBy = "citta",fetch = FetchType.LAZY)
     @Column(name = "user_id")
     @JsonIgnore
-    private User user;
+    private List<User> user;
 }
