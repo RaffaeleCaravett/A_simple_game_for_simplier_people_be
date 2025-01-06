@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
@@ -22,6 +24,9 @@ public class User {
     private String email;
     private String password;
     private String immagineProfilo;
+    private boolean isActive;
+    private String createdAt;
+    private String deletedAt;
     @ManyToOne(fetch = FetchType.EAGER)
     @Column(name = "citta_id")
     private Citta citta;
