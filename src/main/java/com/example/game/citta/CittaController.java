@@ -1,5 +1,6 @@
 package com.example.game.citta;
 
+import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.CittaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,8 +36,17 @@ public class CittaController {
     @PreAuthorize("hasAuthority('Admin')")
     public Citta putById(@PathVariable long id, @RequestBody @Validated CittaDTO cittaDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()){
-            return BadRequestException(bindingResult.getAllErrors());
+            throw new BadRequestException(bindingResult.getAllErrors());
         }
         return cittaService.putById(id,cittaDTO);
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAuthority('Admin')")
+    public Citta post(@RequestBody @Validated CittaDTO cittaDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
+        return cittaService.save(cittaDTO);
     }
 }
