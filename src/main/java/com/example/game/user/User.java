@@ -26,6 +26,7 @@ public class User {
     private String immagineProfilo;
     private boolean isActive;
     private String createdAt;
+    private LocalDate createdAtDate;
     private String deletedAt;
     @ManyToOne(fetch = FetchType.EAGER)
     @Column(name = "citta_id")
