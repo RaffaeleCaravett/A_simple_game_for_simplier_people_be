@@ -4,6 +4,7 @@ import com.example.game.citta.Citta;
 import com.example.game.citta.CittaService;
 import com.example.game.exceptions.InvalidParamsException;
 import com.example.game.exceptions.UserWithEmailNotFoundException;
+import com.example.game.exceptions.UserWithIdNotFoundException;
 import com.example.game.payloads.entities.UserSignupDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
