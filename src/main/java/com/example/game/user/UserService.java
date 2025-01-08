@@ -2,6 +2,7 @@ package com.example.game.user;
 
 import com.example.game.citta.Citta;
 import com.example.game.citta.CittaService;
+import com.example.game.exceptions.EmailAlreadyInUseException;
 import com.example.game.exceptions.InvalidParamsException;
 import com.example.game.exceptions.UserWithEmailNotFoundException;
 import com.example.game.exceptions.UserWithIdNotFoundException;
@@ -58,7 +59,19 @@ public class UserService {
     }
 
     public User modifyById(long id, UserSignupDTO userSignupDTO){
+        User user = findById(id);
+        if(!user.getEmail().equals(userSignupDTO.email())){
+            if(isEmailUsed(userSignupDTO.email())){
+                throw new EmailAlreadyInUseException(userSignupDTO.email());
+            }
+        }
 
+        user.setCognome(userSignupDTO.cognome());
+        user.setNome(userSignupDTO.nome());
+        user.setEmail(userSignupDTO.email());
+        user.setCitta(cittaService.findById(userSignupDTO.cittaId()));
+        
+        return userRepository.save(user);
     }
 
     public User findById(long id){
