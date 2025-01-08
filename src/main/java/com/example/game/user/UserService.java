@@ -1,5 +1,6 @@
 package com.example.game.user;
 
+import com.cloudinary.Cloudinary;
 import com.example.game.citta.Citta;
 import com.example.game.citta.CittaService;
 import com.example.game.exceptions.EmailAlreadyInUseException;
@@ -12,14 +13,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -27,7 +30,8 @@ public class UserService {
     UserRepository userRepository;
     @Autowired
     CittaService cittaService;
-
+    @Autowired
+    Cloudinary cloudinary;
 
     public Page<User> findByParamsAndIsActive(String nome, String cognome, int page, int size, String orderBy, String direction) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(direction), orderBy));
@@ -75,8 +79,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public String updateProfileImage(MultipartFile multipartFile){
-        
+    public String registerTrasportatore(long id,MultipartFile multipartFile){
+        User user = findById(id);
+
+        try {
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) uploadResult.get("url");
+
+            user.setImmagineProfilo(imageUrl);
+        } catch (IOException e) {
+            throw new RuntimeException("Impossibile caricare l'immagine", e);
+        }
+        userRepository.save(user);
+        return user.getImmagineProfilo();
     }
 
     public User findById(long id) {
