@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -72,6 +73,10 @@ public class UserService {
         user.setCitta(cittaService.findById(userSignupDTO.cittaId()));
 
         return userRepository.save(user);
+    }
+
+    public String updateProfileImage(MultipartFile multipartFile){
+        
     }
 
     public User findById(long id) {
