@@ -155,4 +155,20 @@ public class UserService {
             throw new CodeMismatchException(code);
         }
     }
+
+    public boolean resetPassword(String password,String oldPassword, long id){
+        User user = findById(id);
+
+        if(!BCrypt.matches(oldPassword, user.getPassword())){
+            throw new PasswordMismatchException("La vecchia password non coincide con quella che abbiamo noi in database");
+        }
+        try {
+            user.setPassword(BCrypt.encode(password));
+            userRepository.save(user);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
 }
