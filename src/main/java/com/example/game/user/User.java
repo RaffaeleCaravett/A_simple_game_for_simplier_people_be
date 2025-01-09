@@ -28,6 +28,7 @@ public class User {
     private String createdAt;
     private LocalDate createdAtDate;
     private String deletedAt;
+    private String changePasswordCode;
     @ManyToOne(fetch = FetchType.EAGER)
     @Column(name = "citta_id")
     private Citta citta;
