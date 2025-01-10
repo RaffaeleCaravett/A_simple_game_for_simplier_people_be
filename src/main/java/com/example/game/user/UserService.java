@@ -48,13 +48,15 @@ public class UserService {
         }
     }
 
-    public List<User> findByDateBetween(String date1, String date2) {
+    public Page<User> findByDateBetween(String date1, String date2,int page, int size, String orderBy, String direction) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         formatter = formatter.withLocale(Locale.ITALIAN);
         LocalDate from = LocalDate.parse(date1, formatter);
         LocalDate to = LocalDate.parse(date2, formatter);
 
-        return userRepository.findByCreatedAtDateBetween(from, to);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(direction), orderBy));
+
+        return userRepository.findByCreatedAtDateBetween(from, to, pageable);
     }
 
     public Page<User> findByCitta(long id, int page, int size, String orderBy, String direction) {
