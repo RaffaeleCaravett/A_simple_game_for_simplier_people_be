@@ -133,8 +133,8 @@ public class UserService {
         }
     }
 
-    public boolean askForCode(long id) {
-        User user = findById(id);
+    public boolean askForCode(String email) {
+        User user = findByEmail(email);
         String[] strings = new String[]{"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", "u", "U", "v", "V", "z", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
         StringBuilder code = new StringBuilder();
@@ -147,17 +147,22 @@ public class UserService {
 
         user.setChangePasswordCode(code.toString());
         userRepository.save(user);
-        
+
         try {
-            emailService.sendEmail(user.getEmail(), "Codice per cambiare la password", "");
+            emailService.sendEmail(user.getEmail(), "Codice per cambiare la password", "Ciao!" + user.getNome() + " " + user.getCognome() + " per resettare la tua password inserisci il codice qui sotto " + "\n" +
+                    "\n" +
+                    "\n" +
+                    "\n" +
+                    code + " e la tua mail nel form che vedi sulla schermata di Trasporti e premi invio.");
+
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public User changePasswordByCode(long id, String code, String newPassword) {
-        User user = findById(id);
+    public User changePasswordByCode(String email, String code, String newPassword) {
+        User user = findByEmail(email);
 
         if (user.getChangePasswordCode().equals(code)) {
             user.setPassword(BCrypt.encode(newPassword));
