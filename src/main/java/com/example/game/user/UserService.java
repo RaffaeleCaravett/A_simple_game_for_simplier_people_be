@@ -3,6 +3,7 @@ package com.example.game.user;
 import com.cloudinary.Cloudinary;
 import com.example.game.citta.Citta;
 import com.example.game.citta.CittaService;
+import com.example.game.email.EmailService;
 import com.example.game.exceptions.*;
 import com.example.game.payloads.entities.UserSignupDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class UserService {
     Cloudinary cloudinary;
     @Autowired
     PasswordEncoder BCrypt;
+    @Autowired
+    EmailService emailService;
+
     public Page<User> findByParamsAndIsActive(String nome, String cognome, int page, int size, String orderBy, String direction) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(direction), orderBy));
         if (!"".equals(nome) && !"".equals(cognome)) {
@@ -77,7 +81,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public String updateProfileImage(long id,MultipartFile multipartFile){
+    public String updateProfileImage(long id, MultipartFile multipartFile) {
         User user = findById(id);
 
         try {
@@ -129,44 +133,51 @@ public class UserService {
         }
     }
 
-    public String askForCode(long id){
+    public boolean askForCode(long id) {
         User user = findById(id);
-        String[] strings = new String[]{"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T","u","U","v","V","z","Z","1","2","3","4","5","6","7","8","9"};
+        String[] strings = new String[]{"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", "u", "U", "v", "V", "z", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
         StringBuilder code = new StringBuilder();
-        for(int i = 0; i<= 10; i++){
+        for (int i = 0; i <= 10; i++) {
             Random r = new Random();
-            int randInt = r.nextInt(strings.length-1) + 1;
+            int randInt = r.nextInt(strings.length - 1) + 1;
 
             code.append(strings[randInt]);
         }
 
         user.setChangePasswordCode(code.toString());
-        return code.toString();
+        userRepository.save(user);
+        
+        try {
+            emailService.sendEmail(user.getEmail(), "Codice per cambiare la password", "");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public User changePasswordByCode(long id, String code, String newPassword){
+    public User changePasswordByCode(long id, String code, String newPassword) {
         User user = findById(id);
 
-        if(user.getChangePasswordCode().equals(code)){
+        if (user.getChangePasswordCode().equals(code)) {
             user.setPassword(BCrypt.encode(newPassword));
             return userRepository.save(user);
-        }else{
+        } else {
             throw new CodeMismatchException(code);
         }
     }
 
-    public boolean resetPassword(String password,String oldPassword, long id){
+    public boolean resetPassword(String password, String oldPassword, long id) {
         User user = findById(id);
 
-        if(!BCrypt.matches(oldPassword, user.getPassword())){
+        if (!BCrypt.matches(oldPassword, user.getPassword())) {
             throw new PasswordMismatchException("La vecchia password non coincide con quella che abbiamo noi in database");
         }
         try {
             user.setPassword(BCrypt.encode(password));
             userRepository.save(user);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
