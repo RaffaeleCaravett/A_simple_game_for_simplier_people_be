@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -70,4 +71,11 @@ public class UserController {
         }
         return userService.modifyById(user.getId(),userSignupDTO);
     }
+    @PutMapping("/profileImage")
+    @PreAuthorize("hasAuthority('User')")
+    public String findByCitta(@AuthenticationPrincipal User user, @RequestPart(name = "immagine_profilo") MultipartFile multipartFile){
+        return userService.updateProfileImage(user.getId(),multipartFile);
+    }
+
+
 }
