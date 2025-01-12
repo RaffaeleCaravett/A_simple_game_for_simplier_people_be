@@ -103,7 +103,7 @@ public class UserController {
     }
     @PutMapping("/profileImage")
     @PreAuthorize("hasAuthority('User')")
-    public String findByCitta(@AuthenticationPrincipal User user, @RequestPart(name = "immagine_profilo") MultipartFile multipartFile){
+    public String findByCitta(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile){
         return userService.updateProfileImage(user.getId(),multipartFile);
     }
 

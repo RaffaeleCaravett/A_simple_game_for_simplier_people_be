@@ -114,6 +114,7 @@ public class UserService {
         User user = findById(id);
 
         user.setActive(false);
+        user.setDeletedAt(LocalDate.now().toString());
         userRepository.save(user);
         return true;
     }
@@ -122,6 +123,7 @@ public class UserService {
         User user = findById(id);
 
         user.setActive(true);
+        user.setDeletedAt("");
         return userRepository.save(user);
     }
 
