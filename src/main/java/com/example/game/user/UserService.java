@@ -114,14 +114,15 @@ public class UserService {
         User user = findById(id);
 
         user.setActive(false);
+        userRepository.save(user);
         return true;
     }
 
-    public boolean restoreById(long id) {
+    public User restoreById(long id) {
         User user = findById(id);
 
         user.setActive(true);
-        return true;
+        return userRepository.save(user);
     }
 
     public boolean permanentlyDeleteUser(long id) {

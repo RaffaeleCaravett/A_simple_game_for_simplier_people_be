@@ -77,5 +77,15 @@ public class UserController {
         return userService.updateProfileImage(user.getId(),multipartFile);
     }
 
+    @DeleteMapping("")
+    @PreAuthorize("hasAuthority('User')")
+    public boolean deleteById(@AuthenticationPrincipal User user){
+        return userService.deleteById(user.getId());
+    }
 
+    @GetMapping("/restoreById")
+    @PreAuthorize("hasAuthority('User')")
+    public User restoreById(@AuthenticationPrincipal User user){
+        return userService.restoreById(user.getId());
+    }
 }
