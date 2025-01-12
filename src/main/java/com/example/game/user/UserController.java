@@ -20,6 +20,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    /*GET*/
+
     @GetMapping("/byParams")
     @PreAuthorize("hasAuthority('User')")
     public Page<User> findByParamsAndIsActive(@RequestParam(defaultValue = "") String nome,
@@ -63,6 +65,34 @@ public class UserController {
                                   @RequestParam(defaultValue = "ASC") String direction){
         return userService.findByCitta(id,page,size,orderBy,direction);
     }
+
+    @GetMapping("/restoreById")
+    @PreAuthorize("hasAuthority('User')")
+    public User restoreById(@AuthenticationPrincipal User user){
+        return userService.restoreById(user.getId());
+    }
+
+    @GetMapping("/askForCode/{email}")
+    public boolean askForCode(@PathVariable String email){
+        return userService.askForCode(email);
+    }
+
+    @GetMapping("/changePasswordByCode/{email}/{code}/{password}")
+    public User changePasswordByCode(@PathVariable String email,
+                                     @PathVariable String code,
+                                     @PathVariable String password){
+        return userService.changePasswordByCode(email,code,password);
+    }
+
+    @GetMapping("/changePassword/{oldPassword}/{newPassword}")
+    public boolean changePassword(@PathVariable String oldPassword,
+                               @PathVariable String newPassword,
+                               @AuthenticationPrincipal User user){
+        return userService.resetPassword(newPassword,oldPassword,user.getId());
+    }
+
+    /*PUT*/
+
     @PutMapping("")
     @PreAuthorize("hasAuthority('User')")
     public User findByCitta(@AuthenticationPrincipal User user, @RequestBody @Validated UserSignupDTO userSignupDTO, BindingResult bindingResult){
@@ -77,15 +107,16 @@ public class UserController {
         return userService.updateProfileImage(user.getId(),multipartFile);
     }
 
+    /*DELETE*/
+
     @DeleteMapping("")
     @PreAuthorize("hasAuthority('User')")
     public boolean deleteById(@AuthenticationPrincipal User user){
         return userService.deleteById(user.getId());
     }
-
-    @GetMapping("/restoreById")
+    @DeleteMapping("/permanently")
     @PreAuthorize("hasAuthority('User')")
-    public User restoreById(@AuthenticationPrincipal User user){
-        return userService.restoreById(user.getId());
+    public boolean deleteByIdPermanently(@AuthenticationPrincipal User user){
+        return userService.permanentlyDeleteUser(user.getId());
     }
 }
