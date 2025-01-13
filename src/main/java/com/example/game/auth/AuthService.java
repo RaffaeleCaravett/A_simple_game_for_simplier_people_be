@@ -7,6 +7,7 @@ import com.example.game.enums.Role;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.EmailAlreadyInUseException;
 import com.example.game.payloads.entities.UserSignupDTO;
+import com.example.game.token.Token;
 import com.example.game.user.User;
 import com.example.game.user.UserRepository;
 import com.example.game.user.UserService;
@@ -34,6 +35,7 @@ public class AuthService {
     PasswordEncoder passwordEncoder;
     @Autowired
     Cloudinary cloudinary;
+
     public User save(@RequestPart(name = "user") @Validated UserSignupDTO userSignupDTO,
                      @RequestPart(name = "profile_image") MultipartFile multipartFile,
                      BindingResult bindingResult){
@@ -63,5 +65,12 @@ public class AuthService {
         }
 
         return userRepository.save(user);
+    }
+
+    public User verifyToken(String token){
+    return new User();
+    }
+    public Token verifyRefreshToken(String token){
+        return new Token();
     }
 }
