@@ -1,4 +1,4 @@
 package com.example.game.jwt;
 
-public class JWTUtils {
+public class JWTTools {
 }
