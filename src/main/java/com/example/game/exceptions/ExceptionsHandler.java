@@ -41,7 +41,7 @@ public class ExceptionsHandler {
         return new ErrorsDTO(e.getMessage(), new Date());
     }
     @ExceptionHandler(CodeMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE) // 400
     public ErrorsDTO handleCodeMismatch(CodeMismatchException e) {
         return new ErrorsDTO(e.getMessage(), new Date());
     }
@@ -51,7 +51,7 @@ public class ExceptionsHandler {
         return new ErrorsDTO(e.getMessage(), new Date());
     }
     @ExceptionHandler(PasswordMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE) // 400
     public ErrorsDTO handlePasswordMismatch(PasswordMismatchException e) {
         return new ErrorsDTO(e.getMessage(), new Date());
     }
@@ -70,5 +70,11 @@ public class ExceptionsHandler {
     public ErrorsDTO handleGeneric(Exception e) {
         e.printStackTrace();
         return new ErrorsDTO("Problema lato server.", new Date());
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)  // 500
+    public ErrorsDTO handleGeneric(AccessDeniedException e) {
+        e.printStackTrace();
+        return new ErrorsDTO(e.getMessage(),new Date());
     }
 }
