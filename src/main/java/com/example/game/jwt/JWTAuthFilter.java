@@ -1,5 +1,6 @@
 package com.example.game.jwt;
 
+import com.example.game.exceptions.UnauthorizedException;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
 import jakarta.servlet.FilterChain;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.util.List;
 
 @Component

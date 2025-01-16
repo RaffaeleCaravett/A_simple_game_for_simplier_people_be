@@ -72,4 +72,3 @@ public class JWTTools {
                 .build().parseClaimsJws(token).getBody().getSubject();
     }
 }
-}
