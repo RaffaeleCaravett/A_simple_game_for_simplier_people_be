@@ -42,12 +42,7 @@ public class AuthService {
     @Autowired
     JWTTools jwtTools;
 
-    public User save(@RequestPart(name = "user") @Validated UserSignupDTO userSignupDTO,
-                     @RequestPart(name = "profile_image") MultipartFile multipartFile,
-                     BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
+    public User save(UserSignupDTO userSignupDTO, MultipartFile multipartFile) {
         if (userService.isEmailUsed(userSignupDTO.email())) {
             throw new EmailAlreadyInUseException(userSignupDTO.email());
         }
@@ -94,5 +89,9 @@ public class AuthService {
 
     public Token verifyRefreshToken(String token) {
         return jwtTools.verifyRefreshToken(token);
+    }
+
+    public Integer getAllUsersCount(){
+        return userRepository.findAll().size();
     }
 }
