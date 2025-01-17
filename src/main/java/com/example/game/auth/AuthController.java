@@ -8,6 +8,7 @@ import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserWithTokenDTO;
 import com.example.game.token.Token;
 import com.example.game.user.User;
+import com.example.game.user.UserService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,8 @@ public class AuthController {
     AuthService authService;
     @Autowired
     CittaService cittaService;
-
+    @Autowired
+    UserService userService;
 
     @PostMapping("/login")
     public UserWithTokenDTO login(@RequestBody @Validated UserLoginDTO userLoginDTO, BindingResult bindingResult) {
@@ -68,4 +70,19 @@ public class AuthController {
         return ResponseEntity.ok(authService.getAllUsersCount());
     }
 
+    @GetMapping("/requestCode/{email}")
+    public boolean askCodeByEmail(@PathVariable String email){
+       User user = userService.findByEmail(email);
+       return userService.askForCode(user.getEmail());
+    }
+
+    @GetMapping("/verifyPasswordCode/{email}/{code}")
+    public boolean verifyCodeByEmail(@PathVariable String email,@PathVariable String code){
+        return userService.verifyChangePasswordCode(email,code);
+    }
+
+    @GetMapping("/resetPasswordByCode/{newPassword}/{email}/{code}")
+    public User sendCodeByEmail(@PathVariable String newPassword,@PathVariable String email,@PathVariable String code){
+        return userService.changePasswordByCode(email,code,newPassword);
+    }
 }
