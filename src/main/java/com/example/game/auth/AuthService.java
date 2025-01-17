@@ -1,44 +1,30 @@
 package com.example.game.auth;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.example.game.citta.CittaService;
 import com.example.game.enums.Role;
-import com.example.game.exceptions.AccessDeniedException;
-import com.example.game.exceptions.BadRequestException;
-import com.example.game.exceptions.EmailAlreadyInUseException;
+import com.example.game.exceptions.*;
 import com.example.game.jwt.JWTTools;
 import com.example.game.payloads.entities.UserLoginDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserWithTokenDTO;
 import com.example.game.token.Token;
 import com.example.game.user.User;
-import com.example.game.user.UserRepository;
 import com.example.game.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
 
 @Service
 public class AuthService {
-    @Autowired
-    UserRepository userRepository;
     @Autowired
     UserService userService;
     @Autowired
     CittaService cittaService;
     @Autowired
     PasswordEncoder passwordEncoder;
-    @Autowired
-    Cloudinary cloudinary;
     @Autowired
     JWTTools jwtTools;
 
@@ -56,16 +42,9 @@ public class AuthService {
         user.setCreatedAt(LocalDate.now().toString());
         user.setRole(Role.User);
 
-        try {
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
-            String imageUrl = (String) uploadResult.get("url");
+        userService.setProfileImage(user, multipartFile);
 
-            user.setImmagineProfilo(imageUrl);
-        } catch (IOException e) {
-            throw new RuntimeException("Impossibile caricare l'immagine", e);
-        }
-
-        return userRepository.save(user);
+        return userService.save(user);
     }
 
     public UserWithTokenDTO login(UserLoginDTO userLoginDTO) {
@@ -91,7 +70,32 @@ public class AuthService {
         return jwtTools.verifyRefreshToken(token);
     }
 
-    public Integer getAllUsersCount(){
-        return userRepository.findAll().size();
+    public Integer getAllUsersCount() {
+        return userService.findAll().size();
+    }
+    public User changePasswordByCode(String email, String code, String newPassword) {
+        User user = userService.findByEmail(email);
+
+        if (user.getChangePasswordCode().equals(code)) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            return userService.save(user);
+        } else {
+            throw new CodeMismatchException(code);
+        }
+    }
+
+    public boolean resetPassword(String password, String oldPassword, long id) {
+        User user = userService.findById(id);
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new PasswordMismatchException("La vecchia password non coincide con quella che abbiamo noi in database");
+        }
+        try {
+            user.setPassword(passwordEncoder.encode(password));
+            userService.save(user);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

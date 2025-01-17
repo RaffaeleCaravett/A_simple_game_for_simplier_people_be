@@ -35,9 +35,10 @@ public class User implements UserDetails {
     private LocalDate createdAtDate;
     private String deletedAt;
     private String changePasswordCode;
+    @Enumerated(EnumType.STRING)
     private Role role;
     @ManyToOne(fetch = FetchType.EAGER)
-    @Column(name = "citta_id")
+    @JoinColumn(name = "citta_id")
     private Citta citta;
 
     @Override

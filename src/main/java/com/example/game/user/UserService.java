@@ -11,13 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -30,8 +28,6 @@ public class UserService {
     CittaService cittaService;
     @Autowired
     Cloudinary cloudinary;
-    @Autowired
-    PasswordEncoder BCrypt;
     @Autowired
     EmailService emailService;
 
@@ -81,21 +77,6 @@ public class UserService {
         user.setCitta(cittaService.findById(userSignupDTO.cittaId()));
 
         return userRepository.save(user);
-    }
-
-    public String updateProfileImage(long id, MultipartFile multipartFile) {
-        User user = findById(id);
-
-        try {
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
-            String imageUrl = (String) uploadResult.get("url");
-
-            user.setImmagineProfilo(imageUrl);
-        } catch (IOException e) {
-            throw new RuntimeException("Impossibile caricare l'immagine", e);
-        }
-        userRepository.save(user);
-        return user.getImmagineProfilo();
     }
 
     public User findById(long id) {
@@ -166,34 +147,28 @@ public class UserService {
         }
     }
 
-    public User changePasswordByCode(String email, String code, String newPassword) {
-        User user = findByEmail(email);
-
-        if (user.getChangePasswordCode().equals(code)) {
-            user.setPassword(BCrypt.encode(newPassword));
-            return userRepository.save(user);
-        } else {
-            throw new CodeMismatchException(code);
-        }
-    }
-
-    public boolean resetPassword(String password, String oldPassword, long id) {
-        User user = findById(id);
-
-        if (!BCrypt.matches(oldPassword, user.getPassword())) {
-            throw new PasswordMismatchException("La vecchia password non coincide con quella che abbiamo noi in database");
-        }
-        try {
-            user.setPassword(BCrypt.encode(password));
-            userRepository.save(user);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public boolean verifyChangePasswordCode(String email, String code){
         User user = findByEmail(email);
         return null!=user.getChangePasswordCode()&&user.getChangePasswordCode().equals(code);
+    }
+
+    public String setProfileImage(User user, MultipartFile multipartFile){
+        try {
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) uploadResult.get("url");
+
+            user.setImmagineProfilo(imageUrl);
+            return user.getImmagineProfilo();
+        }catch (Exception e){
+            throw new BadRequestException("Impossibile caricare l'immagine");
+        }
+    }
+
+    public User save(User user){
+        return userRepository.save(user);
+    }
+
+    public List<User> findAll(){
+        return userRepository.findAll();
     }
 }
