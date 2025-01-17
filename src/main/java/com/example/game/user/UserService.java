@@ -192,4 +192,8 @@ public class UserService {
         }
     }
 
+    public boolean verifyChangePasswordCode(String email, String code){
+        User user = findByEmail(email);
+        return null!=user.getChangePasswordCode()&&user.getChangePasswordCode().equals(code);
+    }
 }

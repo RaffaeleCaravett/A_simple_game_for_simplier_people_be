@@ -4,9 +4,13 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.game.citta.CittaService;
 import com.example.game.enums.Role;
+import com.example.game.exceptions.AccessDeniedException;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.EmailAlreadyInUseException;
+import com.example.game.jwt.JWTTools;
+import com.example.game.payloads.entities.UserLoginDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
+import com.example.game.payloads.entities.UserWithTokenDTO;
 import com.example.game.token.Token;
 import com.example.game.user.User;
 import com.example.game.user.UserRepository;
@@ -35,14 +39,11 @@ public class AuthService {
     PasswordEncoder passwordEncoder;
     @Autowired
     Cloudinary cloudinary;
+    @Autowired
+    JWTTools jwtTools;
 
-    public User save(@RequestPart(name = "user") @Validated UserSignupDTO userSignupDTO,
-                     @RequestPart(name = "profile_image") MultipartFile multipartFile,
-                     BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
-        if(userService.isEmailUsed(userSignupDTO.email())){
+    public User save(UserSignupDTO userSignupDTO, MultipartFile multipartFile) {
+        if (userService.isEmailUsed(userSignupDTO.email())) {
             throw new EmailAlreadyInUseException(userSignupDTO.email());
         }
         User user = new User();
@@ -67,10 +68,30 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public User verifyToken(String token){
-    return new User();
+    public UserWithTokenDTO login(UserLoginDTO userLoginDTO) {
+        User user = userService.findByEmail(userLoginDTO.email());
+
+        if (passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
+            try {
+                Token token = jwtTools.createTokens(user);
+                return new UserWithTokenDTO(user, token);
+            } catch (Exception e) {
+                throw new BadRequestException(e.getMessage());
+            }
+        } else {
+            throw new AccessDeniedException("La password è errata.");
+        }
     }
-    public Token verifyRefreshToken(String token){
-        return new Token();
+
+    public User verifyToken(String token) {
+        return jwtTools.verifyToken(token);
+    }
+
+    public Token verifyRefreshToken(String token) {
+        return jwtTools.verifyRefreshToken(token);
+    }
+
+    public Integer getAllUsersCount(){
+        return userRepository.findAll().size();
     }
 }
