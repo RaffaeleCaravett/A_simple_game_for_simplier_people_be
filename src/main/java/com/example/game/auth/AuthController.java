@@ -14,6 +14,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -83,6 +84,13 @@ public class AuthController {
 
     @GetMapping("/resetPasswordByCode/{newPassword}/{email}/{code}")
     public User sendCodeByEmail(@PathVariable String newPassword,@PathVariable String email,@PathVariable String code){
-        return userService.changePasswordByCode(email,code,newPassword);
+        return authService.changePasswordByCode(email,code,newPassword);
+    }
+
+    @GetMapping("/changePassword/{oldPassword}/{newPassword}")
+    public boolean changePassword(@PathVariable String oldPassword,
+                                  @PathVariable String newPassword,
+                                  @AuthenticationPrincipal User user){
+        return authService.resetPassword(newPassword,oldPassword,user.getId());
     }
 }

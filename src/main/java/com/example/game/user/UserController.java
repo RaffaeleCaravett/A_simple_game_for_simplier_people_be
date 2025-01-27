@@ -77,20 +77,6 @@ public class UserController {
         return userService.askForCode(email);
     }
 
-    @GetMapping("/changePasswordByCode/{email}/{code}/{password}")
-    public User changePasswordByCode(@PathVariable String email,
-                                     @PathVariable String code,
-                                     @PathVariable String password){
-        return userService.changePasswordByCode(email,code,password);
-    }
-
-    @GetMapping("/changePassword/{oldPassword}/{newPassword}")
-    public boolean changePassword(@PathVariable String oldPassword,
-                               @PathVariable String newPassword,
-                               @AuthenticationPrincipal User user){
-        return userService.resetPassword(newPassword,oldPassword,user.getId());
-    }
-
     /*PUT*/
 
     @PutMapping("")
@@ -103,8 +89,8 @@ public class UserController {
     }
     @PutMapping("/profileImage")
     @PreAuthorize("hasAuthority('User')")
-    public String findByCitta(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile){
-        return userService.updateProfileImage(user.getId(),multipartFile);
+    public String modifyProfileImage(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile){
+        return userService.setProfileImage(user,multipartFile);
     }
 
     /*DELETE*/
