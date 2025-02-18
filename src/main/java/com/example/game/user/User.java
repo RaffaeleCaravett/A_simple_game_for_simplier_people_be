@@ -1,6 +1,7 @@
 package com.example.game.user;
 
 import com.example.game.citta.Citta;
+import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
 import jakarta.persistence.*;
@@ -22,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class User implements UserDetails {
+public class User extends EntityInfos implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -31,10 +32,6 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private String immagineProfilo;
-    private boolean isActive;
-    private String createdAt;
-    private LocalDate createdAtDate;
-    private String deletedAt;
     private String changePasswordCode;
     @Enumerated(EnumType.STRING)
     private Role role;
