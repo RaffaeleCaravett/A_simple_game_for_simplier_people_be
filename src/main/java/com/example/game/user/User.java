@@ -41,7 +41,7 @@ public class User implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "citta_id")
     private Citta citta;
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     private List<Gioco> giochi;
 
     @Override
