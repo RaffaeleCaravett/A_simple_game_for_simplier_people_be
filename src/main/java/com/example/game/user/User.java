@@ -2,6 +2,7 @@ package com.example.game.user;
 
 import com.example.game.citta.Citta;
 import com.example.game.enums.Role;
+import com.example.game.gioco.Gioco;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,6 +41,8 @@ public class User implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "citta_id")
     private Citta citta;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Gioco> giochi;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

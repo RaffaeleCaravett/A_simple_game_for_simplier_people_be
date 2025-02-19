@@ -34,12 +34,12 @@ public class AuthController {
     UserService userService;
 
     @PostMapping("/login")
-    public UserWithTokenDTO login(@RequestBody @Validated UserLoginDTO userLoginDTO, BindingResult bindingResult) {
+    public ResponseEntity<UserWithTokenDTO> login(@RequestBody @Validated UserLoginDTO userLoginDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
 
-        return authService.login(userLoginDTO);
+        return ResponseEntity.ok(authService.login(userLoginDTO));
     }
 
     @PostMapping("/signup")
