@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByIdAndIsActive(Long id,boolean isActive);
     Optional<User> findByEmailAndIsActive(String email,boolean isActive);
     Optional<User> findByEmail(String email);
+    Optional<User> findByEmailAndIsValidated(String email,boolean isValidated);
     Page<User> findByCreatedAtDateBetween(LocalDate dateOne, LocalDate dateTwo, Pageable pageable);
     Page<User> findByNomeContainingIgnoreCaseAndIsActive(String nome,boolean isActive,Pageable pageable);
     Page<User> findByCognomeContainingIgnoreCaseAndIsActive(String cognome,boolean isActive,Pageable pageable);

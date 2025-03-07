@@ -3,6 +3,8 @@ package com.example.game.auth;
 import com.example.game.citta.Citta;
 import com.example.game.citta.CittaService;
 import com.example.game.exceptions.BadRequestException;
+import com.example.game.gioco.Gioco;
+import com.example.game.gioco.GiocoRepository;
 import com.example.game.payloads.entities.UserLoginDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserWithTokenDTO;
@@ -11,6 +13,7 @@ import com.example.game.user.User;
 import com.example.game.user.UserService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +27,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
+@Validated
+@RequiredArgsConstructor
 public class AuthController {
 
+    private final GiocoRepository giocoRepository;
     @Autowired
     AuthService authService;
     @Autowired
@@ -92,5 +98,24 @@ public class AuthController {
                                   @PathVariable String newPassword,
                                   @AuthenticationPrincipal User user){
         return authService.resetPassword(newPassword,oldPassword,user.getId());
+    }
+
+    @GetMapping("/gioco")
+    public List<Gioco> getAll(){
+        return giocoRepository.findAll();
+    }
+
+    @PutMapping("/gioco/{id}")
+    @PreAuthorize("hasAuthority('Admin')")
+    public Gioco updateGiocoImage(@RequestParam(name = "gioco_image") MultipartFile multipartFile,@PathVariable long id){
+        var gioco = giocoRepository.findById(id).orElseThrow();
+        try {
+            byte[] fileBytes = multipartFile.getBytes();
+            gioco.setImage(fileBytes);
+            return giocoRepository.save(gioco);
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            return gioco;
+        }
     }
 }

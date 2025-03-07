@@ -4,6 +4,8 @@ import com.example.game.citta.Citta;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
+import com.example.game.recensione.Recensione;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +35,8 @@ public class User extends EntityInfos implements UserDetails{
     private String password;
     private String immagineProfilo;
     private String changePasswordCode;
+    private boolean isValidated;
+    private String fullName;
     @Enumerated(EnumType.STRING)
     private Role role;
     @ManyToOne(fetch = FetchType.EAGER)
@@ -40,6 +44,9 @@ public class User extends EntityInfos implements UserDetails{
     private Citta citta;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     private List<Gioco> giochi;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Recensione> recensione;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -69,5 +76,15 @@ public class User extends EntityInfos implements UserDetails{
     @Override
     public boolean isEnabled() {
         return true;
+    }
+    public void setFullName(String nome, String cognome){
+        this.fullName=String.valueOf(nome.charAt(0)).toUpperCase()+nome.substring(1) +
+                String.valueOf(cognome.charAt(0)).toUpperCase()+cognome.substring(1);
+    }
+    public void setNome(String nome){
+        this.nome = String.valueOf(getNome().charAt(0)).toUpperCase()+getNome().substring(1).toLowerCase();
+    }
+    public void setCognome(String cognome){
+        this.cognome = String.valueOf(getCognome().charAt(0)).toUpperCase()+getCognome().substring(1).toLowerCase();
     }
 }

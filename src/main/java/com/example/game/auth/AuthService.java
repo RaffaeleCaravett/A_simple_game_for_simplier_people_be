@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -29,19 +30,20 @@ public class AuthService {
     JWTTools jwtTools;
 
     public User save(UserSignupDTO userSignupDTO, MultipartFile multipartFile) {
+        User user = new User();
         if (userService.isEmailUsed(userSignupDTO.email())) {
             throw new EmailAlreadyInUseException(userSignupDTO.email());
         }
-        User user = new User();
         user.setActive(true);
         user.setNome(userSignupDTO.nome());
         user.setCognome(userSignupDTO.cognome());
+        user.setFullName(user.getNome(),user.getCognome());
         user.setCitta(cittaService.findById(userSignupDTO.cittaId()));
         user.setEmail(userSignupDTO.email());
         user.setPassword(passwordEncoder.encode(userSignupDTO.password()));
         user.setCreatedAt(LocalDate.now().toString());
         user.setRole(Role.User);
-
+        user.setValidated(false);
         userService.setProfileImage(user, multipartFile);
 
         return userService.save(user);
@@ -50,15 +52,19 @@ public class AuthService {
     public UserWithTokenDTO login(UserLoginDTO userLoginDTO) {
         User user = userService.findByEmail(userLoginDTO.email());
 
-        if (passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
+        if(!user.isValidated()&&passwordEncoder.matches(userLoginDTO.password(), user.getPassword())){
+            throw new AccessDeniedException("Abbiamo inviato un codice alla mail da te indicata. Inseriscilo qui sotto.");
+        }else if (user.isValidated()&&passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
             try {
                 Token token = jwtTools.createTokens(user);
                 return new UserWithTokenDTO(user, token);
             } catch (Exception e) {
                 throw new BadRequestException(e.getMessage());
             }
-        } else {
+        }else if(!passwordEncoder.matches(userLoginDTO.password(), user.getPassword())){
             throw new AccessDeniedException("La password è errata.");
+        }else{
+            throw new AccessDeniedException("E' successo qualcosa di inaspettato. Contatta l'assistenza dalla pagina dedicata.");
         }
     }
 

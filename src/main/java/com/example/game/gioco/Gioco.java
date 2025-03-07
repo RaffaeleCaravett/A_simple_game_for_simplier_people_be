@@ -2,6 +2,7 @@ package com.example.game.gioco;
 
 import com.example.game.classifica.Classifica;
 import com.example.game.entityInfos.EntityInfos;
+import com.example.game.recensione.Recensione;
 import com.example.game.trofeo.Trofeo;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +31,7 @@ public class Gioco extends EntityInfos {
     @Min(value = 1)
     private int difficolta;
     private byte[] image;
+    private String descrizione;
     @OneToOne(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private Classifica classifica;
@@ -42,6 +44,8 @@ public class Gioco extends EntityInfos {
             inverseJoinColumns = @JoinColumn(name = "utenti_id"))
     @JsonIgnore
     private List<User> users;
+    @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Recensione> recensione;
 
 
 }

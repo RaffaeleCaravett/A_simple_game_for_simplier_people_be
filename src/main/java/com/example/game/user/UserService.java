@@ -73,6 +73,7 @@ public class UserService {
 
         user.setCognome(userSignupDTO.cognome());
         user.setNome(userSignupDTO.nome());
+        user.setFullName(user.getNome(),user.getCognome());
         user.setEmail(userSignupDTO.email());
         user.setCitta(cittaService.findById(userSignupDTO.cittaId()));
 
@@ -86,11 +87,12 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAndIsActive(email, true).orElseThrow(() -> new UserWithEmailNotFoundException(email));
     }
-
+    public Optional<User> findByEmailOptional(String email) {
+        return userRepository.findByEmailAndIsActive(email, true);
+    }
     public boolean isEmailUsed(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
-
     public boolean deleteById(long id) {
         User user = findById(id);
 
