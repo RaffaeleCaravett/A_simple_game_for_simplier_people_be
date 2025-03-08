@@ -71,6 +71,16 @@ public class ExceptionsHandler {
         e.printStackTrace();
         return new ErrorsDTO("Problema lato server.", new Date());
     }
+    @ExceptionHandler(GiocoNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
+    public ErrorsDTO handleGeneric(GiocoNotFoundException e) {
+        return new ErrorsDTO(e.getMessage(), new Date());
+    }
+    @ExceptionHandler(RecensioneNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
+    public ErrorsDTO handleGeneric(RecensioneNotFoundException e) {
+        return new ErrorsDTO(e.getMessage(), new Date());
+    }
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)  // 500
     public ErrorsDTO handleGeneric(AccessDeniedException e) {

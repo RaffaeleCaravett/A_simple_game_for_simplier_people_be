@@ -1,5 +1,6 @@
 package com.example.game.gioco;
 
+import com.example.game.exceptions.GiocoNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -17,5 +18,9 @@ public class GiocoService {
 
     public List<Gioco> findAllByIsActive(boolean isActive){
         return giocoRepository.findByIsActive(isActive);
+    }
+
+    public Gioco findById(long id){
+        return giocoRepository.findById(id).orElseThrow(()->new GiocoNotFoundException(id));
     }
 }
