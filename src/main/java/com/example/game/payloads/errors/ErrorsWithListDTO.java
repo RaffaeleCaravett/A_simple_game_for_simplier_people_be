@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ErrorsWithListDTO {
-    String error;
+    String message;
     Date date;
-    List<String> errorList;
+    List<String> messageList;
 }
