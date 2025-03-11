@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @Validated
@@ -89,5 +90,11 @@ public class RecensioneService {
         recensione.setPunteggio(recensioneDTO.punteggio());
         recensione.setCommento(recensioneDTO.commento());
         return recensioneRepository.save(recensione);
+    }
+
+    public Recensione findByUserIdAndGiocoId(long userId, long giocoId) {
+        Optional<Recensione> recensione = recensioneRepository.findByUser_idAndGiocoId(userId,giocoId);
+
+        return recensione.orElse(null);
     }
 }

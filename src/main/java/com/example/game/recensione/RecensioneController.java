@@ -20,7 +20,7 @@ public class RecensioneController {
 
 
     @PostMapping("")
-    @PreAuthorize("hasAuthority('user')")
+    @PreAuthorize("hasAuthority('User')")
     public Recensione save(@AuthenticationPrincipal User user, @RequestBody @Validated RecensioneDTO recensioneDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -39,14 +39,14 @@ public class RecensioneController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('user')")
+    @PreAuthorize("hasAuthority('User')")
     public boolean deleteById(@AuthenticationPrincipal User user,
                               @PathVariable long id) {
         return recensioneService.deleteRecensione(user.getId(), id);
     }
 
     @GetMapping("/punteggio/{punteggio}/{giocoId}")
-    @PreAuthorize("hasAuthority('user')")
+    @PreAuthorize("hasAuthority('User')")
     public Page<Recensione> getByPunteggioAndGiocoId(@PathVariable int punteggio, @PathVariable long giocoId,
                                                      @RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "10") int size,
@@ -56,7 +56,7 @@ public class RecensioneController {
     }
 
     @GetMapping("/userPunteggio/{punteggio}/{userId}")
-    @PreAuthorize("hasAuthority('user')")
+    @PreAuthorize("hasAuthority('User')")
     public Page<Recensione> getByPunteggioAndUserId(@PathVariable int punteggio, @PathVariable long userId,
                                                     @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size,
@@ -66,12 +66,18 @@ public class RecensioneController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('user')")
+    @PreAuthorize("hasAuthority('User')")
     public Recensione putById(@AuthenticationPrincipal User user, @RequestBody @Validated RecensioneDTO recensioneDTO, BindingResult bindingResult, @PathVariable long id){
         if (bindingResult.hasErrors()){
             throw new BadRequestException(bindingResult.getAllErrors());
         }
         return recensioneService.putById(user.getId(),id,recensioneDTO);
+    }
+
+    @GetMapping("/userAndGioco")
+    @PreAuthorize("hasAuthority('User')")
+    public Recensione getByUserIdAndGiocoId(@AuthenticationPrincipal User user, @RequestParam long giocoId){
+        return recensioneService.findByUserIdAndGiocoId(user.getId(),giocoId);
     }
 
 }
