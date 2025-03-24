@@ -1,6 +1,7 @@
 package com.example.game.auth;
 
 import com.example.game.citta.CittaService;
+import com.example.game.email.EmailService;
 import com.example.game.enums.Role;
 import com.example.game.exceptions.*;
 import com.example.game.jwt.JWTTools;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,6 +29,8 @@ public class AuthService {
     CittaService cittaService;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    EmailService emailService;
     @Autowired
     JWTTools jwtTools;
 
@@ -53,6 +58,7 @@ public class AuthService {
         User user = userService.findByEmail(userLoginDTO.email());
 
         if(!user.isValidated()&&passwordEncoder.matches(userLoginDTO.password(), user.getPassword())){
+            userService.askForCode(user.getEmail(), true);
             throw new AccessDeniedException("Abbiamo inviato un codice alla mail da te indicata. Inseriscilo qui sotto.");
         }else if (user.isValidated()&&passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
             try {
@@ -79,6 +85,7 @@ public class AuthService {
     public Integer getAllUsersCount() {
         return userService.findAll().size();
     }
+
     public User changePasswordByCode(String email, String code, String newPassword) {
         User user = userService.findByEmail(email);
 

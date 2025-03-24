@@ -72,9 +72,9 @@ public class UserController {
         return userService.restoreById(user.getId());
     }
 
-    @GetMapping("/askForCode/{email}")
-    public boolean askForCode(@PathVariable String email){
-        return userService.askForCode(email);
+    @GetMapping("/askForCode/{email}/{validation}")
+    public boolean askForCode(@PathVariable String email,@PathVariable boolean validation){
+        return userService.askForCode(email,validation);
     }
 
     /*PUT*/

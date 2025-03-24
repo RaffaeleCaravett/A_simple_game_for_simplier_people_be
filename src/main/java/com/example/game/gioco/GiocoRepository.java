@@ -21,5 +21,9 @@ public interface GiocoRepository extends JpaRepository<Gioco, Long> {
                                     @Param("nomeGioco") String nomeGioco,
                                     @Param("difficolta") Integer difficolta,
                                     Pageable pageable);
-Page<Gioco> findByNomeGiocoContainingAndDifficoltaGreaterThan(String nomeGioco,Integer difficolta,Pageable pageable);
+
+    Page<Gioco> findByNomeGiocoContainingAndDifficoltaGreaterThan(String nomeGioco, Integer difficolta, Pageable pageable);
+
+    Page<Gioco> findAllByUsers_IdAndIsActive(long id, boolean isActive, Pageable pageable);
+    Gioco findAllByRecensione_IdAndIsActive(long id, boolean isActive);
 }

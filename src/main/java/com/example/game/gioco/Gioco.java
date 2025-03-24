@@ -2,6 +2,7 @@ package com.example.game.gioco;
 
 import com.example.game.classifica.Classifica;
 import com.example.game.entityInfos.EntityInfos;
+import com.example.game.partita.Partita;
 import com.example.game.recensione.Recensione;
 import com.example.game.trofeo.Trofeo;
 import com.example.game.user.User;
@@ -46,6 +47,19 @@ public class Gioco extends EntityInfos {
     private List<User> users;
     @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Recensione> recensione;
+    private int totalRecensioniNumber;
+    @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Partita> partite;
 
+    public List<Recensione> getRecensione(){
+        if(this.recensione.size()>=2) return this.recensione.stream().filter(Recensione::isActive).toList().subList(0,2);
+        return this.recensione.stream().filter(Recensione::isActive).toList();
+    }
+
+    public int getTotalRecensioniNumber(){
+        if (null!=this.recensione) return this.recensione.stream().filter(Recensione::isActive).toList().size();
+        return 0;
+    }
 
 }

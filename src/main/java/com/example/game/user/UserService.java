@@ -121,12 +121,12 @@ public class UserService {
         }
     }
 
-    public boolean askForCode(String email) {
+    public boolean askForCode(String email, boolean validation) {
         User user = findByEmail(email);
         String[] strings = new String[]{"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", "u", "U", "v", "V", "z", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
         StringBuilder code = new StringBuilder();
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 1; i <= 6; i++) {
             Random r = new Random();
             int randInt = r.nextInt(strings.length - 1) + 1;
 
@@ -137,20 +137,36 @@ public class UserService {
         userRepository.save(user);
 
         try {
-            emailService.sendEmail(user.getEmail(), "Codice per cambiare la password", "Ciao!" + user.getNome() + " " + user.getCognome() + " per resettare la tua password inserisci il codice qui sotto " + "\n" +
-                    "\n" +
-                    "\n" +
-                    "\n" +
-                    code + " e la tua mail nel form che vedi sulla schermata di Trasporti e premi invio.");
-
+            if(validation) {
+                emailService.sendEmail(user.getEmail(), "Gioco - effettua il primo accesso",  "Ciao " + user.getNome() + " " + user.getCognome() + " ti mandiamo questo codice per verificare che sia veramente tu. " + "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        code +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        " inserisci questo codice nella schermata di login che trovi su Gioco.");
+            }else{
+                emailService.sendEmail(user.getEmail(), "Codice per cambiare la password", "Ciao!" + user.getNome() + " " + user.getCognome() + " per resettare la tua password inserisci il codice qui sotto " + "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        code + " e la tua mail nel form che vedi sulla schermata di Trasporti e premi invio.");
+            }
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public boolean verifyChangePasswordCode(String email, String code){
+    public boolean verifyChangePasswordCode(String email, String code, boolean validation){
         User user = findByEmail(email);
+        if(null!=user.getChangePasswordCode()&&user.getChangePasswordCode().equals(code)&&validation){
+            user.setValidated(true);
+            userRepository.save(user);
+            return true;
+        };
         return null!=user.getChangePasswordCode()&&user.getChangePasswordCode().equals(code);
     }
 
@@ -172,5 +188,11 @@ public class UserService {
 
     public List<User> findAll(){
         return userRepository.findAll();
+    }
+
+    public void clearCode(String email){
+        User user = findByEmail(email);
+        user.setChangePasswordCode("");
+        save(user);
     }
 }

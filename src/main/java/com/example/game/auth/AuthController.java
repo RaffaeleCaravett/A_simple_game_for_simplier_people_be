@@ -77,15 +77,15 @@ public class AuthController {
         return ResponseEntity.ok(authService.getAllUsersCount());
     }
 
-    @GetMapping("/requestCode/{email}")
-    public boolean askCodeByEmail(@PathVariable String email){
+    @GetMapping("/requestCode/{email}/{validation}")
+    public boolean askCodeByEmail(@PathVariable String email,@PathVariable boolean validation){
        User user = userService.findByEmail(email);
-       return userService.askForCode(user.getEmail());
+       return userService.askForCode(user.getEmail(),validation);
     }
 
-    @GetMapping("/verifyPasswordCode/{email}/{code}")
-    public boolean verifyCodeByEmail(@PathVariable String email,@PathVariable String code){
-        return userService.verifyChangePasswordCode(email,code);
+    @GetMapping("/verifyPasswordCode/{email}/{code}/{validation}")
+    public boolean verifyCodeByEmail(@PathVariable String email,@PathVariable String code, @PathVariable boolean validation){
+        return userService.verifyChangePasswordCode(email,code,validation);
     }
 
     @GetMapping("/resetPasswordByCode/{newPassword}/{email}/{code}")
@@ -117,5 +117,9 @@ public class AuthController {
             System.err.println(e.getMessage());
             return gioco;
         }
+    }
+    @GetMapping("/clear/{email}")
+    public void clear(@PathVariable String email){
+        userService.clearCode(email);
     }
 }

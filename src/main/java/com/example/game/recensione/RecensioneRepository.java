@@ -11,9 +11,10 @@ import java.util.Optional;
 public interface RecensioneRepository extends JpaRepository<Recensione,Long> {
 
     Optional<Recensione> findByIdAndIsActive(long id, boolean isActive);
-    Optional<Recensione> findByUser_idAndGiocoId(long userId, long giocoId);
-    Page<Recensione> findAllByUser_idAndIsActive(long userId, boolean active, Pageable pageable);
-    Page<Recensione> findAllByUser_idAndPunteggioAndIsActive(long userId,int punteggio, boolean active, Pageable pageable);
-    Page<Recensione> findAllByGioco_idAndPunteggioAndIsActive(long userId,int punteggio, boolean active, Pageable pageable);
+    Optional<Recensione> findByUser_IdAndGioco_IdAndIsActive(long userId, long giocoId,boolean isActive);
+    Page<Recensione> findAllByUser_IdAndIsActive(long userId, boolean active, Pageable pageable);
+    Page<Recensione> findAllByUser_IdAndPunteggioAndIsActive(long userId,int punteggio, boolean active, Pageable pageable);
+    Page<Recensione> findAllByGioco_IdAndPunteggioAndIsActive(long userId,int punteggio, boolean active, Pageable pageable);
+    Page<Recensione> findAllByGioco_IdAndIsActiveAndUser_IdNot(long id, boolean isActive,long userId, Pageable pageable);
 
 }

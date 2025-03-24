@@ -4,6 +4,7 @@ import com.example.game.citta.Citta;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
+import com.example.game.partita.Partita;
 import com.example.game.recensione.Recensione;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -43,10 +44,14 @@ public class User extends EntityInfos implements UserDetails{
     @JoinColumn(name = "citta_id")
     private Citta citta;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    @JsonIgnore
     private List<Gioco> giochi;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Recensione> recensione;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Partita> partite;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

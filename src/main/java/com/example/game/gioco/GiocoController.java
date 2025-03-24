@@ -18,18 +18,18 @@ public class GiocoController {
     private final GiocoService giocoService;
 
     @GetMapping("")
-    public List<Gioco> getAll(@RequestParam(defaultValue = "true") boolean isActive){
+    public List<Gioco> getAll(@RequestParam(defaultValue = "true") boolean isActive) {
         return giocoService.findAllByIsActive(isActive);
     }
 
     @PutMapping("/{id}")
-    public Gioco updateGiocoImage(@RequestParam(name = "gioco_image") MultipartFile multipartFile,@PathVariable long id){
+    public Gioco updateGiocoImage(@RequestParam(name = "gioco_image") MultipartFile multipartFile, @PathVariable long id) {
         var gioco = giocoRepository.findById(id).orElseThrow();
         try {
             byte[] fileBytes = multipartFile.getBytes();
             gioco.setImage(fileBytes);
             return giocoRepository.save(gioco);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             return gioco;
         }
@@ -39,12 +39,23 @@ public class GiocoController {
     @PreAuthorize("hasAuthority('User')")
     @Transactional
     public Page<Gioco> getGiochiByValidationsAvg(@RequestParam(required = false) String nomeGioco,
-                                                  @RequestParam(required = false) Integer difficolta,
-                                                  @RequestParam(required = false) int avg,
-                                                  @RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "10") int size,
-                                                  @RequestParam(defaultValue = "id") String orderBy,
-                                                  @RequestParam(defaultValue = "ASC") String sortOrder){
-        return giocoService.findAllByFilters(nomeGioco,difficolta,avg,page,size,orderBy,sortOrder);
+                                                 @RequestParam(required = false) Integer difficolta,
+                                                 @RequestParam(required = false) int avg,
+                                                 @RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "10") int size,
+                                                 @RequestParam(defaultValue = "id") String orderBy,
+                                                 @RequestParam(defaultValue = "ASC") String sortOrder) {
+        return giocoService.findAllByFilters(nomeGioco, difficolta, avg, page, size, orderBy, sortOrder);
     }
+
+    @GetMapping("/userId")
+    @PreAuthorize("hasAuthority('User')")
+    public Page<Gioco> getByUserId(@RequestParam(required = false) long id,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "id") String orderBy,
+                                   @RequestParam(defaultValue = "ASC") String sortOrder) {
+        return giocoService.getByUserId(id, page, size, orderBy, sortOrder);
+    }
+
 }

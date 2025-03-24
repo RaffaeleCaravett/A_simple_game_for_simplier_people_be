@@ -2,7 +2,9 @@ package com.example.game.recensione;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.RecensioneDTO;
+import com.example.game.payloads.entities.RecensioneGiocoDTO;
 import com.example.game.user.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +23,7 @@ public class RecensioneController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('User')")
+    @Transactional
     public Recensione save(@AuthenticationPrincipal User user, @RequestBody @Validated RecensioneDTO recensioneDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -30,12 +33,24 @@ public class RecensioneController {
     }
 
     @GetMapping("")
-    public Page<Recensione> getByUserId(@AuthenticationPrincipal User user,
+    public Page<RecensioneGiocoDTO> getByUserId(@AuthenticationPrincipal User user,
+                                                @RequestParam(required = false, defaultValue = "0") long id,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size,
+                                                @RequestParam(defaultValue = "id") String orderBy,
+                                                @RequestParam(defaultValue = "ASC") String sortOrder) {
+        if(id==0) return recensioneService.findAllByUserId(user.getId(), page, size, orderBy, sortOrder);
+        else return recensioneService.findAllByUserId(id, page, size, orderBy, sortOrder);
+    }
+
+    @GetMapping("/byGiocoId/{id}")
+    public Page<Recensione> getByGiocoId(@PathVariable long id,
                                         @RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size,
-                                        @RequestParam(defaultValue = "id") String orderBy,
-                                        @RequestParam(defaultValue = "ASC") String sortOrder) {
-        return recensioneService.findAllByUserId(user.getId(), page, size, orderBy, sortOrder);
+                                        @RequestParam(defaultValue = "4") int size,
+                                        @RequestParam(defaultValue = "punteggio") String orderBy,
+                                        @RequestParam(defaultValue = "DESC") String sortOrder,
+                                         @AuthenticationPrincipal User user) {
+        return recensioneService.findAllByGiocoId(id,user.getId(), page, size, orderBy, sortOrder);
     }
 
     @DeleteMapping("/{id}")

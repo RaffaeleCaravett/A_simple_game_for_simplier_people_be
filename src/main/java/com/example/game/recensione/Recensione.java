@@ -18,9 +18,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Recensione extends EntityInfos {
     @Id
+    @SequenceGenerator(name = "s_id_global_generator", sequenceName = "s_recensioni",
+            initialValue = 1_0, allocationSize = 5)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String commento;
+    private String commentoPreview;
     private int punteggio;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
