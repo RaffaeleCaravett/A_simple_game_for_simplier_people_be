@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class PartitaService {
@@ -28,22 +29,23 @@ public class PartitaService {
     private PunteggioService punteggioService;
 
 
-    public Partita save(PartitaDTO partitaDTO){
-        Partita partita = new Partita();
-        partita.setUser(userService.findById(partitaDTO.userId()));
-        partita.setGioco(giocoService.findById(partitaDTO.giocoId()));
-        Punteggio punteggio = new Punteggio();
-        punteggio.setPunteggio(partitaDTO.punteggio());
-        punteggio.setPartita(partita);
-        punteggio.setCreatedAt(LocalDate.now().toString());
-        punteggio.setActive(true);
-        punteggio.setCreatedAtDate(LocalDate.now());
-        partita.setCreatedAt(LocalDate.now().toString());
-        partita.setActive(true);
-        partita.setCreatedAtDate(LocalDate.now());
-        partita.setEsito(Esito.valueOf(partitaDTO.esito()));
-
-        return partitaRepository.save(partita);
+    public List<Partita> save(List<PartitaDTO> partitaDTO){
+        return partitaDTO.stream().map(partitaDTO1 -> {
+            Partita partita = new Partita();
+            partita.setUser(userService.findById(partitaDTO1.userId()));
+            partita.setGioco(giocoService.findById(partitaDTO1.giocoId()));
+            Punteggio punteggio = new Punteggio();
+            punteggio.setPunteggio(partitaDTO1.punteggio());
+            punteggio.setPartita(partita);
+            punteggio.setCreatedAt(LocalDate.now().toString());
+            punteggio.setActive(true);
+            punteggio.setCreatedAtDate(LocalDate.now());
+            partita.setCreatedAt(LocalDate.now().toString());
+            partita.setActive(true);
+            partita.setCreatedAtDate(LocalDate.now());
+            partita.setEsito(Esito.valueOf(partitaDTO1.esito()));
+            return partitaRepository.save(partita);
+        }).toList();
     }
 
 
@@ -57,8 +59,8 @@ public class PartitaService {
         return partitaRepository.findAllByGioco_Id(giocoId, pageable);
     }
 
-    public Page<Partita> getAllByDateBetweenAndUserId(long userId,String dataFrom,String dateTo, int page, int size, String orderBy, String sortOrder) {
+    public Page<Partita> getAllByDateBetweenAndUserId(long userId,LocalDate dataFrom,LocalDate dateTo, int page, int size, String orderBy, String sortOrder) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
-        return partitaRepository.findAllByUser_IdAndCreatedAtDateBetween(userId,LocalDate.parse(dataFrom),LocalDate.parse(dateTo), pageable);
+        return partitaRepository.findAllByUser_IdAndCreatedAtDateBetween(userId,dataFrom,dateTo, pageable);
     }
 }
