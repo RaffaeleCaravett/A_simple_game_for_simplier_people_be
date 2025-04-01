@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Repository
 public interface PartitaRepository extends JpaRepository<Partita, Long> {
     Page<Partita> findAllByUser_Id(long userId, Pageable pageable);
+    Page<Partita> findAllByUser_IdAndGioco_Id(long userId,long giocoId, Pageable pageable);
     Page<Partita> findAllByUser_IdAndCreatedAtDateBetween(long userId, LocalDate from, LocalDate to, Pageable pageable);
     Page<Partita> findAllByGioco_Id(long giocoId, Pageable pageable);
 

@@ -58,4 +58,9 @@ public class GiocoController {
         return giocoService.getByUserId(id, page, size, orderBy, sortOrder);
     }
 
+    @GetMapping("/assignGiocoToUser")
+    @PreAuthorize("hasAuthority('User')")
+    public boolean assignGiocoToUser(@RequestParam long gioco, @RequestParam long user){
+        return giocoService.assignGiocoToUser(gioco,user);
+    }
 }

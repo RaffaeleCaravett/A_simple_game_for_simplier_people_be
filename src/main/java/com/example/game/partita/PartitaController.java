@@ -61,4 +61,15 @@ public class PartitaController {
                                            @RequestParam(defaultValue = "ASC") String sortOrder) {
         return partitaService.getAllByDateBetweenAndUserId(id, from, to, page, size, orderBy, sortOrder);
     }
+    @GetMapping("/userAndGioco/{id}/{giocoId}")
+    @PreAuthorize("hasAuthority('User')")
+    public Page<Partita> getByUserId(@PathVariable long id,
+                                     @PathVariable long giocoId,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size,
+                                     @RequestParam(defaultValue = "id") String orderBy,
+                                     @RequestParam(defaultValue = "ASC") String sortOrder) {
+        return partitaService.getAllByUserAndGiocoId(id,giocoId, page, size, orderBy, sortOrder);
+    }
+
 }

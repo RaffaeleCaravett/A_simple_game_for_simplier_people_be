@@ -2,6 +2,7 @@ package com.example.game.gioco;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.GiocoNotFoundException;
+import com.example.game.user.UserService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import java.util.List;
 public class GiocoService {
 
     private final GiocoRepository giocoRepository;
-
+    private final UserService userService;
 
     public List<Gioco> findAllByIsActive(boolean isActive) {
         return giocoRepository.findByIsActive(isActive);
@@ -76,5 +77,17 @@ public class GiocoService {
 
     public Gioco getByReceId(long id) {
         return giocoRepository.findAllByRecensione_IdAndIsActive(id, true);
+    }
+
+    public boolean assignGiocoToUser(long giocoId, long userId){
+        try {
+            var gioco = findById(giocoId);
+            var user = userService.findById(userId);
+            user.addGioco(gioco);
+            userService.save(user);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 }

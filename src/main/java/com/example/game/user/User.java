@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -45,7 +46,7 @@ public class User extends EntityInfos implements UserDetails{
     private Citta citta;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     @JsonIgnore
-    private List<Gioco> giochi;
+    private Set<Gioco> giochi;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Recensione> recensione;
@@ -91,5 +92,8 @@ public class User extends EntityInfos implements UserDetails{
     }
     public void setCognome(String cognome){
         this.cognome = String.valueOf(getCognome().charAt(0)).toUpperCase()+getCognome().substring(1).toLowerCase();
+    }
+    public void addGioco(Gioco gioco){
+        giochi.add(gioco);
     }
 }
