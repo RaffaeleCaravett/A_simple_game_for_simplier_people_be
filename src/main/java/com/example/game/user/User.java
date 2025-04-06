@@ -46,7 +46,7 @@ public class User extends EntityInfos implements UserDetails{
     private Citta citta;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     @JsonIgnore
-    private Set<Gioco> giochi;
+    private List<Gioco> giochi;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Recensione> recensione;
@@ -93,7 +93,8 @@ public class User extends EntityInfos implements UserDetails{
     public void setCognome(String cognome){
         this.cognome = String.valueOf(getCognome().charAt(0)).toUpperCase()+getCognome().substring(1).toLowerCase();
     }
-    public void addGioco(Gioco gioco){
+    public void addGioco(Gioco gioco) throws Exception {
+        if(giochi.contains(gioco)) throw new Exception();
         giochi.add(gioco);
     }
 }

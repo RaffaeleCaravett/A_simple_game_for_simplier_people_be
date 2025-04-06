@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "giochi")
@@ -61,5 +62,8 @@ public class Gioco extends EntityInfos {
         if (null!=this.recensione) return this.recensione.stream().filter(Recensione::isActive).toList().size();
         return 0;
     }
-
+    public void addUser(User user) throws Exception {
+        if(users.contains(user)) throw new Exception();
+        users.add(user);
+    }
 }

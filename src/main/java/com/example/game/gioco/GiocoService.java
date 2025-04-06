@@ -84,7 +84,9 @@ public class GiocoService {
             var gioco = findById(giocoId);
             var user = userService.findById(userId);
             user.addGioco(gioco);
+            gioco.addUser(user);
             userService.save(user);
+            giocoRepository.save(gioco);
             return true;
         }catch (Exception e){
             return false;
