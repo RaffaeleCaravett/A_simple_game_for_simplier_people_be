@@ -46,8 +46,7 @@ public class PreferitoService {
     public boolean deletePreferito(long id){
         try {
             Preferito preferito = findById(id);
-            preferito.delete();
-            preferitoRepository.save(preferito);
+            preferitoRepository.delete(preferito);
             return true;
         }catch (Exception e){
             return false;

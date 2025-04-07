@@ -1,11 +1,12 @@
 package com.example.game.payloads.entities;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public record PreferitoDTO(
-        @NotEmpty(message = "user_id mancante")
+        @NotNull(message = "user_id mancante")
         long user_id,
-        @NotEmpty(message = "gioco_id mancante")
+        @NotNull(message = "gioco_id mancante")
         long gioco_id
 ) {
 }

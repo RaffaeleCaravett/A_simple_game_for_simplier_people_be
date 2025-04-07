@@ -41,4 +41,8 @@ public class PreferitoController {
         }
         return preferitoService.save(preferitoDTO);
     }
+    @DeleteMapping("/{id}")
+    public boolean deleteById(@PathVariable long id){
+        return preferitoService.deletePreferito(id);
+    }
 }

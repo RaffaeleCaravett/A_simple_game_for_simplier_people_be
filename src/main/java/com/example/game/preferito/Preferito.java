@@ -4,6 +4,7 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.extensions.EntityDatas;
 import com.example.game.gioco.Gioco;
 import com.example.game.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -21,11 +22,12 @@ public class Preferito extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gioco_id")
     private Gioco gioco;
-    @ManyToOne()
-    @JoinColumn(name = "gioco_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     public void delete(){

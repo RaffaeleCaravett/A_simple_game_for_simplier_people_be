@@ -55,7 +55,6 @@ public class User extends EntityInfos implements UserDetails{
     @JsonIgnore
     private List<Partita> partite;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore
     private List<Preferito> preferiti;
 
     @Override
