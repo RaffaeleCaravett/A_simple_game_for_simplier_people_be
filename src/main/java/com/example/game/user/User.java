@@ -5,6 +5,7 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
 import com.example.game.partita.Partita;
+import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -53,6 +54,9 @@ public class User extends EntityInfos implements UserDetails{
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Partita> partite;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Preferito> preferiti;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -96,5 +100,9 @@ public class User extends EntityInfos implements UserDetails{
     public void addGioco(Gioco gioco) throws Exception {
         if(giochi.contains(gioco)) throw new Exception();
         giochi.add(gioco);
+    }
+    public boolean checkIfPreferitiExists(Gioco gioco){
+        List<Gioco> giochi = preferiti.stream().map(Preferito::getGioco).toList();
+        return giochi.contains(gioco);
     }
 }
