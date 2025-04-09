@@ -30,5 +30,6 @@ public class Partita extends EntityInfos {
     @JoinColumn(name = "user_id")
     private User user;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "partita")
+    @JoinColumn(name = "punteggio_id")
     private Punteggio punteggio;
 }

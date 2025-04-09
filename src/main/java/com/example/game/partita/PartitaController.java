@@ -2,6 +2,7 @@ package com.example.game.partita;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.PartitaDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,6 +24,7 @@ public class PartitaController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('User')")
+    @Transactional
     public List<Partita> save(@RequestBody @Validated List<PartitaDTO> partitaDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());

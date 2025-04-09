@@ -92,4 +92,8 @@ public class GiocoService {
             return false;
         }
     }
+
+    public Gioco save(Gioco gioco){
+        return giocoRepository.save(gioco);
+    }
 }

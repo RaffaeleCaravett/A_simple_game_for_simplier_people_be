@@ -1,12 +1,14 @@
 package com.example.game.user;
 
 import com.example.game.citta.Citta;
+import com.example.game.classifica.Classifica;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
 import com.example.game.partita.Partita;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
+import com.example.game.trofeo.Trofeo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,6 +50,9 @@ public class User extends EntityInfos implements UserDetails{
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     @JsonIgnore
     private List<Gioco> giochi;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    @JsonIgnore
+    private List<Classifica> classificas;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Recensione> recensione;
@@ -56,6 +61,9 @@ public class User extends EntityInfos implements UserDetails{
     private List<Partita> partite;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Preferito> preferiti;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Trofeo> trofeo;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -96,8 +104,8 @@ public class User extends EntityInfos implements UserDetails{
     public void setCognome(String cognome){
         this.cognome = String.valueOf(getCognome().charAt(0)).toUpperCase()+getCognome().substring(1).toLowerCase();
     }
-    public void addGioco(Gioco gioco) throws Exception {
-        if(giochi.contains(gioco)) throw new Exception();
+    public void addGioco(Gioco gioco) {
+        if(giochi.contains(gioco)) return;
         giochi.add(gioco);
     }
     public boolean checkIfPreferitiExists(Gioco gioco){

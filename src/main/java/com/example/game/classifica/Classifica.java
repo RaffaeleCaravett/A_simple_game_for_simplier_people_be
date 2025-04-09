@@ -1,11 +1,12 @@
 package com.example.game.classifica;
 
 import com.example.game.gioco.Gioco;
+import com.example.game.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "classifiche")
@@ -13,10 +14,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Classifica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gioco_id")
     private Gioco gioco;
+    @ManyToMany
+    @JoinTable(name = "classifiche_utenti",
+            joinColumns= @JoinColumn(name = "classifiche_id"),
+            inverseJoinColumns = @JoinColumn(name = "utenti_id"))
+    @JsonIgnore
+    private List<User> users;
+
+
+    public void addUser(User user){
+        if(!users.contains(user)) users.add(user);
+    }
 }

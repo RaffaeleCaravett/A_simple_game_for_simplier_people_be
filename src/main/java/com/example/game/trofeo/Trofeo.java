@@ -1,10 +1,17 @@
 package com.example.game.trofeo;
 
 import com.example.game.gioco.Gioco;
+import com.example.game.user.User;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "trofeo")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Trofeo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,5 +19,8 @@ public class Trofeo {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gioco_id")
     private Gioco gioco;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

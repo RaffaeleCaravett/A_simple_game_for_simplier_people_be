@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -46,6 +47,10 @@ public class PreferitoService {
     public boolean deletePreferito(long id){
         try {
             Preferito preferito = findById(id);
+            preferito.getUser().getPreferiti().remove(preferito);
+            preferito.getGioco().getPreferiti().remove(preferito);
+            userService.save(preferito.getUser());
+            giocoService.save(preferito.getGioco());
             preferitoRepository.delete(preferito);
             return true;
         }catch (Exception e){
