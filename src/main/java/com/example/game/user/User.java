@@ -108,6 +108,10 @@ public class User extends EntityInfos implements UserDetails{
         if(giochi.contains(gioco)) return;
         giochi.add(gioco);
     }
+    public void addClassifica(Classifica classifica) {
+        if(classificas.contains(classifica)) return;
+        classificas.add(classifica);
+    }
     public boolean checkIfPreferitiExists(Gioco gioco){
         List<Gioco> giochi = preferiti.stream().map(Preferito::getGioco).toList();
         return giochi.contains(gioco);

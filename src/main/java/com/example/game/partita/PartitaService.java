@@ -66,7 +66,7 @@ public class PartitaService {
                 userService.save(user);
                 giocoService.save(gioco);
             }
-
+            Partita savedPartita = partitaRepository.save(partita);
             Optional<Classifica> classifica = classificaService.getByGiocoId(gioco.getId());
             if (classifica.isEmpty()) {
                 Classifica classifica1 = classificaService.crea(new ClassificaDTO(gioco.getId()));
@@ -76,9 +76,7 @@ public class PartitaService {
             if (partita.getEsito().equals(Esito.VINTA) || (partita.getPunteggio().getPunteggio().equals("5") && partita.getEsito().equals(Esito.VALIDA))) {
                 trofeoService.crea(new TrofeoDTO(gioco.getId(), user.getId()));
             }
-
-
-            return partitaRepository.save(partita);
+            return savedPartita;
         }).toList();
     }
 

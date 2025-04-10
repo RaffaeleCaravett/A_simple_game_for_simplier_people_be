@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,13 +25,14 @@ public class Classifica {
     private Gioco gioco;
     @ManyToMany
     @JoinTable(name = "classifiche_utenti",
-            joinColumns= @JoinColumn(name = "classifiche_id"),
+            joinColumns = @JoinColumn(name = "classifiche_id"),
             inverseJoinColumns = @JoinColumn(name = "utenti_id"))
     @JsonIgnore
     private List<User> users;
 
 
-    public void addUser(User user){
-        if(!users.contains(user)) users.add(user);
+    public void addUser(User user) {
+        if(users==null) users = new ArrayList<>();
+        if (!users.contains(user)) users.add(user);
     }
 }
