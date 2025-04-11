@@ -1,10 +1,12 @@
 package com.example.game.classifica;
 
+import com.example.game.entityInfos.EntityInfos;
 import com.example.game.gioco.Gioco;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +17,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Classifica {
+@SuperBuilder
+public class Classifica extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

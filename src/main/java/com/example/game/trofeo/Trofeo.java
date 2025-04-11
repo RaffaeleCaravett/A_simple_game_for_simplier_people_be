@@ -1,9 +1,11 @@
 package com.example.game.trofeo;
 
+import com.example.game.entityInfos.EntityInfos;
 import com.example.game.gioco.Gioco;
 import com.example.game.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "trofeo")
@@ -11,8 +13,8 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Trofeo {
+@SuperBuilder
+public class Trofeo extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

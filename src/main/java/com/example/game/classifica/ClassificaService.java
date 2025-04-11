@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -30,19 +31,24 @@ public class ClassificaService {
         Gioco gioco = giocoService.findById(classificaDTO.giocoId());
         return classificaRepository.save(Classifica.builder()
                 .gioco(gioco)
+                .createdAt(LocalDate.now().toString())
+                .createdAtDate(LocalDate.now())
+                .modifiedAt(LocalDate.now().toString())
+                .isActive(true)
                 .build());
     }
 
-    public Page<Classifica> getByUserId(Long userId, Integer page, Integer size, String orderBy, String sortOrder){
-        Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(sortOrder),orderBy));
+    public Page<Classifica> getByUserId(Long userId, Integer page, Integer size, String orderBy, String sortOrder) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
 
-        return classificaRepository.findByUsers_Id(userId,pageable);
+        return classificaRepository.findByUsers_Id(userId, pageable);
     }
-    public Optional<Classifica> getByGiocoId(Long giocoId){
+
+    public Optional<Classifica> getByGiocoId(Long giocoId) {
         return classificaRepository.findByGioco_Id(giocoId);
     }
 
-    public Classifica save(Classifica classifica){
+    public Classifica save(Classifica classifica) {
         return classificaRepository.save(classifica);
     }
 }

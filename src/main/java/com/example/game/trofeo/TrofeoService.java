@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class TrofeoService {
 
@@ -28,17 +30,22 @@ public class TrofeoService {
         return trofeoRepository.save(Trofeo.builder()
                 .gioco(gioco)
                 .user(user)
+                .createdAt(LocalDate.now().toString())
+                .createdAtDate(LocalDate.now())
+                .modifiedAt(LocalDate.now().toString())
+                .isActive(true)
                 .build());
     }
 
-    public Page<Trofeo> getByUserId(Long userId, Integer page, Integer size, String orderBy, String sortOrder){
-        Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(sortOrder),orderBy));
+    public Page<Trofeo> getByUserId(Long userId, Integer page, Integer size, String orderBy, String sortOrder) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
 
-        return trofeoRepository.findByUser_Id(userId,pageable);
+        return trofeoRepository.findByUser_Id(userId, pageable);
     }
-    public Page<Trofeo> getByGiocoId(Long giocoId, Integer page, Integer size, String orderBy, String sortOrder){
-        Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(sortOrder),orderBy));
 
-        return trofeoRepository.findByGioco_Id(giocoId,pageable);
+    public Page<Trofeo> getByGiocoId(Long giocoId, Integer page, Integer size, String orderBy, String sortOrder) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
+
+        return trofeoRepository.findByGioco_Id(giocoId, pageable);
     }
 }
