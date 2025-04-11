@@ -8,6 +8,7 @@ import com.example.game.recensione.Recensione;
 import com.example.game.trofeo.Trofeo;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -25,6 +26,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties("hibernateLazyInitializer")
 public class Gioco extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

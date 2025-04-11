@@ -13,7 +13,7 @@ public class ClassificaController {
     private ClassificaService classificaService;
 
     @GetMapping("/user/{id}")
-    private Page<Classifica> getByUserId(@PathVariable Long id,
+    private Page<Classifica> getByUserId(@PathVariable long id,
                                      @RequestParam(defaultValue = "0") Integer page,
                                      @RequestParam(defaultValue = "10") Integer size,
                                      @RequestParam(defaultValue = "id") String orderBy,

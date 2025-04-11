@@ -23,7 +23,7 @@ public class Classifica {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gioco_id")
     private Gioco gioco;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "classifiche_utenti",
             joinColumns = @JoinColumn(name = "classifiche_id"),
             inverseJoinColumns = @JoinColumn(name = "utenti_id"))

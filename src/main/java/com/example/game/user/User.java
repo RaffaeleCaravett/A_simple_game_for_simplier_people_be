@@ -10,6 +10,7 @@ import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
 import com.example.game.trofeo.Trofeo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

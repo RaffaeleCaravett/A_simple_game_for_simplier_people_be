@@ -12,7 +12,7 @@ public class TrofeoController {
     private TrofeoService trofeoService;
 
     @GetMapping("/user/{id}")
-    private Page<Trofeo> getByUserId(@PathVariable Long id,
+    private Page<Trofeo> getByUserId(@PathVariable long id,
                                      @RequestParam(defaultValue = "0") Integer page,
                                      @RequestParam(defaultValue = "10") Integer size,
                                      @RequestParam(defaultValue = "id") String orderBy,
