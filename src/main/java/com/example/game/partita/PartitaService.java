@@ -90,6 +90,9 @@ public class PartitaService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
         return partitaRepository.findAllByUser_IdAndGioco_Id(userId, giocoId, pageable);
     }
+    public List<Partita> getAllByUserAndGiocoIdUnpaged(long userId, long giocoId) {
+        return partitaRepository.findAllByUser_IdAndGioco_Id(userId, giocoId);
+    }
 
     public Page<Partita> getAllByGiocoId(long giocoId, int page, int size, String orderBy, String sortOrder) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
