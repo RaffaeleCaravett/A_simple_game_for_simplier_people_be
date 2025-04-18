@@ -31,10 +31,15 @@ public class Classifica extends EntityInfos {
             inverseJoinColumns = @JoinColumn(name = "utenti_id"))
     @JsonIgnore
     private List<User> users;
+    private Integer totalUsers;
 
 
     public void addUser(User user) {
         if(users==null) users = new ArrayList<>();
         if (!users.contains(user)) users.add(user);
+    }
+    public Integer getTotalUsers(){
+        if(!users.isEmpty()) return users.size();
+        return 0;
     }
 }

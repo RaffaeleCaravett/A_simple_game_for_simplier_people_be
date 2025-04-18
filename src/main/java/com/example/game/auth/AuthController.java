@@ -71,6 +71,10 @@ public class AuthController {
     public List<Citta> getCities(){
         return cittaService.findAll();
     }
+    @GetMapping("/user/{id}")
+    public User getUserById(@PathVariable long id){
+        return userService.findById(id);
+    }
 
     @GetMapping("/allUsers")
     public ResponseEntity<Integer> getAllUsersCount(){

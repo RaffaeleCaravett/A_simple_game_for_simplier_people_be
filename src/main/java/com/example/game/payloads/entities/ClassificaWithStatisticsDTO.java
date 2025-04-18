@@ -16,5 +16,5 @@ import java.util.HashMap;
 public class ClassificaWithStatisticsDTO {
     private Long id;
     private Gioco gioco;
-    private HashMap<User,Integer> users;
+    private HashMap<Integer,UserWithPoints> users;
 }
