@@ -4,6 +4,7 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "richieste")
@@ -11,7 +12,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Richiesta extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
