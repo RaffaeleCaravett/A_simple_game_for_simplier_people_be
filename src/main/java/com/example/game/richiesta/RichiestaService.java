@@ -53,11 +53,12 @@ public class RichiestaService {
         return richiestaRepository.findById(richiestaId).orElseThrow(() -> new NotFoundException("Richiesta con id " + richiestaId + " non trovata in db."));
     }
 
-    public Page<Richiesta> byFilters(String descrizione, String oggetto, Long userId, LocalDate from, LocalDate to, Pageable pageable) {
+    public Page<Richiesta> byFilters(String descrizione, String oggetto, Long userId, LocalDate from, LocalDate to, Boolean isActive, Pageable pageable) {
         return richiestaRepository.findAll(Specification.where(RichiestaRepository.oggettoLike(oggetto))
                 .and(RichiestaRepository.descrizioneLike(descrizione))
                 .and(RichiestaRepository.userIdEquals(userId))
-                .and(RichiestaRepository.createdAtBetween(from, to)), pageable);
+                .and(RichiestaRepository.createdAtBetween(from, to))
+                .and(RichiestaRepository.isActiveEquals(isActive)), pageable);
     }
 
     public String formatDescrizione(String descrizione) {

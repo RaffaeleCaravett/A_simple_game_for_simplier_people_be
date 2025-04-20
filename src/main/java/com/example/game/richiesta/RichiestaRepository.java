@@ -16,13 +16,13 @@ public interface RichiestaRepository extends JpaRepository<Richiesta, Long>, Jpa
     static Specification<Richiesta> descrizioneLike(String descrizione) {
         if (descrizione == null) return null;
         return ((root, query, criteriaBuilder) -> criteriaBuilder.like(
-                criteriaBuilder.upper(root.get("descrizione")), descrizione.toUpperCase() +"%"));
+                criteriaBuilder.upper(root.get("descrizione")), "%" + descrizione.toUpperCase() +"%"));
     }
 
     static Specification<Richiesta> oggettoLike(String oggetto) {
         if (oggetto == null) return null;
         return ((root, query, criteriaBuilder) -> criteriaBuilder.like(
-                criteriaBuilder.upper(root.get("oggetto")), oggetto.toUpperCase() +"%"));
+                criteriaBuilder.upper(root.get("oggetto")), "%" + oggetto.toUpperCase() +"%"));
     }
 
     static Specification<Richiesta> userIdEquals(Long userId) {
@@ -33,6 +33,11 @@ public interface RichiestaRepository extends JpaRepository<Richiesta, Long>, Jpa
     static Specification<Richiesta> createdAtBetween(LocalDate from, LocalDate to) {
         if (from == null || to == null) return null;
         return ((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("cretedAt"), from, to));
+    }
+
+    static Specification<Richiesta> isActiveEquals(Boolean isActive) {
+        if (isActive == null) return null;
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isActive"), isActive));
     }
 
 }

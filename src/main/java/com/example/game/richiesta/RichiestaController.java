@@ -46,8 +46,9 @@ public class RichiestaController {
                                                 @RequestParam(required = false) String descrizione,
                                                 @RequestParam(required = false) LocalDate from,
                                                 @RequestParam(required = false) LocalDate to,
+                                                @RequestParam(required = false, defaultValue = "true") Boolean isActive,
                                                 @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return richiestaService.byFilters(descrizione, oggetto, userId, from, to, pageable);
+        return richiestaService.byFilters(descrizione, oggetto, userId, from, to, isActive, pageable);
     }
 
     @PutMapping("/{id}")
