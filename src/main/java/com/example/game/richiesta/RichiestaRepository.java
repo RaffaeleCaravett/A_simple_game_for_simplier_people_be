@@ -11,16 +11,18 @@ import java.time.LocalDate;
 
 @Repository
 public interface RichiestaRepository extends JpaRepository<Richiesta, Long>, JpaSpecificationExecutor<Richiesta> {
-    Page<Richiesta> findByUser_IdAndIsActive(Long userId,boolean isActive, Pageable pageable);
+    Page<Richiesta> findByUser_IdAndIsActive(Long userId, boolean isActive, Pageable pageable);
 
     static Specification<Richiesta> descrizioneLike(String descrizione) {
         if (descrizione == null) return null;
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("descrizione"), descrizione));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.like(
+                criteriaBuilder.upper(root.get("descrizione")), descrizione.toUpperCase() +"%"));
     }
 
     static Specification<Richiesta> oggettoLike(String oggetto) {
         if (oggetto == null) return null;
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("oggetto"), oggetto));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.like(
+                criteriaBuilder.upper(root.get("oggetto")), oggetto.toUpperCase() +"%"));
     }
 
     static Specification<Richiesta> userIdEquals(Long userId) {
