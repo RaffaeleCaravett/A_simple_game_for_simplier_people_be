@@ -44,6 +44,8 @@ public class RichiestaService {
         Richiesta richiesta = findById(richiestaId);
         richiesta.setOggetto(richiestaDTO.oggetto());
         richiesta.setDescrizione(richiestaDTO.descrizione());
+        richiesta.setDescrizionePreview(formatDescrizione(richiestaDTO.descrizione()));
+        richiesta.setModifiedAt(LocalDate.now().toString());
         return richiestaRepository.save(richiesta);
     }
 

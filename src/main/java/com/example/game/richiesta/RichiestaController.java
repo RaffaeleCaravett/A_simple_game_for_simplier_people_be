@@ -34,7 +34,8 @@ public class RichiestaController {
     public Page<Richiesta> getByUserId(@PathVariable Long id, @PageableDefault(page = 0, size = 10) Pageable pageable) {
         return richiestaService.getByUserId(id, pageable);
     }
-@DeleteMapping("/{id}")
+
+    @DeleteMapping("/{id}")
     public Boolean deleteById(@AuthenticationPrincipal User user, @PathVariable Long id) {
         return richiestaService.delete(user, id);
     }
@@ -50,11 +51,11 @@ public class RichiestaController {
     }
 
     @PutMapping("/{id}")
-    public Richiesta modify(@AuthenticationPrincipal User user,@PathVariable Long id, @RequestBody @Validated RichiestaDTO richiestaDTO, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    public Richiesta modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody @Validated RichiestaDTO richiestaDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return richiestaService.modifyRichiesta(user.getId(),richiestaDTO,id);
+        return richiestaService.modifyRichiesta(user.getId(), richiestaDTO, id);
     }
 }
 
