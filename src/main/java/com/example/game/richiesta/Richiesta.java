@@ -20,6 +20,8 @@ public class Richiesta extends EntityInfos {
     private String oggetto;
     @Column(length = 2000)
     private String descrizione;
+    @Column(length = 100)
+    private String descrizionePreview;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
