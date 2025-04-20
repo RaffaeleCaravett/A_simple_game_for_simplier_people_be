@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Repository
 public interface RichiestaRepository extends JpaRepository<Richiesta, Long>, JpaSpecificationExecutor<Richiesta> {
-    Page<Richiesta> findByUser_Id(Long userId, Pageable pageable);
+    Page<Richiesta> findByUser_IdAndIsActive(Long userId,boolean isActive, Pageable pageable);
 
     static Specification<Richiesta> descrizioneLike(String descrizione) {
         if (descrizione == null) return null;

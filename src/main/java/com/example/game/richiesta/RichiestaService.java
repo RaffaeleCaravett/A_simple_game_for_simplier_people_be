@@ -34,7 +34,7 @@ public class RichiestaService {
     }
 
     public Page<Richiesta> getByUserId(Long userId, Pageable pageable) {
-        return richiestaRepository.findByUser_Id(userId, pageable);
+        return richiestaRepository.findByUser_IdAndIsActive(userId,true, pageable);
     }
 
     public Richiesta modifyRichiesta(Long userId, RichiestaDTO richiestaDTO, Long richiestaId) {
@@ -67,7 +67,7 @@ public class RichiestaService {
     public  Boolean delete(User user, Long richiestaId){
         try {
             Richiesta richiesta = findById(richiestaId);
-            if(!richiesta.getUser().equals(user)) throw new UnauthorizedException("Non puoi cancellare questa richiesta");
+            if(richiesta.getUser().getId()!=user.getId()) throw new UnauthorizedException("Non puoi cancellare questa richiesta");
             richiesta.setDeletedAt(LocalDate.now().toString());
             richiesta.setActive(false);
             richiestaRepository.save(richiesta);
