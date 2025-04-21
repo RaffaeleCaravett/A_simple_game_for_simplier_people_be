@@ -100,14 +100,14 @@ public class User extends EntityInfos implements UserDetails{
         return true;
     }
     public void setFullName(String nome, String cognome){
-        this.fullName=String.valueOf(nome.charAt(0)).toUpperCase()+nome.substring(1) +
+        this.fullName=String.valueOf(nome.charAt(0)).toUpperCase()+nome.substring(1) + " " +
                 String.valueOf(cognome.charAt(0)).toUpperCase()+cognome.substring(1);
     }
     public void setNome(String nome){
-        this.nome = String.valueOf(getNome().charAt(0)).toUpperCase()+getNome().substring(1).toLowerCase();
+        this.nome = String.valueOf(nome.charAt(0)).toUpperCase()+nome.substring(1).toLowerCase();
     }
     public void setCognome(String cognome){
-        this.cognome = String.valueOf(getCognome().charAt(0)).toUpperCase()+getCognome().substring(1).toLowerCase();
+        this.cognome = String.valueOf(cognome.charAt(0)).toUpperCase()+cognome.substring(1).toLowerCase();
     }
     public void addGioco(Gioco gioco) {
         if(giochi.contains(gioco)) return;

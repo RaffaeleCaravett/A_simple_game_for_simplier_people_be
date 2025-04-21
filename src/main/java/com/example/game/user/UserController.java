@@ -3,6 +3,8 @@ package com.example.game.user;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.InvalidParamsException;
 import com.example.game.payloads.entities.UserSignupDTO;
+import com.example.game.payloads.entities.UserToPatch;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -91,6 +93,15 @@ public class UserController {
     @PreAuthorize("hasAuthority('User')")
     public String modifyProfileImage(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile){
         return userService.setProfileImage(user,multipartFile);
+    }
+    @PutMapping("/{id}")
+    @Transactional
+    public User putById(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestBody @Validated UserToPatch userToPatch, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
+
+        return userService.putUser(id,user.getId(),userToPatch);
     }
 
     /*DELETE*/

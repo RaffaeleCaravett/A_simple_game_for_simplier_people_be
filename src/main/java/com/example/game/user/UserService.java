@@ -6,6 +6,7 @@ import com.example.game.citta.CittaService;
 import com.example.game.email.EmailService;
 import com.example.game.exceptions.*;
 import com.example.game.payloads.entities.UserSignupDTO;
+import com.example.game.payloads.entities.UserToPatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,7 +45,7 @@ public class UserService {
         }
     }
 
-    public Page<User> findByDateBetween(String date1, String date2,int page, int size, String orderBy, String direction) {
+    public Page<User> findByDateBetween(String date1, String date2, int page, int size, String orderBy, String direction) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         formatter = formatter.withLocale(Locale.ITALIAN);
         LocalDate from = LocalDate.parse(date1, formatter);
@@ -73,7 +74,7 @@ public class UserService {
 
         user.setCognome(userSignupDTO.cognome());
         user.setNome(userSignupDTO.nome());
-        user.setFullName(user.getNome(),user.getCognome());
+        user.setFullName(user.getNome(), user.getCognome());
         user.setEmail(userSignupDTO.email());
         user.setCitta(cittaService.findById(userSignupDTO.cittaId()));
 
@@ -87,12 +88,15 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAndIsActive(email, true).orElseThrow(() -> new UserWithEmailNotFoundException(email));
     }
+
     public Optional<User> findByEmailOptional(String email) {
         return userRepository.findByEmailAndIsActive(email, true);
     }
+
     public boolean isEmailUsed(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
+
     public boolean deleteById(long id) {
         User user = findById(id);
 
@@ -137,8 +141,8 @@ public class UserService {
         userRepository.save(user);
 
         try {
-            if(validation) {
-                emailService.sendEmail(user.getEmail(), "Gioco - effettua il primo accesso",  "Ciao " + user.getNome() + " " + user.getCognome() + " ti mandiamo questo codice per verificare che sia veramente tu. " + "\n" +
+            if (validation) {
+                emailService.sendEmail(user.getEmail(), "Gioco - effettua il primo accesso", "Ciao " + user.getNome() + " " + user.getCognome() + " ti mandiamo questo codice per verificare che sia veramente tu. " + "\n" +
                         "\n" +
                         "\n" +
                         "\n" +
@@ -147,7 +151,7 @@ public class UserService {
                         "\n" +
                         "\n" +
                         " inserisci questo codice nella schermata di login che trovi su Gioco.");
-            }else{
+            } else {
                 emailService.sendEmail(user.getEmail(), "Codice per cambiare la password", "Ciao!" + user.getNome() + " " + user.getCognome() + " per resettare la tua password inserisci il codice qui sotto " + "\n" +
                         "\n" +
                         "\n" +
@@ -160,39 +164,50 @@ public class UserService {
         }
     }
 
-    public boolean verifyChangePasswordCode(String email, String code, boolean validation){
+    public boolean verifyChangePasswordCode(String email, String code, boolean validation) {
         User user = findByEmail(email);
-        if(null!=user.getChangePasswordCode()&&user.getChangePasswordCode().equals(code)&&validation){
+        if (null != user.getChangePasswordCode() && user.getChangePasswordCode().equals(code) && validation) {
             user.setValidated(true);
             userRepository.save(user);
             return true;
-        };
-        return null!=user.getChangePasswordCode()&&user.getChangePasswordCode().equals(code);
+        }
+        ;
+        return null != user.getChangePasswordCode() && user.getChangePasswordCode().equals(code);
     }
 
-    public String setProfileImage(User user, MultipartFile multipartFile){
+    public String setProfileImage(User user, MultipartFile multipartFile) {
         try {
             Map<String, Object> uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
             String imageUrl = (String) uploadResult.get("url");
 
             user.setImmagineProfilo(imageUrl);
             return user.getImmagineProfilo();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BadRequestException("Impossibile caricare l'immagine");
         }
     }
 
-    public User save(User user){
+    public User save(User user) {
         return userRepository.save(user);
     }
 
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public void clearCode(String email){
+    public void clearCode(String email) {
         User user = findByEmail(email);
         user.setChangePasswordCode("");
         save(user);
+    }
+
+    public User putUser(Long id, Long userAuthId, UserToPatch userToPatch) {
+        if (!Objects.equals(id, userAuthId)) throw new UnauthorizedException("Non puoi modificare questo id");
+        User user = findById(id);
+        user.setNome(userToPatch.nome());
+        user.setCognome(userToPatch.cognome());
+        user.setCitta(cittaService.findById(userToPatch.cittaId()));
+        user.setFullName(user.getNome(), user.getCognome());
+        return userRepository.save(user);
     }
 }
