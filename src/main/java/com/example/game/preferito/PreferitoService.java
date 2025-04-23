@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
@@ -63,9 +64,12 @@ public class PreferitoService {
         return preferitoRepository.findById(id).orElseThrow(()-> new PreferitoNotFoundException("Nessun preferito con id " + id));
     }
 
-    public Page<Preferito> getByUserId(long userId,int page, int size, String sort, String order){
+    public Page<Preferito> getByUserId(long userId,String giocoName, Integer giocoDifficolta,int page, int size, String sort, String order){
         Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(order),sort));
-        return preferitoRepository.findAllByUser_Id(userId,pageable);
+        return preferitoRepository.findAll(Specification.where(PreferitoRepository.userIdEquals(userId))
+                .and(PreferitoRepository.giocoNameEquals(giocoName))
+                .and(PreferitoRepository.giocoDifficoltaEquals(giocoDifficolta))
+                .and(PreferitoRepository.giocoActiveEquals(true)),pageable);
     }
     public Page<Preferito> getByGiocoId(long giocoId,int page, int size, String sort, String order){
         Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(order),sort));

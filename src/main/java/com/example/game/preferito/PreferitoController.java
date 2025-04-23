@@ -17,12 +17,14 @@ public class PreferitoController {
 
 
     @GetMapping("/user/{id}")
-    public Page<Preferito> getAllByUserId(@PathVariable long id,
-                                          @RequestParam(defaultValue = "0") int page,
+    public Page<Preferito> getAllByUserIdAndParams(@PathVariable long id,
+                                                   @RequestParam(required = false) String giocoName,
+                                                   @RequestParam(required = false) Integer giocoDifficolta,
+                                                   @RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size,
                                           @RequestParam(defaultValue = "id") String orderBy,
                                           @RequestParam(defaultValue = "ASC") String sortOrder) {
-        return preferitoService.getByUserId(id, page, size, orderBy, sortOrder);
+        return preferitoService.getByUserId(id,giocoName,giocoDifficolta, page, size, orderBy, sortOrder);
     }
 
     @GetMapping("/gioco/{id}")
