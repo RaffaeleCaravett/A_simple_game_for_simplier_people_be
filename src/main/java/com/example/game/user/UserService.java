@@ -175,13 +175,13 @@ public class UserService {
         return null != user.getChangePasswordCode() && user.getChangePasswordCode().equals(code);
     }
 
-    public String setProfileImage(User user, MultipartFile multipartFile) {
+    public User setProfileImage(User user, MultipartFile multipartFile) {
         try {
             Map<String, Object> uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
             String imageUrl = (String) uploadResult.get("url");
 
             user.setImmagineProfilo(imageUrl);
-            return user.getImmagineProfilo();
+            return save(user);
         } catch (Exception e) {
             throw new BadRequestException("Impossibile caricare l'immagine");
         }

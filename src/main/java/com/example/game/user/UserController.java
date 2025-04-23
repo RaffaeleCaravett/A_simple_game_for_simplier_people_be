@@ -91,7 +91,7 @@ public class UserController {
     }
     @PutMapping("/profileImage")
     @PreAuthorize("hasAuthority('User')")
-    public String modifyProfileImage(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile){
+    public User modifyProfileImage(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile){
         return userService.setProfileImage(user,multipartFile);
     }
     @PutMapping("/{id}")

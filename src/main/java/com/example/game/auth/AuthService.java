@@ -42,7 +42,7 @@ public class AuthService {
         user.setActive(true);
         user.setNome(userSignupDTO.nome());
         user.setCognome(userSignupDTO.cognome());
-        user.setFullName(user.getNome(),user.getCognome());
+        user.setFullName(user.getNome(), user.getCognome());
         user.setCitta(cittaService.findById(userSignupDTO.cittaId()));
         user.setEmail(userSignupDTO.email());
         user.setPassword(passwordEncoder.encode(userSignupDTO.password()));
@@ -57,19 +57,19 @@ public class AuthService {
     public UserWithTokenDTO login(UserLoginDTO userLoginDTO) {
         User user = userService.findByEmail(userLoginDTO.email());
 
-        if(!user.isValidated()&&passwordEncoder.matches(userLoginDTO.password(), user.getPassword())){
+        if (!user.isValidated() && passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
             userService.askForCode(user.getEmail(), true);
             throw new AccessDeniedException("Abbiamo inviato un codice alla mail da te indicata. Inseriscilo qui sotto.");
-        }else if (user.isValidated()&&passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
+        } else if (user.isValidated() && passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
             try {
                 Token token = jwtTools.createTokens(user);
                 return new UserWithTokenDTO(user, token);
             } catch (Exception e) {
                 throw new BadRequestException(e.getMessage());
             }
-        }else if(!passwordEncoder.matches(userLoginDTO.password(), user.getPassword())){
+        } else if (!passwordEncoder.matches(userLoginDTO.password(), user.getPassword())) {
             throw new AccessDeniedException("La password è errata.");
-        }else{
+        } else {
             throw new AccessDeniedException("E' successo qualcosa di inaspettato. Contatta l'assistenza dalla pagina dedicata.");
         }
     }
@@ -106,6 +106,15 @@ public class AuthService {
         try {
             user.setPassword(passwordEncoder.encode(password));
             userService.save(user);
+            emailService.sendEmail(user.getEmail(), "La tua password è stata cambiata",
+                    "Ciao " + user.getFullName() + ",  \n " +
+                            "la tua vecchia passoword " + oldPassword + "  è stata cambiata oggi \n" +
+                            LocalDate.now().getDayOfMonth() + " - " + LocalDate.now().getMonth().toString() + " - " + LocalDate.now().getYear() + ", \n" +
+                            " in una nuova passoword : \n " +
+                            password + " , \n" +
+                            "Se non sei stato tu ad effettuare quest operazione ti consigliamo di cambiare la password nuovamente. \n" +
+                            "Cordiali saluti, \n" +
+                            "Il Team di Multigame");
             return true;
         } catch (Exception e) {
             return false;
