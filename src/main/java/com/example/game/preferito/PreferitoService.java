@@ -67,7 +67,7 @@ public class PreferitoService {
     public Page<Preferito> getByUserId(long userId,String giocoName, Integer giocoDifficolta,int page, int size, String sort, String order){
         Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(order),sort));
         return preferitoRepository.findAll(Specification.where(PreferitoRepository.userIdEquals(userId))
-                .and(PreferitoRepository.giocoNameEquals(giocoName))
+                .and(PreferitoRepository.giocoNameLike(giocoName))
                 .and(PreferitoRepository.giocoDifficoltaEquals(giocoDifficolta))
                 .and(PreferitoRepository.giocoActiveEquals(true)),pageable);
     }

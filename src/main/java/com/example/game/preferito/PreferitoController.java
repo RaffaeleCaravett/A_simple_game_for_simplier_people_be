@@ -21,30 +21,31 @@ public class PreferitoController {
                                                    @RequestParam(required = false) String giocoName,
                                                    @RequestParam(required = false) Integer giocoDifficolta,
                                                    @RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size,
-                                          @RequestParam(defaultValue = "id") String orderBy,
-                                          @RequestParam(defaultValue = "ASC") String sortOrder) {
-        return preferitoService.getByUserId(id,giocoName,giocoDifficolta, page, size, orderBy, sortOrder);
+                                                   @RequestParam(defaultValue = "10") int size,
+                                                   @RequestParam(defaultValue = "id") String orderBy,
+                                                   @RequestParam(defaultValue = "ASC") String sortOrder) {
+        return preferitoService.getByUserId(id, giocoName, giocoDifficolta, page, size, orderBy, sortOrder);
     }
 
     @GetMapping("/gioco/{id}")
     public Page<Preferito> getAllByGiocoId(@PathVariable long id,
-                                          @RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size,
-                                          @RequestParam(defaultValue = "id") String orderBy,
-                                          @RequestParam(defaultValue = "ASC") String sortOrder){
-        return preferitoService.getByGiocoId(id,page,size,orderBy,sortOrder);
+                                           @RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "10") int size,
+                                           @RequestParam(defaultValue = "id") String orderBy,
+                                           @RequestParam(defaultValue = "ASC") String sortOrder) {
+        return preferitoService.getByGiocoId(id, page, size, orderBy, sortOrder);
     }
 
     @PostMapping("")
-    public Preferito save(@RequestBody @Validated PreferitoDTO preferitoDTO, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    public Preferito save(@RequestBody @Validated PreferitoDTO preferitoDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
         return preferitoService.save(preferitoDTO);
     }
+
     @DeleteMapping("/{id}")
-    public boolean deleteById(@PathVariable long id){
+    public boolean deleteById(@PathVariable long id) {
         return preferitoService.deletePreferito(id);
     }
 }
