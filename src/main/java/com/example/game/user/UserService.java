@@ -89,10 +89,6 @@ public class UserService {
         return userRepository.findByEmailAndIsActive(email, true).orElseThrow(() -> new UserWithEmailNotFoundException(email));
     }
 
-    public Optional<User> findByEmailOptional(String email) {
-        return userRepository.findByEmailAndIsActive(email, true);
-    }
-
     public boolean isEmailUsed(String email) {
         return userRepository.findByEmail(email).isPresent();
     }

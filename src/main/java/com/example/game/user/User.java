@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +33,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@SuperBuilder
 public class User extends EntityInfos implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +48,7 @@ public class User extends EntityInfos implements UserDetails{
     private String fullName;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private boolean isCompleted;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "citta_id")
     private Citta citta;

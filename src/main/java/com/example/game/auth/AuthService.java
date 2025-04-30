@@ -5,6 +5,7 @@ import com.example.game.email.EmailService;
 import com.example.game.enums.Role;
 import com.example.game.exceptions.*;
 import com.example.game.jwt.JWTTools;
+import com.example.game.payloads.entities.GoogleUser;
 import com.example.game.payloads.entities.UserLoginDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserWithTokenDTO;
@@ -17,10 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @Service
 public class AuthService {
     @Autowired
@@ -50,6 +47,7 @@ public class AuthService {
         user.setRole(Role.User);
         user.setValidated(false);
         userService.setProfileImage(user, multipartFile);
+        user.setCompleted(true);
 
         return userService.save(user);
     }
@@ -118,6 +116,23 @@ public class AuthService {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+    public User signupGoogleUser(GoogleUser googleUser){
+        try{
+            userService.findByEmail(googleUser.email());
+            throw new EmailAlreadyInUseException(googleUser.email());
+        }catch (UserWithEmailNotFoundException ex){
+            return User.builder()
+                    .email(googleUser.email())
+                    .nome(googleUser.fullname().substring(0,googleUser.fullname().indexOf(' ')))
+                    .cognome(googleUser.fullname().substring(googleUser.fullname().indexOf(' ')))
+                    .createdAt(LocalDate.now().toString())
+                    .modifiedAt(LocalDate.now().toString())
+                    .isActive(true)
+                    .immagineProfilo(googleUser.immagineProfilo())
+                    .isCompleted(false)
+                    .build();
         }
     }
 }

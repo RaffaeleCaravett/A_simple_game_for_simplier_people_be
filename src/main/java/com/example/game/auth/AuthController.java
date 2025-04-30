@@ -5,6 +5,7 @@ import com.example.game.citta.CittaService;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.gioco.Gioco;
 import com.example.game.gioco.GiocoRepository;
+import com.example.game.payloads.entities.GoogleUser;
 import com.example.game.payloads.entities.UserLoginDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserWithTokenDTO;
@@ -125,5 +126,13 @@ public class AuthController {
     @GetMapping("/clear/{email}")
     public void clear(@PathVariable String email){
         userService.clearCode(email);
+    }
+
+    @PostMapping("/googleUser")
+    public User signupGoogleUser(@RequestBody @Validated GoogleUser googleUser, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            throw  new BadRequestException(bindingResult.getAllErrors());
+        }
+        return authService.signupGoogleUser(googleUser);
     }
 }
