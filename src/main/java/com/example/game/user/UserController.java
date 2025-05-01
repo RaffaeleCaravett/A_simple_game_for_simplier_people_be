@@ -2,6 +2,7 @@ package com.example.game.user;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.InvalidParamsException;
+import com.example.game.payloads.entities.DescrizioneDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserToPatch;
 import jakarta.transaction.Transactional;
@@ -32,10 +33,10 @@ public class UserController {
                                               @RequestParam(defaultValue = "10") int size,
                                               @RequestParam(defaultValue = "id") String orderBy,
                                               @RequestParam(defaultValue = "ASC") String direction) {
-        if((nome + cognome).isEmpty()){
+        if ((nome + cognome).isEmpty()) {
             throw new InvalidParamsException("I parametri che hai passato sono vuoti");
-        }else{
-            return userService.findByParamsAndIsActive(nome,cognome,page,size,orderBy,direction);
+        } else {
+            return userService.findByParamsAndIsActive(nome, cognome, page, size, orderBy, direction);
         }
     }
 
@@ -46,14 +47,14 @@ public class UserController {
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size,
                                         @RequestParam(defaultValue = "id") String orderBy,
-                                        @RequestParam(defaultValue = "ASC") String direction){
+                                        @RequestParam(defaultValue = "ASC") String direction) {
 
-        if ("".equals(date1)||"".equals(date2)){
+        if ("".equals(date1) || "".equals(date2)) {
             throw new InvalidParamsException("Le date che stai passando non sono valide.");
         }
         try {
-            return userService.findByDateBetween(date1,date2,page,size,orderBy,direction);
-        }catch (Exception e){
+            return userService.findByDateBetween(date1, date2, page, size, orderBy, direction);
+        } catch (Exception e) {
             throw new InvalidParamsException("Le date che stai passando non sono valide.");
         }
     }
@@ -64,56 +65,67 @@ public class UserController {
                                   @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "10") int size,
                                   @RequestParam(defaultValue = "id") String orderBy,
-                                  @RequestParam(defaultValue = "ASC") String direction){
-        return userService.findByCitta(id,page,size,orderBy,direction);
+                                  @RequestParam(defaultValue = "ASC") String direction) {
+        return userService.findByCitta(id, page, size, orderBy, direction);
     }
 
     @GetMapping("/restoreById")
     @PreAuthorize("hasAuthority('User')")
-    public User restoreById(@AuthenticationPrincipal User user){
+    public User restoreById(@AuthenticationPrincipal User user) {
         return userService.restoreById(user.getId());
     }
 
     @GetMapping("/askForCode/{email}/{validation}")
-    public boolean askForCode(@PathVariable String email,@PathVariable boolean validation){
-        return userService.askForCode(email,validation);
+    public boolean askForCode(@PathVariable String email, @PathVariable boolean validation) {
+        return userService.askForCode(email, validation);
     }
 
     /*PUT*/
 
     @PutMapping("")
     @PreAuthorize("hasAuthority('User')")
-    public User findByCitta(@AuthenticationPrincipal User user, @RequestBody @Validated UserSignupDTO userSignupDTO, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    public User findByCitta(@AuthenticationPrincipal User user, @RequestBody @Validated UserSignupDTO userSignupDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return userService.modifyById(user.getId(),userSignupDTO);
+        return userService.modifyById(user.getId(), userSignupDTO);
     }
+
     @PutMapping("/profileImage")
     @PreAuthorize("hasAuthority('User')")
-    public User modifyProfileImage(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile){
-        return userService.setProfileImage(user,multipartFile);
+    public User modifyProfileImage(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile) {
+        return userService.setProfileImage(user, multipartFile);
     }
+
     @PutMapping("/{id}")
     @Transactional
-    public User putById(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestBody @Validated UserToPatch userToPatch, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    public User putById(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestBody @Validated UserToPatch userToPatch, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
 
-        return userService.putUser(id,user.getId(),userToPatch);
+        return userService.putUser(id, user.getId(), userToPatch);
     }
 
     /*DELETE*/
 
     @DeleteMapping("")
     @PreAuthorize("hasAuthority('User')")
-    public boolean deleteById(@AuthenticationPrincipal User user){
+    public boolean deleteById(@AuthenticationPrincipal User user) {
         return userService.deleteById(user.getId());
     }
+
     @DeleteMapping("/permanently")
     @PreAuthorize("hasAuthority('User')")
-    public boolean deleteByIdPermanently(@AuthenticationPrincipal User user){
+    public boolean deleteByIdPermanently(@AuthenticationPrincipal User user) {
         return userService.permanentlyDeleteUser(user.getId());
+    }
+
+    @PutMapping("/descrizione")
+    public String updateDescrizione(@AuthenticationPrincipal User user, @RequestBody @Validated DescrizioneDTO descrizioneDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
+        return userService.updateDescrizione(user,descrizioneDTO);
     }
 }

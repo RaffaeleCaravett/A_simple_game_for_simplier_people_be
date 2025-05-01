@@ -5,6 +5,7 @@ import com.example.game.citta.Citta;
 import com.example.game.citta.CittaService;
 import com.example.game.email.EmailService;
 import com.example.game.exceptions.*;
+import com.example.game.payloads.entities.DescrizioneDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserToPatch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,5 +206,11 @@ public class UserService {
         user.setCitta(cittaService.findById(userToPatch.cittaId()));
         user.setFullName(user.getNome(), user.getCognome());
         return userRepository.save(user);
+    }
+
+    public String updateDescrizione(User user, DescrizioneDTO descrizioneDTO) {
+        user.setDescrizione(descrizioneDTO.descrizione());
+        userRepository.save(user);
+        return descrizioneDTO.descrizione();
     }
 }

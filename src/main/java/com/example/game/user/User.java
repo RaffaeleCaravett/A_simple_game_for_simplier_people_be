@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,6 +47,8 @@ public class User extends EntityInfos implements UserDetails{
     private String changePasswordCode;
     private boolean isValidated;
     private String fullName;
+    @Length(max = 5000)
+    private String descrizione;
     @Enumerated(EnumType.STRING)
     private Role role;
     private boolean isCompleted;
