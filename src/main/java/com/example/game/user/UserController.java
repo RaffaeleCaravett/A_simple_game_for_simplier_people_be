@@ -122,7 +122,7 @@ public class UserController {
     }
 
     @PutMapping("/descrizione")
-    public String updateDescrizione(@AuthenticationPrincipal User user, @RequestBody @Validated DescrizioneDTO descrizioneDTO, BindingResult bindingResult) {
+    public User updateDescrizione(@AuthenticationPrincipal User user, @RequestBody @Validated DescrizioneDTO descrizioneDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
