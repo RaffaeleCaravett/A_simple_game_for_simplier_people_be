@@ -2,6 +2,7 @@ package com.example.game.user;
 
 import com.example.game.citta.Citta;
 import com.example.game.classifica.Classifica;
+import com.example.game.descrizione.Descrizione;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
@@ -47,8 +48,8 @@ public class User extends EntityInfos implements UserDetails{
     private String changePasswordCode;
     private boolean isValidated;
     private String fullName;
-    @Length(max = 5000)
-    private String descrizione;
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+    private Descrizione descrizione;
     @Enumerated(EnumType.STRING)
     private Role role;
     private boolean isCompleted;

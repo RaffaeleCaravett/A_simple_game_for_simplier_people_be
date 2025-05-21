@@ -204,13 +204,9 @@ public class UserService {
         user.setNome(userToPatch.nome());
         user.setCognome(userToPatch.cognome());
         user.setCitta(cittaService.findById(userToPatch.cittaId()));
-        user.setDescrizione(userToPatch.descrizione());
         user.setFullName(user.getNome(), user.getCognome());
         return userRepository.save(user);
     }
 
-    public User updateDescrizione(User user, DescrizioneDTO descrizioneDTO) {
-        user.setDescrizione(descrizioneDTO.descrizione());
-        return userRepository.save(user);
-    }
+
 }

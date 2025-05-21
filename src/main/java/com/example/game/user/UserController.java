@@ -1,5 +1,6 @@
 package com.example.game.user;
 
+import com.example.game.descrizione.DescrizioneService;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.InvalidParamsException;
 import com.example.game.payloads.entities.DescrizioneDTO;
@@ -22,7 +23,8 @@ import java.time.LocalDate;
 public class UserController {
     @Autowired
     UserService userService;
-
+    @Autowired
+    DescrizioneService descrizioneService;
     /*GET*/
 
     @GetMapping("/byParams")
@@ -122,10 +124,11 @@ public class UserController {
     }
 
     @PutMapping("/descrizione")
+    @Transactional
     public User updateDescrizione(@AuthenticationPrincipal User user, @RequestBody @Validated DescrizioneDTO descrizioneDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return userService.updateDescrizione(user,descrizioneDTO);
+        return descrizioneService.updateDescrizione(user, descrizioneDTO);
     }
 }
