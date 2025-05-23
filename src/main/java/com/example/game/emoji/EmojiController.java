@@ -24,10 +24,11 @@ public class EmojiController {
     public List<Emoji> findAll(){
         return emojiService.findAll();
     }
-    @GetMapping("/{title}")
+    @GetMapping("/title/{title}")
     public List<Emoji> findAllByTitle(@PathVariable String title){
         return emojiService.findAllByTitle(title);
     }
+
     @PostMapping("")
     public List<Emoji> save(@RequestBody @Validated List<@Valid EmojiDTO> emojiDTOS, BindingResult bindingResult){
         if(bindingResult.hasErrors()){

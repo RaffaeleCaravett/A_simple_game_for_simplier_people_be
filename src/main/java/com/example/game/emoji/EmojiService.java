@@ -2,6 +2,7 @@ package com.example.game.emoji;
 
 import com.example.game.payloads.entities.EmojiDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,7 +21,7 @@ public class EmojiService {
     }
 
     public List<Emoji> findAllByTitle(String title){
-        return emojiRepository.findAllByTitle(title);
+        return emojiRepository.findAll(Specification.where(EmojiRepository.titleLike(title)));
     }
     public List<Emoji> save(List<EmojiDTO> emojiDTOS){
         return emojiDTOS.stream().map(this::map).map(emojiRepository::save).toList();

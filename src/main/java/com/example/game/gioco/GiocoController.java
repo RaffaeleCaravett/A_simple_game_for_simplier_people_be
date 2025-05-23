@@ -42,7 +42,7 @@ public class GiocoController {
     @Transactional
     public Page<Gioco> getGiochiByValidationsAvg(@RequestParam(required = false) String nomeGioco,
                                                  @RequestParam(required = false) Integer difficolta,
-                                                 @RequestParam(required = false) int avg,
+                                                 @RequestParam(required = false) Integer avg,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int size,
                                                  @RequestParam(defaultValue = "id") String orderBy,

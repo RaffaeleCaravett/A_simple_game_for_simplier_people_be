@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -38,14 +39,9 @@ public class GiocoService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
 
-        if (punteggio == 0) {
-            return giocoRepository.findByNomeGiocoContainingAndDifficoltaGreaterThan(nomeGioco, difficolta, pageable);
-        }
-        if (difficolta == 0) {
-            difficolta = null;
-        }
-
-        return giocoRepository.findGiochiByFilters(punteggio, nomeGioco, difficolta, pageable);
+        return giocoRepository.findAll(Specification.where(GiocoRepository.difficoltaMoreThanOrEquals(difficolta))
+                .and(GiocoRepository.nomeLike(nomeGioco))
+                .and(GiocoRepository.punteggioMoreThanOrEquals(punteggio)),pageable);
     }
 
     public void orderByIsNotIn(String orderBy) {
