@@ -23,6 +23,10 @@ public class GiocoController {
     public List<Gioco> getAll(@RequestParam(defaultValue = "true") boolean isActive) {
         return giocoService.findAllByIsActive(isActive);
     }
+    @GetMapping("/{id}")
+    public Gioco getGiocoById(@PathVariable Long id) {
+        return giocoService.findById(id);
+    }
 
     @PutMapping("/{id}")
     public Gioco updateGiocoImage(@RequestParam(name = "gioco_image") MultipartFile multipartFile, @PathVariable long id) {
