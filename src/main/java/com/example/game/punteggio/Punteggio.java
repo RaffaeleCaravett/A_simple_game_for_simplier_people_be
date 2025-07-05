@@ -23,4 +23,9 @@ public class Punteggio extends EntityInfos {
     @JsonIgnore
     private Partita partita;
     private String punteggio;
+
+    public Punteggio (Partita partita, String punteggio){
+        this.partita = partita;
+        this.punteggio = punteggio;
+    }
 }

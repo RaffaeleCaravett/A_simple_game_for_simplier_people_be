@@ -2,11 +2,13 @@ package com.example.game.partita;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.PartitaDTO;
+import com.example.game.user.User;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -74,4 +76,8 @@ public class PartitaController {
         return partitaService.getAllByUserAndGiocoId(id,giocoId, page, size, orderBy, sortOrder);
     }
 
+    @PutMapping("/{id}")
+    public Partita putById(@PathVariable Long id, @AuthenticationPrincipal User user, PartitaDTO partitaDTO){
+        return partitaService.putById(id,user.getId(),partitaDTO);
+    }
 }

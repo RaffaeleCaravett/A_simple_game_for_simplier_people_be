@@ -3,6 +3,8 @@ package com.example.game.partita;
 import com.example.game.classifica.Classifica;
 import com.example.game.classifica.ClassificaService;
 import com.example.game.enums.Esito;
+import com.example.game.exceptions.NotFoundException;
+import com.example.game.exceptions.UnauthorizedException;
 import com.example.game.gioco.GiocoService;
 import com.example.game.payloads.entities.ClassificaDTO;
 import com.example.game.payloads.entities.PartitaDTO;
@@ -90,6 +92,7 @@ public class PartitaService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
         return partitaRepository.findAllByUser_IdAndGioco_Id(userId, giocoId, pageable);
     }
+
     public List<Partita> getAllByUserAndGiocoIdUnpaged(long userId, long giocoId) {
         return partitaRepository.findAllByUser_IdAndGioco_Id(userId, giocoId);
     }
@@ -102,5 +105,21 @@ public class PartitaService {
     public Page<Partita> getAllByDateBetweenAndUserId(long userId, LocalDate dataFrom, LocalDate dateTo, int page, int size, String orderBy, String sortOrder) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
         return partitaRepository.findAllByUser_IdAndCreatedAtDateBetween(userId, dataFrom, dateTo, pageable);
+    }
+
+    public Partita putById(Long id, Long userId, PartitaDTO partitaDTO) {
+        Partita partita = getById(id);
+        if (partita.getUser().getId() != userId) {
+            throw new UnauthorizedException("Non hai i permessi per modificare questa partita");
+        }
+        partita.setPunteggio(new Punteggio(getById(id),partitaDTO.punteggio()));
+        partita.setEsito(Esito.valueOf(partitaDTO.esito()));
+        partita.setModifiedAt(LocalDate.now().toString());
+        punteggioService.save(partita.getPunteggio());
+        return partitaRepository.save(partita);
+    }
+
+    public Partita getById(Long id){
+        return partitaRepository.findById(id).orElseThrow(() -> new NotFoundException("Partita con id " + id + " non trovata."));
     }
 }
