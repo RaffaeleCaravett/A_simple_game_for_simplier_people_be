@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.w3c.dom.stylesheets.LinkStyle;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Table(name = "torneo")
@@ -33,5 +35,7 @@ public class Tournament {
     @OneToMany(mappedBy = "torneo",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Punteggio> punteggios;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
 }
