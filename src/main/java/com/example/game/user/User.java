@@ -10,6 +10,7 @@ import com.example.game.partita.Partita;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
 import com.example.game.richiesta.Richiesta;
+import com.example.game.tournament.Tournament;
 import com.example.game.trofeo.Trofeo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -76,6 +77,11 @@ public class User extends EntityInfos implements UserDetails{
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Richiesta> richieste;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    @JsonIgnore
+    private List<Tournament> tournaments;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

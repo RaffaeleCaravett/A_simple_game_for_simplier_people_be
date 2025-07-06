@@ -5,6 +5,8 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.partita.Partita;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
+import com.example.game.richiesta.Richiesta;
+import com.example.game.tournament.Tournament;
 import com.example.game.trofeo.Trofeo;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -58,6 +60,9 @@ public class Gioco extends EntityInfos {
     @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Preferito> preferiti;
+    @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Tournament> tournaments;
 
     public List<Recensione> getRecensione(){
         if(this.recensione.size()>=2) return this.recensione.stream().filter(Recensione::isActive).toList().subList(0,2);
