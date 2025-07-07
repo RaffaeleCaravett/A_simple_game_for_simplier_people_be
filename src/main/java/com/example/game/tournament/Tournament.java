@@ -37,5 +37,4 @@ public class Tournament {
     private List<Punteggio> punteggios;
     private LocalDate startDate;
     private LocalDate endDate;
-
 }
