@@ -26,6 +26,11 @@ public interface GiocoRepository extends JpaRepository<Gioco, Long>, JpaSpecific
         if(nome == null) return null;
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("nomeGioco")),"%"+nome.toUpperCase() +"%");
     }
+    static Specification<Gioco> categoriaIn(List<Long> ids){
+        if(ids.isEmpty()) return null;
+        return ((root, query, criteriaBuilder) ->
+           criteriaBuilder.or(criteriaBuilder.in(root.get("categorie").get("id")).value(ids)));
+    }
 
     Page<Gioco> findAllByUsers_IdAndIsActive(long id, boolean isActive, Pageable pageable);
     Gioco findAllByRecensione_IdAndIsActive(long id, boolean isActive);

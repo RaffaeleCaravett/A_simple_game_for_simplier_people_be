@@ -33,7 +33,8 @@ public class GiocoService {
         return giocoRepository.findById(id).orElseThrow(() -> new GiocoNotFoundException(id));
     }
 
-    public Page<Gioco> findAllByFilters(@Nullable String nomeGioco, @Nullable Integer difficolta, @Nullable Integer punteggio, int page, int size, String orderBy, String sortOrder) {
+    public Page<Gioco> findAllByFilters(@Nullable String nomeGioco, @Nullable Integer difficolta, @Nullable Integer punteggio,
+                                        @Nullable List<Long> categorie, int page, int size, String orderBy, String sortOrder) {
         orderByIsNotIn(orderBy);
         sortOrderIsNotIn(sortOrder);
 
@@ -41,7 +42,8 @@ public class GiocoService {
 
         return giocoRepository.findAll(Specification.where(GiocoRepository.difficoltaMoreThanOrEquals(difficolta))
                 .and(GiocoRepository.nomeLike(nomeGioco))
-                .and(GiocoRepository.punteggioMoreThanOrEquals(punteggio)),pageable);
+                .and(GiocoRepository.punteggioMoreThanOrEquals(punteggio))
+                .and(GiocoRepository.categoriaIn(categorie)),pageable);
     }
 
     public void orderByIsNotIn(String orderBy) {

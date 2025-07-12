@@ -42,20 +42,19 @@ public class GiocoController {
     }
 
     @GetMapping("/byFilters")
-    @PreAuthorize("hasAuthority('User')")
     @Transactional
     public Page<Gioco> getGiochiByValidationsAvg(@RequestParam(required = false) String nomeGioco,
                                                  @RequestParam(required = false) Integer difficolta,
                                                  @RequestParam(required = false) Integer avg,
+                                                 @RequestParam(required = false) List<Long> categorie,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int size,
                                                  @RequestParam(defaultValue = "id") String orderBy,
                                                  @RequestParam(defaultValue = "ASC") String sortOrder) {
-        return giocoService.findAllByFilters(nomeGioco, difficolta, avg, page, size, orderBy, sortOrder);
+        return giocoService.findAllByFilters(nomeGioco, difficolta, avg, categorie, page, size, orderBy, sortOrder);
     }
 
     @GetMapping("/userId")
-    @PreAuthorize("hasAuthority('User')")
     public Page<Gioco> getByUserId(@RequestParam(required = false) Long id,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "10") int size,
@@ -69,7 +68,6 @@ public class GiocoController {
     }
 
     @GetMapping("/assignGiocoToUser")
-    @PreAuthorize("hasAuthority('User')")
     public boolean assignGiocoToUser(@RequestParam long gioco, @RequestParam long user) {
         return giocoService.assignGiocoToUser(gioco, user);
     }
