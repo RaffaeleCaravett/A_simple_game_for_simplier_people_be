@@ -27,7 +27,7 @@ public interface GiocoRepository extends JpaRepository<Gioco, Long>, JpaSpecific
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("nomeGioco")),"%"+nome.toUpperCase() +"%");
     }
     static Specification<Gioco> categoriaIn(List<Long> ids){
-        if(ids.isEmpty()) return null;
+        if(ids == null || ids.isEmpty()) return null;
         return ((root, query, criteriaBuilder) ->
            criteriaBuilder.or(criteriaBuilder.in(root.get("categorie").get("id")).value(ids)));
     }
