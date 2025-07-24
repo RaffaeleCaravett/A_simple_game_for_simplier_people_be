@@ -90,7 +90,6 @@ public class RecensioneController {
     }
 
     @GetMapping("/userAndGioco")
-    @PreAuthorize("hasAuthority('User')")
     public Recensione getByUserIdAndGiocoId(@AuthenticationPrincipal User user, @RequestParam long giocoId){
         return recensioneService.findByUserIdAndGiocoId(user.getId(),giocoId);
     }

@@ -1,7 +1,12 @@
 package com.example.game.gioco;
 
+import com.example.game.categoria.Categoria;
+import com.example.game.categoria.CategoriaRepository;
+import com.example.game.categoria.CategoriaService;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.GiocoNotFoundException;
+import com.example.game.exceptions.NotFoundException;
+import com.example.game.payloads.entities.GiocoDTO;
 import com.example.game.user.UserService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +19,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -24,6 +31,37 @@ public class GiocoService {
 
     private final GiocoRepository giocoRepository;
     private final UserService userService;
+    private final CategoriaRepository categoriaRepository;
+
+    public void put(Gioco gioco, GiocoDTO giocoDTO) {
+        if (null != giocoDTO.nome() && !giocoDTO.nome().isEmpty() && !giocoDTO.nome().isBlank()) {
+            gioco.setNomeGioco(giocoDTO.nome());
+        }
+        if (null != giocoDTO.descrizione() && !giocoDTO.descrizione().isEmpty() && !giocoDTO.descrizione().isBlank()) {
+            gioco.setDescrizione(giocoDTO.descrizione());
+        }
+        if (giocoDTO.difficolta() != null) {
+            gioco.setDifficolta(giocoDTO.difficolta());
+        }
+        if (gioco.getCategorie().size() < 3) {
+            if (null != giocoDTO.categorie() && !giocoDTO.categorie().isEmpty()) {
+                for (Long c : giocoDTO.categorie()) {
+                    if (!gioco.getCategorie().stream().map(Categoria::getId).toList().contains(c)) {
+                        Categoria categoria = categoriaRepository.findById(c).orElseThrow(() -> new NotFoundException("Categoria non trovata."));
+                        if(gioco.getCategorie().size()<3) {
+                            gioco.getCategorie().add(categoria);
+                            categoria.getGiochi().add(gioco);
+                            categoriaRepository.save(categoria);
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new BadRequestException(gioco.getNomeGioco() + " ha già 3 categorie assegnate, che sono il massimo numero possibile.");
+        }
+        gioco.setModifiedAt(LocalDate.now().toString());
+        giocoRepository.save(gioco);
+    }
 
     public List<Gioco> findAllByIsActive(boolean isActive) {
         return giocoRepository.findByIsActive(isActive);
@@ -34,7 +72,7 @@ public class GiocoService {
     }
 
     public Page<Gioco> findAllByFilters(@Nullable String nomeGioco, @Nullable Integer difficolta, @Nullable Integer punteggio,
-                                        @Nullable List<Long> categorie, int page, int size, String orderBy, String sortOrder) {
+                                        @Nullable List<Long> categorie, int page, int size, String orderBy, String sortOrder, Boolean isActive) {
         orderByIsNotIn(orderBy);
         sortOrderIsNotIn(sortOrder);
 
@@ -43,7 +81,8 @@ public class GiocoService {
         return giocoRepository.findAll(Specification.where(GiocoRepository.difficoltaMoreThanOrEquals(difficolta))
                 .and(GiocoRepository.nomeLike(nomeGioco))
                 .and(GiocoRepository.punteggioMoreThanOrEquals(punteggio))
-                .and(GiocoRepository.categoriaIn(categorie)),pageable);
+                .and(GiocoRepository.categoriaIn(categorie))
+                .and(GiocoRepository.isActive(isActive)), pageable);
     }
 
     public void orderByIsNotIn(String orderBy) {
@@ -77,7 +116,7 @@ public class GiocoService {
         return giocoRepository.findAllByRecensione_IdAndIsActive(id, true);
     }
 
-    public boolean assignGiocoToUser(long giocoId, long userId){
+    public boolean assignGiocoToUser(long giocoId, long userId) {
         try {
             var gioco = findById(giocoId);
             var user = userService.findById(userId);
@@ -86,12 +125,51 @@ public class GiocoService {
             userService.save(user);
             giocoRepository.save(gioco);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public Gioco save(Gioco gioco){
+    public Gioco save(Gioco gioco) {
+        return giocoRepository.save(gioco);
+    }
+
+    public boolean delete(Long id) {
+        try {
+            Gioco gioco = findById(id);
+            gioco.setDeletedAt(LocalDate.now().toString());
+            gioco.setActive(false);
+            giocoRepository.save(gioco);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean restore(Long id) {
+        try {
+            Gioco gioco = findById(id);
+            gioco.setDeletedAt(null);
+            gioco.setActive(true);
+            gioco.setModifiedAt(LocalDate.now().toString());
+            giocoRepository.save(gioco);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Gioco deleteCategoriasFromGame(Long categoriaId, Long giocoId) {
+        Gioco gioco = findById(giocoId);
+        if (gioco.getCategorie().isEmpty())
+            throw new BadRequestException(gioco.getNomeGioco() + " non ha categorie assegnate");
+        Categoria categoria = categoriaRepository.findById(categoriaId).orElseThrow(() -> new NotFoundException("Categoria non trovare"));
+        if (gioco.getCategorie().stream().map(Categoria::getId).toList().contains(categoriaId)) {
+            gioco.getCategorie().remove(categoria);
+            categoria.getGiochi().remove(gioco);
+            categoriaRepository.save(categoria);
+
+        }
         return giocoRepository.save(gioco);
     }
 }

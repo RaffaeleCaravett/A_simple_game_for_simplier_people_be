@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -78,5 +79,9 @@ public class Gioco extends EntityInfos {
     public void addUser(User user) {
         if(users.contains(user)) return;
         users.add(user);
+    }
+
+    public void cleanCategorias(){
+        this.categorie.clear();
     }
 }

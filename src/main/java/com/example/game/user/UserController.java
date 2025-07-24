@@ -131,4 +131,13 @@ public class UserController {
         }
         return descrizioneService.updateDescrizione(user, descrizioneDTO);
     }
+
+    @GetMapping("/connected/{connected}")
+    public User connect(@PathVariable Boolean connected,@AuthenticationPrincipal User user){
+        return this.userService.connectUser(connected,user);
+    }
+    @GetMapping("/allConnected/{page}")
+    public Page<User> allConnected(@PathVariable Integer page,@AuthenticationPrincipal User user){
+        return this.userService.findAllConnected(page,user);
+    }
 }

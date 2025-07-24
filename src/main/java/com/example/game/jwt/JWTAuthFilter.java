@@ -17,7 +17,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-
+/*
+*
+*
+*
+*
+* https://www.geeksforgeeks.org/springboot/spring-boot-web-socket/
+*
+*
+*
+*/
 @Component
 public class JWTAuthFilter extends OncePerRequestFilter {
 
@@ -67,7 +76,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         // Ad es tutte le richieste al controller /auth/** non devono essere filtrate
         String pathWithArguments = request.getServletPath() + request.getQueryString();
 
-        List<String> excludedPaths = List.of("/auth");
+        List<String> excludedPaths = List.of("/auth","/ichat","/ichat/**");
 
         return excludedPaths.stream().anyMatch(pathWithArguments::startsWith);
     }

@@ -8,11 +8,13 @@ import com.example.game.exceptions.*;
 import com.example.game.payloads.entities.DescrizioneDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserToPatch;
+import com.example.game.socket.connection.ConnectionController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.cloudinary.utils.ObjectUtils;
@@ -32,6 +34,8 @@ public class UserService {
     Cloudinary cloudinary;
     @Autowired
     EmailService emailService;
+    @Autowired
+    ConnectionController connectionController;
 
     public Page<User> findByParamsAndIsActive(String nome, String cognome, int page, int size, String orderBy, String direction) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(direction), orderBy));
@@ -208,5 +212,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User connectUser(Boolean connect, User user) {
+        user.setIsConnected(connect);
+        if(connect){
+            connectionController.convertAndSend(user);
+        }else{
+            connectionController.logout(user);
+        }
+        return userRepository.save(user);
+    }
 
+    public Page<User> findAllConnected(Integer page, User user) {
+        Pageable pageable = PageRequest.of(page, 20);
+        return userRepository.findAll(Specification.where(UserRepository.isConnected(true))
+                .and(UserRepository.idNotEqual(user.getId())), pageable);
+    }
 }

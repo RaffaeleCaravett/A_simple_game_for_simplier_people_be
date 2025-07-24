@@ -38,7 +38,7 @@ public class CategoriaController {
 
     @GetMapping("/assignToGame")
     @PreAuthorize("hasAuthority('Admin')")
-    public Categoria put(@RequestParam Long id, @RequestParam Long giocoId) {
+    public Categoria assignToGame(@RequestParam Long id, @RequestParam Long giocoId) {
         return  categoriaService.assignToGame(id,giocoId);
     }
 
@@ -46,13 +46,14 @@ public class CategoriaController {
     public List<Categoria> getAll(){
         return categoriaService.getAll();
     }
+
     @GetMapping("/{name}")
     public List<Categoria> getAllByNameContaining(@PathVariable String name){
         return categoriaService.getByNameContaining(name);
     }
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('Admin')")
-    public boolean getAll(@PathVariable Long id){
+    public boolean deleteById(@PathVariable Long id){
         return categoriaService.deleteById(id);
     }
 }

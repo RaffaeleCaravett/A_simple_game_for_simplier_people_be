@@ -2,6 +2,7 @@ package com.example.game.payloads.entities;
 
 import jakarta.validation.constraints.*;
 
+
 public record UserSignupDTO(
         @NotEmpty(message = "Email necessaria")
         @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "L'email inserita non è valida")

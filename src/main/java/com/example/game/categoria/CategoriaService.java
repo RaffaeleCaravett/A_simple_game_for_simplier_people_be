@@ -23,6 +23,9 @@ public class CategoriaService {
         categoria.setNome(categoriaDTO.nome());
         return categoriaRepository.save(categoria);
     }
+    public Categoria save(Categoria categoria) {
+        return categoriaRepository.save(categoria);
+    }
 
     public Categoria putById(CategoriaDTO categoriaDTO, Long id) {
         Categoria categoria = findById(id);

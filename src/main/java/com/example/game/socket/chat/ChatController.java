@@ -1,0 +1,78 @@
+package com.example.game.socket.chat;
+
+import com.example.game.enums.MessageState;
+import com.example.game.exceptions.BadRequestException;
+import com.example.game.payloads.entities.ChatDTO;
+import com.example.game.payloads.entities.MessageDTO;
+import com.example.game.socket.message.MessageRepository;
+import com.example.game.socket.message.Messaggio;
+import com.example.game.user.User;
+import com.example.game.user.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/chat")
+@RequiredArgsConstructor
+public class ChatController {
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    private MessageRepository messageRepository;
+    private final ChatService chatService;
+    private final UserService userService;
+
+    /**
+     * Sends a message to its destination channel
+     *
+     * @param message
+     */
+    @MessageMapping("/messages")
+    public void handleMessage(@RequestBody @Valid MessageDTO message, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) throw new BadRequestException(bindingResult.getAllErrors());
+        Messaggio messaggio = new Messaggio();
+        messaggio.setCreatedAtDate(LocalDate.now());
+        messaggio.setCreatedAt(LocalDate.now().toString());
+        messaggio.setChat(chatService.findById(message.chat()));
+        messaggio.setSender(userService.findById(message.mittente()));
+        messaggio.setReceivers(message.riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList());
+        messaggio.setState(MessageState.SENT);
+        messaggio.setText(message.message());
+        messaggio.setModifiedAt(LocalDate.now().toString());
+        messageRepository.save(messaggio);
+        template.convertAndSend("/channel/chat/" + message.chat(), message);
+    }
+
+    @GetMapping("")
+    public List<Chat> findAll(@RequestParam Long userId, @RequestParam(defaultValue = "true") Boolean active) {
+        return chatService.findAll(userId, active);
+    }
+
+    @PostMapping("")
+    public Chat post(@RequestBody @Valid ChatDTO chatDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
+        return chatService.save(chatDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('Admin')")
+    public boolean delete(@PathVariable Long id) {
+        return chatService.deleteChat(id);
+    }
+}

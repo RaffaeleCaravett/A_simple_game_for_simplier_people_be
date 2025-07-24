@@ -49,6 +49,7 @@ public class User extends EntityInfos implements UserDetails{
     private String changePasswordCode;
     private boolean isValidated;
     private String fullName;
+    private Boolean isConnected;
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
     private Descrizione descrizione;
     @Enumerated(EnumType.STRING)
