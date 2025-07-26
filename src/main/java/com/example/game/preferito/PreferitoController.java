@@ -2,6 +2,7 @@ package com.example.game.preferito;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.PreferitoDTO;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;

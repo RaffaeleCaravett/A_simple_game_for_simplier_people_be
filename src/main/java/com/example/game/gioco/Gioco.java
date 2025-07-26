@@ -53,7 +53,7 @@ public class Gioco extends EntityInfos {
             inverseJoinColumns = @JoinColumn(name = "utenti_id"))
     @JsonIgnore
     private List<User> users;
-    @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "gioco", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Recensione> recensione;
     private int totalRecensioniNumber;
     @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -65,7 +65,7 @@ public class Gioco extends EntityInfos {
     @OneToMany(mappedBy = "gioco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Tournament> tournaments;
-    @ManyToMany(mappedBy = "giochi", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToMany(mappedBy = "giochi", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Categoria> categorie;
     public List<Recensione> getRecensione(){
         if(this.recensione.size()>=2) return this.recensione.stream().filter(Recensione::isActive).toList().subList(0,2);

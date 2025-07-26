@@ -9,6 +9,7 @@ import com.example.game.payloads.entities.DescrizioneDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserToPatch;
 import com.example.game.socket.connection.ConnectionController;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -211,7 +212,6 @@ public class UserService {
         user.setFullName(user.getNome(), user.getCognome());
         return userRepository.save(user);
     }
-
     public User connectUser(Boolean connect, User user) {
         user.setIsConnected(connect);
         if(connect){

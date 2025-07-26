@@ -3,6 +3,7 @@ package com.example.game.socket.connection;
 import com.example.game.user.User;
 import com.example.game.user.UserRepository;
 import com.example.game.user.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ public class ConnectionController {
         template.convertAndSend("/channel/login", user);
 
     }
+
 
     public void logout(User user) {
         template.convertAndSend("/channel/logout", user);
