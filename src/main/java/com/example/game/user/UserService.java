@@ -212,11 +212,12 @@ public class UserService {
         user.setFullName(user.getNome(), user.getCognome());
         return userRepository.save(user);
     }
+
     public User connectUser(Boolean connect, User user) {
         user.setIsConnected(connect);
-        if(connect){
+        if (connect) {
             connectionController.convertAndSend(user);
-        }else{
+        } else {
             connectionController.logout(user);
         }
         return userRepository.save(user);
@@ -226,5 +227,10 @@ public class UserService {
         Pageable pageable = PageRequest.of(page, 20);
         return userRepository.findAll(Specification.where(UserRepository.isConnected(true))
                 .and(UserRepository.idNotEqual(user.getId())), pageable);
+    }
+
+    public User changeVisibility(User user) {
+        user.setOpen(!user.isOpen());
+        return userRepository.save(user);
     }
 }

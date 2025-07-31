@@ -1,6 +1,7 @@
 package com.example.game.socket.chat;
 
 import com.example.game.enums.MessageState;
+import com.example.game.enums.Role;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.ChatDTO;
 import com.example.game.payloads.entities.MessageDTO;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -57,22 +59,25 @@ public class ChatController {
         template.convertAndSend("/channel/chat/" + message.chat(), message);
     }
 
-    @GetMapping("")
-    public List<Chat> findAll(@RequestParam Long userId, @RequestParam(defaultValue = "true") Boolean active) {
-        return chatService.findAll(userId, active);
-    }
-
     @PostMapping("")
-    public Chat post(@RequestBody @Valid ChatDTO chatDTO, BindingResult bindingResult) {
+    public Chat post(@RequestBody @Valid ChatDTO chatDTO, BindingResult bindingResult, @AuthenticationPrincipal User user) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return chatService.save(chatDTO);
+        return chatService.save(chatDTO, user);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('Admin')")
     public boolean delete(@PathVariable Long id) {
         return chatService.deleteChat(id);
+    }
+
+    @GetMapping("/params")
+    public List<Chat> findByTitleContaining(@RequestParam(required = false) String title, @RequestParam Long userId, @RequestParam(required = false, defaultValue = "true") Boolean isActive, @AuthenticationPrincipal User user) {
+        var userIdentityNumber = 0L;
+        if(user.getRole().equals(Role.Admin)) userIdentityNumber = userId;
+        else userIdentityNumber = user.getId();
+        return chatService.findByParams(title, userIdentityNumber, isActive);
     }
 }

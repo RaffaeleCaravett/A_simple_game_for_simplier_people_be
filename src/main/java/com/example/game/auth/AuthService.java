@@ -48,6 +48,7 @@ public class AuthService {
         user.setValidated(false);
         userService.setProfileImage(user, multipartFile);
         user.setCompleted(true);
+        user.setOpen(true);
 
         return userService.save(user);
     }

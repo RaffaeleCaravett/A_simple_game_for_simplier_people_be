@@ -140,4 +140,9 @@ public class UserController {
     public Page<User> allConnected(@PathVariable Integer page,@AuthenticationPrincipal User user){
         return this.userService.findAllConnected(page,user);
     }
+
+    @GetMapping("/open")
+    public User changeVisibility(@AuthenticationPrincipal User user){
+        return userService.changeVisibility(user);
+    }
 }

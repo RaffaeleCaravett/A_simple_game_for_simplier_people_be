@@ -81,6 +81,7 @@ public class User extends EntityInfos implements UserDetails{
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     @JsonIgnore
     private List<Tournament> tournaments;
+    private boolean isOpen;
 
 
 

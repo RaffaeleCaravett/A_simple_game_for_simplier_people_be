@@ -14,12 +14,17 @@ import static org.springframework.data.jpa.domain.Specification.where;
 public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificationExecutor<Chat> {
     static Specification<Chat> userIdEqual(@Nullable Long userId) {
         if (userId == null) return null;
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("utenti").get("id"),userId);
-    }
-    static Specification<Chat> isActive(@Nullable Boolean active) {
-        if (active == null) return null;
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isActive"),active);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("utenti").get("id"), userId);
     }
 
+    static Specification<Chat> isActive(@Nullable Boolean active) {
+        if (active == null) return null;
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isActive"), active);
+    }
+
+    static Specification<Chat> titleLike(@Nullable String toMatch) {
+        if (toMatch == null) return null;
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("title")), "%" + toMatch.toUpperCase() + "%");
+    }
 
 }

@@ -30,6 +30,7 @@ public class Chat extends EntityInfos {
     private List<User> utenti;
     @OneToMany(mappedBy = "chat", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Messaggio> messaggi;
+    private String title;
 
 
     public List<Messaggio> getMessaggi() {
