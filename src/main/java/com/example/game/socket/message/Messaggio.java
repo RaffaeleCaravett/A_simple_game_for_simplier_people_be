@@ -31,11 +31,19 @@ public class Messaggio extends EntityInfos {
     private User sender;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "messaggi_users",
-    joinColumns = @JoinColumn(name = "messaggio_id"),
-    inverseJoinColumns = @JoinColumn(name = "ricevitore_id"))
-    @JsonIgnore
+            joinColumns = @JoinColumn(name = "messaggio_id"),
+            inverseJoinColumns = @JoinColumn(name = "ricevitore_id"))
     private List<User> receivers;
     @Enumerated(EnumType.STRING)
     private MessageState state;
     private String text;
+    private Long settedChatId;
+
+
+    public Long getSettedChatId() {
+        return chat.getId();
+    }
+    public List<Long> getReceivers(){
+        return this.receivers.stream().map(User::getId).toList();
+    }
 }

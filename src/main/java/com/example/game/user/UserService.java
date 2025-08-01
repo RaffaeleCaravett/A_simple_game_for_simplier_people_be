@@ -35,8 +35,6 @@ public class UserService {
     Cloudinary cloudinary;
     @Autowired
     EmailService emailService;
-    @Autowired
-    ConnectionController connectionController;
 
     public Page<User> findByParamsAndIsActive(String nome, String cognome, int page, int size, String orderBy, String direction) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(direction), orderBy));
@@ -216,9 +214,9 @@ public class UserService {
     public User connectUser(Boolean connect, User user) {
         user.setIsConnected(connect);
         if (connect) {
-            connectionController.convertAndSend(user);
+         //   connectionController.convertAndSend(user);
         } else {
-            connectionController.logout(user);
+           // connectionController.logout(user);
         }
         return userRepository.save(user);
     }

@@ -10,6 +10,8 @@ import com.example.game.socket.chat.ChatService;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,8 +24,10 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ChatService chatService;
     private final UserService userService;
-
+    //@Autowired
+    //private SimpMessagingTemplate template;
     public Messaggio save(MessageDTO messageDTO) {
+      //  template.convertAndSend("/channel/chat/" + messageDTO.chat(), messageDTO);
 
         Chat chat = chatService.findById(messageDTO.chat());
         User sender = userService.findById(messageDTO.mittente());
@@ -31,6 +35,7 @@ public class MessageService {
         Messaggio messaggio = Messaggio.builder().state(MessageState.SENT).chat(chat)
                 .receivers(receivers).sender(sender).isActive(true).modifiedAt(LocalDate.now().toString())
                 .createdAt(LocalDate.now().toString()).createdAtDate(LocalDate.now()).text(messageDTO.message()).build();
+
         return messageRepository.save(messaggio);
     }
 

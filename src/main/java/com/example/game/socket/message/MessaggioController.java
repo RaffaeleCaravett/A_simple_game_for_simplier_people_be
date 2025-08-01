@@ -3,6 +3,7 @@ package com.example.game.socket.message;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.MessageDTO;
 import com.example.game.payloads.entities.ReadReceiptRequestDTO;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ public class MessaggioController {
     }
 
     @PostMapping("")
+    @Transactional
     public Messaggio save(@RequestBody @Valid MessageDTO request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) throw new BadRequestException(bindingResult.getAllErrors());
         return messageService.save(request);

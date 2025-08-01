@@ -25,7 +25,6 @@ public class PartitaController {
 
 
     @PostMapping("")
-    @PreAuthorize("hasAuthority('User')")
     @Transactional
     public List<Partita> save(@RequestBody @Validated List<PartitaDTO> partitaDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -35,7 +34,6 @@ public class PartitaController {
     }
 
     @GetMapping("/user/{id}")
-    @PreAuthorize("hasAuthority('User')")
     public Page<Partita> getByUserId(@PathVariable long id,
                                      @RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "10") int size,
@@ -45,7 +43,6 @@ public class PartitaController {
     }
 
     @GetMapping("/gioco/{id}")
-    @PreAuthorize("hasAuthority('User')")
     public Page<Partita> getByGiocoId(@PathVariable long id,
                                       @RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "10") int size,
@@ -55,7 +52,6 @@ public class PartitaController {
     }
 
     @GetMapping("/userAndDate/{id}")
-    @PreAuthorize("hasAuthority('User')")
     public Page<Partita> getByUserAndDates(@PathVariable long id,
                                            @RequestParam() @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                            @RequestParam() @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to,
@@ -66,7 +62,6 @@ public class PartitaController {
         return partitaService.getAllByDateBetweenAndUserId(id, from, to, page, size, orderBy, sortOrder);
     }
     @GetMapping("/userAndGioco/{id}/{giocoId}")
-    @PreAuthorize("hasAuthority('User')")
     public Page<Partita> getByUserId(@PathVariable long id,
                                      @PathVariable long giocoId,
                                      @RequestParam(defaultValue = "0") int page,

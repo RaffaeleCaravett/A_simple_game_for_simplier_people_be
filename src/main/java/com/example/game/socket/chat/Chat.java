@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class Chat extends EntityInfos {
 
 
     public List<Messaggio> getMessaggi() {
-        return this.messaggi.stream().filter(Messaggio::isActive).collect(Collectors.toSet()).stream().toList();
+        return this.messaggi.stream().filter(Messaggio::isActive).collect(Collectors.toSet()).stream().sorted(Comparator.comparing(Messaggio::getId)).toList();
     }
+
 }

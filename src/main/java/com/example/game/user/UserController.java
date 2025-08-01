@@ -28,7 +28,6 @@ public class UserController {
     /*GET*/
 
     @GetMapping("/byParams")
-    @PreAuthorize("hasAuthority('User')")
     public Page<User> findByParamsAndIsActive(@RequestParam(defaultValue = "") String nome,
                                               @RequestParam(defaultValue = "") String cognome,
                                               @RequestParam(defaultValue = "0") int page,
@@ -43,7 +42,6 @@ public class UserController {
     }
 
     @GetMapping("/byDates")
-    @PreAuthorize("hasAuthority('User')")
     public Page<User> findByDateBetween(@RequestParam(defaultValue = "") String date1,
                                         @RequestParam(defaultValue = "") String date2,
                                         @RequestParam(defaultValue = "0") int page,
@@ -62,7 +60,6 @@ public class UserController {
     }
 
     @GetMapping("/byCitta/{id}")
-    @PreAuthorize("hasAuthority('User')")
     public Page<User> findByCitta(@PathVariable long id,
                                   @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "10") int size,
@@ -72,7 +69,6 @@ public class UserController {
     }
 
     @GetMapping("/restoreById")
-    @PreAuthorize("hasAuthority('User')")
     public User restoreById(@AuthenticationPrincipal User user) {
         return userService.restoreById(user.getId());
     }
@@ -85,7 +81,6 @@ public class UserController {
     /*PUT*/
 
     @PutMapping("")
-    @PreAuthorize("hasAuthority('User')")
     public User findByCitta(@AuthenticationPrincipal User user, @RequestBody @Validated UserSignupDTO userSignupDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -94,7 +89,6 @@ public class UserController {
     }
 
     @PutMapping("/profileImage")
-    @PreAuthorize("hasAuthority('User')")
     public User modifyProfileImage(@AuthenticationPrincipal User user, @RequestPart(name = "profile_image") MultipartFile multipartFile) {
         return userService.setProfileImage(user, multipartFile);
     }
@@ -141,7 +135,7 @@ public class UserController {
         return this.userService.findAllConnected(page,user);
     }
 
-    @GetMapping("/open")
+    @GetMapping("/changeVisibility")
     public User changeVisibility(@AuthenticationPrincipal User user){
         return userService.changeVisibility(user);
     }

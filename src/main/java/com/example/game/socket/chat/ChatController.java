@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatController {
 
-    @Autowired
-    private SimpMessagingTemplate template;
+    //@Autowired
+    //private SimpMessagingTemplate template;
 
     @Autowired
     private MessageRepository messageRepository;
@@ -42,22 +42,22 @@ public class ChatController {
      * Sends a message to its destination channel
      *
      * @param message
+     * @MessageMapping("/messages") public void handleMessage(@RequestBody @Valid MessageDTO message, BindingResult bindingResult) {
+     * if (bindingResult.hasErrors()) throw new BadRequestException(bindingResult.getAllErrors());
+     * <p>
+     * //        template.convertAndSend("/channel/chat/" + message.chat(), message);
+     * Messaggio messaggio = new Messaggio();
+     * messaggio.setCreatedAtDate(LocalDate.now());
+     * messaggio.setCreatedAt(LocalDate.now().toString());
+     * messaggio.setChat(chatService.findById(message.chat()));
+     * messaggio.setSender(userService.findById(message.mittente()));
+     * messaggio.setReceivers(message.riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList());
+     * messaggio.setState(MessageState.SENT);
+     * messaggio.setText(message.message());
+     * messaggio.setModifiedAt(LocalDate.now().toString());
+     * messageRepository.save(messaggio);
+     * }
      */
-    @MessageMapping("/messages")
-    public void handleMessage(@RequestBody @Valid MessageDTO message, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) throw new BadRequestException(bindingResult.getAllErrors());
-        Messaggio messaggio = new Messaggio();
-        messaggio.setCreatedAtDate(LocalDate.now());
-        messaggio.setCreatedAt(LocalDate.now().toString());
-        messaggio.setChat(chatService.findById(message.chat()));
-        messaggio.setSender(userService.findById(message.mittente()));
-        messaggio.setReceivers(message.riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList());
-        messaggio.setState(MessageState.SENT);
-        messaggio.setText(message.message());
-        messaggio.setModifiedAt(LocalDate.now().toString());
-        messageRepository.save(messaggio);
-        template.convertAndSend("/channel/chat/" + message.chat(), message);
-    }
 
     @PostMapping("")
     public Chat post(@RequestBody @Valid ChatDTO chatDTO, BindingResult bindingResult, @AuthenticationPrincipal User user) {
@@ -76,7 +76,7 @@ public class ChatController {
     @GetMapping("/params")
     public List<Chat> findByTitleContaining(@RequestParam(required = false) String title, @RequestParam Long userId, @RequestParam(required = false, defaultValue = "true") Boolean isActive, @AuthenticationPrincipal User user) {
         var userIdentityNumber = 0L;
-        if(user.getRole().equals(Role.Admin)) userIdentityNumber = userId;
+        if (user.getRole().equals(Role.Admin)) userIdentityNumber = userId;
         else userIdentityNumber = user.getId();
         return chatService.findByParams(title, userIdentityNumber, isActive);
     }
