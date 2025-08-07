@@ -4,6 +4,7 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.NotificationState;
 import com.example.game.socket.chat.Chat;
 import com.example.game.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -28,6 +29,7 @@ public class Notification extends EntityInfos {
     private User sender;
     @ManyToOne
     @JoinColumn(name = "receiver_id")
+    @JsonIgnore
     private User receiver;
     @Enumerated(EnumType.STRING)
     private NotificationState state;

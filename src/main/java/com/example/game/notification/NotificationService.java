@@ -4,6 +4,7 @@ import com.example.game.enums.NotificationState;
 import com.example.game.exceptions.NotFoundException;
 import com.example.game.exceptions.UnauthorizedException;
 import com.example.game.payloads.entities.NotificationDTO;
+import com.example.game.payloads.entities.NotificationsIdsDTO;
 import com.example.game.socket.chat.Chat;
 import com.example.game.socket.chat.ChatService;
 import com.example.game.user.User;
@@ -40,8 +41,8 @@ public class NotificationService {
                 .modifiedAt(LocalDate.now().toString()).build());
     }
 
-    public boolean read(List<Long> notificationId, User user) {
-        List<Notification> notifications = notificationRepository.findAllById(notificationId);
+    public boolean read(NotificationsIdsDTO notificationIdsDTO, User user) {
+        List<Notification> notifications = notificationRepository.findAllById(notificationIdsDTO.ids());
         notifications.forEach(notification -> {
             if (user.getId() == notification.getReceiver().getId()) {
                 notification.setState(NotificationState.READ);
