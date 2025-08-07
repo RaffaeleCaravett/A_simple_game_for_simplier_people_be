@@ -38,12 +38,21 @@ public class Messaggio extends EntityInfos {
     private MessageState state;
     private String text;
     private Long settedChatId;
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "messaggi_readers",
+            joinColumns = @JoinColumn(name = "messaggio_id"),
+            inverseJoinColumns = @JoinColumn(name = "reader_id"))
+    private List<User> readers;
 
     public Long getSettedChatId() {
         return chat.getId();
     }
-    public List<Long> getReceivers(){
+
+    public List<Long> getReceivers() {
         return this.receivers.stream().map(User::getId).toList();
+    }
+
+    public List<Long> getReaders() {
+        return this.readers.stream().map(User::getId).toList();
     }
 }

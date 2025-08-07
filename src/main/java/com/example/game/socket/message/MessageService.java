@@ -9,12 +9,16 @@ import com.example.game.socket.chat.Chat;
 import com.example.game.socket.chat.ChatService;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,10 +28,11 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ChatService chatService;
     private final UserService userService;
+
     //@Autowired
     //private SimpMessagingTemplate template;
     public Messaggio save(MessageDTO messageDTO) {
-      //  template.convertAndSend("/channel/chat/" + messageDTO.chat(), messageDTO);
+        //  template.convertAndSend("/channel/chat/" + messageDTO.chat(), messageDTO);
 
         Chat chat = chatService.findById(messageDTO.chat());
         User sender = userService.findById(messageDTO.mittente());
@@ -50,19 +55,46 @@ public class MessageService {
         }
     }
 
-    public boolean delete(Long id,User user){
+    public boolean delete(Long id, User user) {
         Messaggio messaggio = findById(id);
-        if(messaggio.getSender().getId()==user.getId() || user.getRole().equals(Role.Admin)){
-           messaggio.setActive(false);
-           messaggio.setDeletedAt(LocalDate.now().toString());
-           messageRepository.save(messaggio);
-           return true;
-        }else{
+        if (messaggio.getSender().getId() == user.getId() || user.getRole().equals(Role.Admin)) {
+            messaggio.setActive(false);
+            messaggio.setDeletedAt(LocalDate.now().toString());
+            messageRepository.save(messaggio);
+            return true;
+        } else {
             throw new UnauthorizedException("Non sei autorizzato a modificare questo messaggio");
         }
     }
 
     public Messaggio findById(Long id) {
         return messageRepository.findById(id).orElseThrow(() -> new BadRequestException("Messaggio non trovato"));
+    }
+
+    public List<Messaggio> findAll(Long chatId, Long userId, @Nullable MessageState messageState) {
+        return messageRepository.findAll(Specification.where(MessageRepository.chatIdEquals(chatId))
+                .and(MessageRepository.receiversContain(userId))
+                .and(MessageRepository.stateEquals(messageState)));
+    }
+
+    public boolean read(Long chatId, User user) {
+        try {
+            List<Messaggio> messaggi = findAll(chatId, user.getId(),MessageState.SENT);
+            messaggi.forEach(m -> {
+                if (CollectionUtils.isEmpty(m.getReaders())) {
+                    List<User> users = new ArrayList<>();
+                    users.add(user);
+                    m.setReaders(users);
+                } else if (!m.getReaders().contains(user.getId())) {
+                    var readers = m.getReaders();
+                    readers.add(user.getId());
+                    m.setReaders(readers.stream().map(userService::findById).toList());
+                }
+                messageRepository.save(m);
+            });
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.example.game.socket.message;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.MessageDTO;
 import com.example.game.payloads.entities.ReadReceiptRequestDTO;
+import com.example.game.user.User;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +41,10 @@ public class MessaggioController {
     public Messaggio save(@RequestBody @Valid MessageDTO request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) throw new BadRequestException(bindingResult.getAllErrors());
         return messageService.save(request);
+    }
+
+    @GetMapping("/read")
+    public boolean readMessages(@RequestParam Long chatId, @AuthenticationPrincipal User user){
+        return messageService.read(chatId,user);
     }
 }
