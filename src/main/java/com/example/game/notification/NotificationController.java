@@ -29,7 +29,7 @@ public class NotificationController {
         return notificationService.save(notificationDTO);
     }
 
-    @GetMapping("/read")
+    @PostMapping("/read")
     public boolean readAll(@RequestBody @Valid NotificationsIdsDTO notificationIdsDTO, BindingResult bindingResult, @AuthenticationPrincipal User user) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());

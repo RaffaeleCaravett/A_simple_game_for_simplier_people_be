@@ -53,6 +53,7 @@ public class Messaggio extends EntityInfos {
     }
 
     public List<Long> getReaders() {
+        if(this.readers == null ) return null;
         return this.readers.stream().map(User::getId).toList();
     }
 }
