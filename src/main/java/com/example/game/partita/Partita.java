@@ -2,6 +2,7 @@ package com.example.game.partita;
 
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Esito;
+import com.example.game.enums.GameType;
 import com.example.game.gioco.Gioco;
 import com.example.game.punteggio.Punteggio;
 import com.example.game.user.User;
@@ -32,4 +33,6 @@ public class Partita extends EntityInfos {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "partita")
     @JoinColumn(name = "punteggio_id")
     private Punteggio punteggio;
+    @Enumerated(EnumType.STRING)
+    private GameType gameType;
 }

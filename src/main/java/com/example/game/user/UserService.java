@@ -213,11 +213,6 @@ public class UserService {
 
     public User connectUser(Boolean connect, User user) {
         user.setIsConnected(connect);
-        if (connect) {
-         //   connectionController.convertAndSend(user);
-        } else {
-           // connectionController.logout(user);
-        }
         return userRepository.save(user);
     }
 
