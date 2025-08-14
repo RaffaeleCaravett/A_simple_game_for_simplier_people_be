@@ -6,6 +6,7 @@ import com.example.game.descrizione.Descrizione;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
+import com.example.game.invito.Invito;
 import com.example.game.partita.Partita;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
@@ -82,6 +83,9 @@ public class User extends EntityInfos implements UserDetails{
     @JsonIgnore
     private List<Tournament> tournaments;
     private boolean isOpen;
+    @OneToMany(mappedBy = "receiver")
+    @JsonIgnore
+    private List<Invito> inviti;
 
 
 
