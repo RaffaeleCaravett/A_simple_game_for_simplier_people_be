@@ -1,6 +1,7 @@
 package com.example.game.invito;
 
 import com.example.game.enums.InviteState;
+import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.NotFoundException;
 import com.example.game.gioco.GiocoService;
 import com.example.game.payloads.entities.InvitoDTO;
@@ -22,38 +23,48 @@ public class InvitoService {
     private final GiocoService giocoService;
 
 
-    public Invito save(InvitoDTO invitoDTO, User user){
-    return new Invito();
+    public Invito save(InvitoDTO invitoDTO, User user) {
+        if (findByParams(user.getId(), InviteState.SENT, null, Instant.now())) {
+            throw new BadRequestException("Hai già un invito attivo! Aspetta che scada l'invito per invitare qualcuno!");
+        }
+
+        return invitoRepository.save(Invito.builder().createdAt(Instant.now()).inviteState(InviteState.SENT).sender(userService.findById(user.getId())).receiver(
+                userService.findById(invitoDTO.receiverId())).gioco(giocoService.findById(invitoDTO.giocoId())).build());
     }
-    public List<Invito> findAll(User user){
+
+    public List<Invito> findAll(User user) {
         return new ArrayList<>();
     }
-    public Invito accetta(Long invitoId, User user){
+
+    public Invito accetta(Long invitoId, User user) {
         Invito invito = findById(invitoId);
-        if(invito.getReceiver().getId() == user.getId()){
+        if (invito.getReceiver().getId() == user.getId()) {
             invito.setInviteState(InviteState.ACCEPTED);
         }
         return invitoRepository.save(invito);
     }
-    public Invito rifiuta(Long invitoId, User user){
+
+    public Invito rifiuta(Long invitoId, User user) {
         Invito invito = findById(invitoId);
-        if(invito.getReceiver().getId() == user.getId()){
+        if (invito.getReceiver().getId() == user.getId()) {
             invito.setInviteState(InviteState.REFUSED);
         }
         return invitoRepository.save(invito);
     }
-    public Invito elimina(Long invitoId, User user){
+
+    public Invito elimina(Long invitoId, User user) {
         Invito invito = findById(invitoId);
-        if(invito.getSender().getId() == user.getId()){
+        if (invito.getSender().getId() == user.getId()) {
             invito.setInviteState(InviteState.CANCELED);
         }
         return invitoRepository.save(invito);
     }
-    public Invito findById(Long id){
-        return invitoRepository.findById(id).orElseThrow(()-> new NotFoundException("Invito non trovato"));
+
+    public Invito findById(Long id) {
+        return invitoRepository.findById(id).orElseThrow(() -> new NotFoundException("Invito non trovato"));
     }
 
-    public boolean findByParams(Long userId, InviteState inviteState,Long giocoId, Instant instant){
+    public boolean findByParams(Long userId, InviteState inviteState, Long giocoId, Instant instant) {
         return invitoRepository.findOne(Specification.where(InvitoRepository.stateEquals(inviteState))
                 .and(InvitoRepository.isValid(instant))
                 .and(InvitoRepository.giocoIdEquals(giocoId))

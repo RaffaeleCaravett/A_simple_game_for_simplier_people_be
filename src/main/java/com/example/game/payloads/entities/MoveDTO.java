@@ -11,8 +11,16 @@ public record MoveDTO(
         String idDiv,
         @NotEmpty(message = "tipo di mossa necessario")
         MoveType moveType,
+        @NotNull(message = "opposite id necessario")
         Long oppositeUser,
+        @NotNull(message = "sender id necessario")
+        Long senderUser,
+        @NotNull(message = "invitation id necessario")
         Long invitationId,
-        Long partitaId
+        Long partitaId,
+        Long senderScore,
+        Long oppositeScore,
+        Long userTimeoutId,
+        Long moverId
 ) {
 }

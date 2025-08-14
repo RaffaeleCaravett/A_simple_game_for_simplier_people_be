@@ -1,5 +1,5 @@
 package com.example.game.enums;
 
 public enum InviteState {
-    SENT, ACCEPTED, REFUSED, EXPIRED,CANCELED
+    SENT, ACCEPTED, REFUSED, EXPIRED,CANCELED,START,END, MOVE
 }
