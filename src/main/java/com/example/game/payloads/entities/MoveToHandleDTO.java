@@ -18,4 +18,8 @@ public class MoveToHandleDTO {
     private Long senderScore;
     private Long receiverScore;
     private Long winner;
+    private Boolean connectionMove;
+    private Boolean connection;
+    private Long userConnected;
+    private Long giocoConnection;
 }

@@ -2,6 +2,8 @@ package com.example.game.socket.connection;
 
 import com.example.game.enums.*;
 import com.example.game.exceptions.BadRequestException;
+import com.example.game.gioco.Gioco;
+import com.example.game.gioco.GiocoService;
 import com.example.game.invito.Invito;
 import com.example.game.invito.InvitoService;
 import com.example.game.notification.Notification;
@@ -39,6 +41,8 @@ public class ConnectionController {
     private NotificationRepository notificationRepository;
     @Autowired
     private InvitoService invitoService;
+    @Autowired
+    private GiocoService giocoService;
 
     @MessageMapping("/send")
     @SendTo("/updates/receive")
@@ -68,10 +72,10 @@ public class ConnectionController {
                             .senderId(invito.getSender().getId()).receiverId(invito.getReceiver().getId())
                             .senderScore(socketDTO.moveDTO().senderScore()).receiverScore(socketDTO.moveDTO().oppositeScore())
                             .winner(invito.getSender().getId() == socketDTO.moveDTO().userTimeoutId() ? invito.getReceiver().getId() : invito.getSender().getId());
-                }else if(MoveType.MOVE.equals(socketDTO.moveDTO().moveType())){
+                } else if (MoveType.MOVE.equals(socketDTO.moveDTO().moveType())) {
                     return MoveToHandleDTO.builder().giocoId(invito.getGioco().getId()).inviteState(InviteState.MOVE)
                             .senderId(invito.getSender().getId()).receiverId(invito.getReceiver().getId()).moverId(socketDTO.moveDTO().moverId());
-                }else{
+                } else {
                     throw new BadRequestException("Mossa non determinabile");
                 }
             }
@@ -93,9 +97,23 @@ public class ConnectionController {
                 return messageRepository.save(messaggio);
             }
             case CONNECTION -> {
-                break;
+                if (socketDTO.connectionDTO() == null) {
+                    throw new BadRequestException("Impossibile stabilire quale utente si sia connesso.");
+                }
+                return userService.findById(socketDTO.connectionDTO().getUserId());
+            }
+            case GAME_CONNECTION -> {
+                if (socketDTO.gameConnectionDTO() == null) {
+                    throw new BadRequestException("Impossibile determinare a che gioco ci si è connessi.");
+                }
+                Gioco gioco = giocoService.findById(socketDTO.gameConnectionDTO().getGiocoId());
+                User user = userService.findById(socketDTO.gameConnectionDTO().getUserId());
+                return MoveToHandleDTO.builder().connection(socketDTO.gameConnectionDTO().getConnected()).connectionMove(true)
+                        .giocoConnection(gioco.getId()).userConnected(user.getId());
+            }
+            default -> {
+                throw new BadRequestException("Impossibile determinare l'azione!");
             }
         }
-        return null;
     }
 }
