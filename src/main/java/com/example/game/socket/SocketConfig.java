@@ -22,7 +22,7 @@ public class SocketConfig  implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/updatess");
+        registry.enableSimpleBroker("/updates");
         registry.setApplicationDestinationPrefixes("/ws");
 
     }

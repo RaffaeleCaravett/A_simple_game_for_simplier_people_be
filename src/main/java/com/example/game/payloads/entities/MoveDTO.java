@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record MoveDTO(
-        @NotNull(message = "id gioco necessario")
+        @NotNull(message = "id del gioco necessario")
         Long id,
-        @NotEmpty(message = "id del div necessario")
         String idDiv,
         @NotEmpty(message = "tipo di mossa necessario")
         MoveType moveType,
