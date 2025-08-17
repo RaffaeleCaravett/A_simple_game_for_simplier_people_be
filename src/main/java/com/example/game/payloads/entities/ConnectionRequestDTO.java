@@ -1,4 +1,9 @@
 package com.example.game.payloads.entities;
 
-public class ConnectionRequestDTO {
+import jakarta.validation.constraints.NotNull;
+
+public record ConnectionRequestDTO (
+    @NotNull(message = "Receiver id necessario")
+    Long receiverId
+){
 }

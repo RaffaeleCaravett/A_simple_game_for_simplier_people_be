@@ -102,9 +102,7 @@ public class ConnectionController {
                 throw new BadRequestException("Impossibile stabilire quale utente si sia connesso.");
             }
             //User user=  userService.findById(socketDTO.connectionDTO().getUserId());
-            User user=  userService.findById(2);
-            user.setIsConnected(true);
-            userService.save(user);
+            User user=  userService.findById(socketDTO.connectionDTO().getUserId());
             Thread.sleep(3000);
             return user;
         } else if (stompType.equals(StompType.GAME_CONNECTION)) {

@@ -2,6 +2,7 @@ package com.example.game.user;
 
 import com.example.game.citta.Citta;
 import com.example.game.classifica.Classifica;
+import com.example.game.connectionRequest.ConnectionRequest;
 import com.example.game.descrizione.Descrizione;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Role;
@@ -86,6 +87,11 @@ public class User extends EntityInfos implements UserDetails{
     @OneToMany(mappedBy = "receiver")
     @JsonIgnore
     private List<Invito> inviti;
+    @OneToMany(mappedBy = "receiver")
+    private List<ConnectionRequest> connectionRequestsReceived;
+    @OneToMany(mappedBy = "sender")
+    @JsonIgnore
+    private List<ConnectionRequest> connectionRequestsSent;
 
 
 
