@@ -20,16 +20,10 @@ public class ConnectionRequest extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
-    @JoinTable(name = "richieste_connessioni_ricevute_utenti",
-            joinColumns = @JoinColumn(name = "richieste_id"),
-            inverseJoinColumns = @JoinColumn(name = "utenti_id"))
     private User receiver;
-    @ManyToOne
-    @JoinTable(name = "richieste_connessioni_inviate_utenti",
-            joinColumns = @JoinColumn(name = "richieste_id"),
-            inverseJoinColumns = @JoinColumn(name = "utenti_id"))
+    @ManyToOne(fetch = FetchType.EAGER)
     private User sender;
     private EsitoRichiesta esitoRichiesta;
 }

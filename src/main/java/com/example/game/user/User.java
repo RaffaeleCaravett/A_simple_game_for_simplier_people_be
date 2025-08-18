@@ -87,11 +87,13 @@ public class User extends EntityInfos implements UserDetails{
     @OneToMany(mappedBy = "receiver")
     @JsonIgnore
     private List<Invito> inviti;
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
     private List<ConnectionRequest> connectionRequestsReceived;
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<ConnectionRequest> connectionRequestsSent;
+
 
 
 

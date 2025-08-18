@@ -32,6 +32,6 @@ public interface ConnectionRequestRepository extends JpaRepository<ConnectionReq
 
     static Specification<ConnectionRequest> stateEquals(EsitoRichiesta esitoRichiesta) {
         if (esitoRichiesta == null) return null;
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("esitoRichiesta").get("id"), esitoRichiesta);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("esitoRichiesta"), esitoRichiesta);
     }
 }
