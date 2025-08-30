@@ -31,7 +31,7 @@ public class ConnectionRequestService {
     public ConnectionRequest save(ConnectionRequestDTO connectionRequestDTO, User user) {
 
         var connectionRequest = connectionRequestRepository.findAll(Specification.where(
-                ConnectionRequestRepository.sendeIdrOrReceiverIdEquals(user.getId(),connectionRequestDTO.receiverId()))
+                        ConnectionRequestRepository.sendeIdrOrReceiverIdEquals(user.getId(), connectionRequestDTO.receiverId()))
                 .and(ConnectionRequestRepository.stateEquals(EsitoRichiesta.INVIATA)));
 
         if (!connectionRequest.isEmpty()) {
@@ -77,13 +77,8 @@ public class ConnectionRequestService {
             return true;
         }
         List<ConnectionRequest> connectionRequests = connectionRequestRepository.findAll(Specification.where(
-                        ConnectionRequestRepository.senderIdEquals(senderId))
-                .and(ConnectionRequestRepository.receiverIdEquals(receiverId))
-                .or(
-                        Specification.where(
-                                        ConnectionRequestRepository.senderIdEquals(receiverId))
-                                .and(ConnectionRequestRepository.receiverIdEquals(senderId))
-                ));
+                ConnectionRequestRepository.sendeIdrOrReceiverIdEquals(senderId, receiverId)
+        ));
 
         return !connectionRequests.stream().filter(c -> c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).toList().isEmpty();
 

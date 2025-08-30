@@ -25,6 +25,7 @@ public class ConnectionRequest extends EntityInfos {
     private User receiver;
     @ManyToOne(fetch = FetchType.EAGER)
     private User sender;
+    @Enumerated(EnumType.STRING)
     private EsitoRichiesta esitoRichiesta;
     private String receiverImage;
     private String receiverFullName;
