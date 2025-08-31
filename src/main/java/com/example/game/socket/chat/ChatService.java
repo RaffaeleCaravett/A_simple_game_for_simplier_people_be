@@ -99,12 +99,13 @@ public class ChatService {
         optionsArray.add("Info chat");
 
         if (chat.getChatType().equals(ChatType.SINGOLA)) {
-            optionsArray.add("Blocca " + chat.getUtenti().stream().filter(u -> u.getId() != user.getId()).toList().get(0).getFullName());
+            optionsArray.add("Blocca " + chat.getUtenti().stream().filter(u -> u.getId() != user.getId()).toList().get(0).getNome());
             optionsArray.add("Elimina chat");
             return ChatOptionsMenuDTO.builder().options(optionsArray).build();
         } else {
             optionsArray.add("Aggiungi partecipante");
             optionsArray.add("Cambia foto");
+            optionsArray.add("Abbandona gruppo");
             return ChatOptionsMenuDTO.builder().options(optionsArray).build();
         }
     }

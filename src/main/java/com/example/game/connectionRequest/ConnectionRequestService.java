@@ -30,8 +30,8 @@ public class ConnectionRequestService {
 
     public ConnectionRequest save(ConnectionRequestDTO connectionRequestDTO, User user) {
 
-        var connectionRequest = connectionRequestRepository.findAll(Specification.where(ConnectionRequestRepository.senderIdEquals(user.getId()))
-                .and(ConnectionRequestRepository.receiverIdEquals(connectionRequestDTO.receiverId()))
+        var connectionRequest = connectionRequestRepository.findAll(Specification.where(
+                ConnectionRequestRepository.sendeIdrOrReceiverIdEquals(user.getId(),connectionRequestDTO.receiverId()))
                 .and(ConnectionRequestRepository.stateEquals(EsitoRichiesta.INVIATA)));
 
         if (!connectionRequest.isEmpty()) {

@@ -9,6 +9,20 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConnectionRequestRepository extends JpaRepository<ConnectionRequest, Long>, JpaSpecificationExecutor<ConnectionRequest> {
+    static Specification<ConnectionRequest> sendeIdrOrReceiverIdEquals(Long userId, Long requestUserId) {
+        if (userId == null || requestUserId == null) return null;
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.or(
+                        criteriaBuilder.and(
+                            criteriaBuilder.equal(root.get("sender").get("id"), userId),
+                            criteriaBuilder.equal(root.get("receiver").get("id"),requestUserId)
+                        ),
+                        criteriaBuilder.and(
+                                criteriaBuilder.equal(root.get("sender").get("id"), requestUserId),
+                                criteriaBuilder.equal(root.get("receiver").get("id"),userId)
+                        )
+                );
+    }
 
     static Specification<ConnectionRequest> senderIdEquals(Long userId) {
         if (userId == null) return null;
