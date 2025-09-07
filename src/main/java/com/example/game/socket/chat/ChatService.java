@@ -6,6 +6,7 @@ import com.example.game.enums.ChatType;
 import com.example.game.enums.EsitoRichiesta;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.ChatDTO;
+import com.example.game.payloads.entities.ChatOptionsMenuDTO;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
 import jakarta.mail.search.SearchTerm;
@@ -90,5 +91,21 @@ public class ChatService {
             return new HashSet<>(availableUsers);
         }
         return new HashSet<>();
+    }
+
+    public ChatOptionsMenuDTO getChatOptionsMenu(Long id, User user) {
+        Chat chat = findById(id);
+        List<String> optionsArray = new ArrayList<>();
+        optionsArray.add("Info chat");
+
+        if (chat.getChatType().equals(ChatType.SINGOLA)) {
+            optionsArray.add("Blocca " + chat.getUtenti().stream().filter(u -> u.getId() != user.getId()).toList().get(0).getFullName());
+            optionsArray.add("Elimina chat");
+            return ChatOptionsMenuDTO.builder().options(optionsArray).build();
+        } else {
+            optionsArray.add("Aggiungi partecipante");
+            optionsArray.add("Cambia foto");
+            return ChatOptionsMenuDTO.builder().options(optionsArray).build();
+        }
     }
 }

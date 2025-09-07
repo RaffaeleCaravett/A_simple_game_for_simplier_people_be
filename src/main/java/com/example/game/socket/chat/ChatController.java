@@ -4,6 +4,7 @@ import com.example.game.enums.MessageState;
 import com.example.game.enums.Role;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.ChatDTO;
+import com.example.game.payloads.entities.ChatOptionsMenuDTO;
 import com.example.game.payloads.entities.MessageDTO;
 import com.example.game.socket.message.MessageRepository;
 import com.example.game.socket.message.Messaggio;
@@ -68,7 +69,7 @@ public class ChatController {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return chatService.save(chatDTO, user,file);
+        return chatService.save(chatDTO, user, file);
     }
 
     @DeleteMapping("/{id}")
@@ -86,7 +87,12 @@ public class ChatController {
     }
 
     @GetMapping("/availableContacts")
-    public Set<User> getAvailableContacts(@AuthenticationPrincipal User user){
+    public Set<User> getAvailableContacts(@AuthenticationPrincipal User user) {
         return this.chatService.getAvailableContacts(user);
+    }
+
+    @GetMapping("/options/{id}")
+    public ChatOptionsMenuDTO getChatOptionsMenu(@PathVariable long id, @AuthenticationPrincipal User user) {
+        return this.chatService.getChatOptionsMenu(id,user);
     }
 }
