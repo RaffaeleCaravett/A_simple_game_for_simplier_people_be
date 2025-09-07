@@ -22,12 +22,12 @@ public interface ConnectionRequestRepository extends JpaRepository<ConnectionReq
 
     static Specification<ConnectionRequest> senderFullnameLike(String fullname) {
         if (fullname == null) return null;
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("sender").get("fullname")), "%" + fullname.toUpperCase() + "%");
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("sender").get("fullName")), "%" + fullname.toUpperCase() + "%");
     }
 
     static Specification<ConnectionRequest> receiverFullnameLike(String fullname) {
         if (fullname == null) return null;
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("receiver").get("fullname")), "%" + fullname.toUpperCase() + "%");
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("receiver").get("fullName")), "%" + fullname.toUpperCase() + "%");
     }
 
     static Specification<ConnectionRequest> stateEquals(EsitoRichiesta esitoRichiesta) {

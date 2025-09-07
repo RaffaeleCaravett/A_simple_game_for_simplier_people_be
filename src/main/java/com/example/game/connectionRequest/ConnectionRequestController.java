@@ -1,11 +1,13 @@
 package com.example.game.connectionRequest;
 
 import com.example.game.exceptions.BadRequestException;
+import com.example.game.notification.Notification;
 import com.example.game.payloads.entities.ConnectionRequestDTO;
 import com.example.game.user.User;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -39,8 +41,28 @@ public class ConnectionRequestController {
     }
 
     @GetMapping("/friend")
-    Boolean isFriend(@RequestParam(required = false) Long senderId,
-                                     @RequestParam(required = false) Long receiverId) {
-        return connectionRequestService.checkIfFriends(senderId, receiverId);
+    Boolean isFriend(@RequestParam(required = false) Long userId1,
+                     @RequestParam(required = false) Long userId2) {
+        return connectionRequestService.checkIfFriends(userId1, userId2);
+    }
+
+    @GetMapping("/accept")
+    ConnectionRequest accept(@RequestParam Long requestId, @AuthenticationPrincipal User user) {
+        return connectionRequestService.accept(requestId, user);
+    }
+
+    @GetMapping("/refuse")
+    ConnectionRequest refuse(@RequestParam Long requestId, @AuthenticationPrincipal User user) {
+        return connectionRequestService.refuse(requestId, user);
+    }
+
+    @GetMapping("/delete")
+    ConnectionRequest delete(@RequestParam Long requestId, @AuthenticationPrincipal User user) {
+        return connectionRequestService.delete(requestId, user);
+    }
+
+    @GetMapping("/deleteByIds")
+    boolean deleteFriend(@AuthenticationPrincipal User user, @RequestParam Long visitedUserId) {
+        return connectionRequestService.deleteFriend(visitedUserId, user);
     }
 }

@@ -1,15 +1,26 @@
 package com.example.game.socket.chat;
 
+import com.example.game.connectionRequest.ConnectionRequest;
+import com.example.game.connectionRequest.ConnectionRequestService;
+import com.example.game.enums.ChatType;
+import com.example.game.enums.EsitoRichiesta;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.ChatDTO;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
+import jakarta.mail.search.SearchTerm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,6 +28,7 @@ import java.util.stream.Collectors;
 public class ChatService {
     private final ChatRepository chatRepository;
     private final UserService userService;
+    private final ConnectionRequestService connectionRequestService;
 
     public Chat findById(Long id) {
         return chatRepository.findById(id).orElseThrow(() -> new BadRequestException("Chat non trovata."));
@@ -45,7 +57,7 @@ public class ChatService {
         }
     }
 
-    public Chat save(ChatDTO chatDTO, User user) {
+    public Chat save(ChatDTO chatDTO, User user, MultipartFile file) throws IOException {
         Chat chat = new Chat().builder()
                 .createdAt(LocalDate.now().toString())
                 .createdAtDate(LocalDate.now())
@@ -53,8 +65,30 @@ public class ChatService {
                 .isActive(true)
                 .utenti(chatDTO.userId().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList())
                 .title(chatDTO.title())
+                .chatType(chatDTO.chatType() != null ? ChatType.valueOf(chatDTO.chatType()) : null)
                 .build();
+
+        if (file != null && !file.isEmpty()) {
+            byte[] fileBytes = file.getBytes();
+            chat.setImage(fileBytes);
+        }
         return chatRepository.save(chat);
     }
 
+    public Set<User> getAvailableContacts(User user) {
+        List<ConnectionRequest> connectionsSent = connectionRequestService.findAllByParams(user.getId(), null, "ACCETTATA");
+        List<ConnectionRequest> connectionsReceived = connectionRequestService.findAllByParams(null, user.getId(), "ACCETTATA");
+
+        List<User> availableUsers = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(connectionsSent)) {
+            availableUsers.addAll(connectionsSent.stream().map(ConnectionRequest::getReceiver).collect(Collectors.toSet()));
+        }
+        if (!CollectionUtils.isEmpty(connectionsReceived)) {
+            availableUsers.addAll(connectionsReceived.stream().map(ConnectionRequest::getSender).collect(Collectors.toSet()));
+        }
+        if (!CollectionUtils.isEmpty(availableUsers)) {
+            return new HashSet<>(availableUsers);
+        }
+        return new HashSet<>();
+    }
 }

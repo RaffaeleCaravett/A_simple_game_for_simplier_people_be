@@ -13,16 +13,20 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,11 +64,11 @@ public class ChatController {
      */
 
     @PostMapping("")
-    public Chat post(@RequestBody @Valid ChatDTO chatDTO, BindingResult bindingResult, @AuthenticationPrincipal User user) {
+    public Chat post(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("chat") @Valid ChatDTO chatDTO, BindingResult bindingResult, @AuthenticationPrincipal User user) throws IOException {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return chatService.save(chatDTO, user);
+        return chatService.save(chatDTO, user,file);
     }
 
     @DeleteMapping("/{id}")
@@ -79,5 +83,10 @@ public class ChatController {
         if (user.getRole().equals(Role.Admin)) userIdentityNumber = userId;
         else userIdentityNumber = user.getId();
         return chatService.findByParams(title, userIdentityNumber, isActive);
+    }
+
+    @GetMapping("/availableContacts")
+    public Set<User> getAvailableContacts(@AuthenticationPrincipal User user){
+        return this.chatService.getAvailableContacts(user);
     }
 }

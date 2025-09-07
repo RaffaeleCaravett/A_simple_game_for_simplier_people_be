@@ -85,10 +85,12 @@ public class MessageService {
                     List<User> users = new ArrayList<>();
                     users.add(user);
                     m.setReaders(users);
+                    m.setState(MessageState.READ);
                 } else if (!m.getReaders().contains(user.getId())) {
                     var readers = m.getReaders();
                     readers.add(user.getId());
                     m.setReaders(readers.stream().map(userService::findById).toList());
+                    m.setState(MessageState.READ);
                 }
                 messageRepository.save(m);
             });

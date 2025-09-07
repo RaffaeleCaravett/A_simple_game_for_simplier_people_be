@@ -2,6 +2,7 @@ package com.example.game.notification;
 
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.NotificationState;
+import com.example.game.enums.NotificationType;
 import com.example.game.socket.chat.Chat;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,4 +34,6 @@ public class Notification extends EntityInfos {
     private User receiver;
     @Enumerated(EnumType.STRING)
     private NotificationState state;
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
 }

@@ -1,9 +1,10 @@
 package com.example.game.payloads.entities;
 
-public record SocketDTO (
-     MessageDTO messageDTO,
-     MoveDTO moveDTO,
-     GameConnectionDTO gameConnectionDTO,
-     ConnectionDTO connectionDTO
-){
+public record SocketDTO(
+        MessageDTO messageDTO,
+        MoveDTO moveDTO,
+        GameConnectionDTO gameConnectionDTO,
+        ConnectionDTO connectionDTO,
+        ConnectionRequestDTO connectionRequestDTO
+) {
 }

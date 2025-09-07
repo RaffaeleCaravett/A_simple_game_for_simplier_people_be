@@ -26,4 +26,16 @@ public class ConnectionRequest extends EntityInfos {
     @ManyToOne(fetch = FetchType.EAGER)
     private User sender;
     private EsitoRichiesta esitoRichiesta;
+    private String receiverImage;
+    private String receiverFullName;
+    private Long takenReceiverId;
+    public String getReceiverImage(){
+        return this.receiver.getImmagineProfilo();
+    }
+    public String getReceiverFullName(){
+        return this.receiver.getFullName();
+    }
+    public Long getTakenReceiverId(){
+        return this.receiver.getId();
+    }
 }

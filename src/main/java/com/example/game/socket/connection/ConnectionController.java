@@ -50,7 +50,7 @@ public class ConnectionController {
         var stompType = socketDTO.messageDTO() != null ? StompType.MESSAGE :
                 socketDTO.connectionDTO() != null ? StompType.CONNECTION :
                         socketDTO.gameConnectionDTO() != null ? StompType.GAME_CONNECTION :
-                                socketDTO.moveDTO() != null ? StompType.MOVE : "";
+                                socketDTO.moveDTO() != null ? StompType.MOVE : socketDTO.connectionRequestDTO() != null ? StompType.CONNECTION_REQUEST : "";
         if (stompType.equals(StompType.MOVE)) {
             if (socketDTO.moveDTO() == null) {
                 throw new BadRequestException("Impossibile determinare il tipo di mossa");
@@ -93,7 +93,7 @@ public class ConnectionController {
                 if (!u.getIsConnected()) {
                     notificationRepository.save(Notification.builder().testo("Hai un nuovo messaggio da " + messaggio.getSender().getFullName())
                             .sender(messaggio.getSender()).receiver(u).chat(messaggio.getChat()).state(NotificationState.SENT).createdAtDate(LocalDate.now())
-                            .createdAt(LocalDate.now().toString()).build());
+                            .createdAt(LocalDate.now().toString()).notificationType(NotificationType.MESSAGE).build());
                 }
             });
             return messageRepository.save(messaggio);
@@ -102,7 +102,7 @@ public class ConnectionController {
                 throw new BadRequestException("Impossibile stabilire quale utente si sia connesso.");
             }
             //User user=  userService.findById(socketDTO.connectionDTO().getUserId());
-            User user=  userService.findById(socketDTO.connectionDTO().getUserId());
+            User user = userService.findById(socketDTO.connectionDTO().getUserId());
             Thread.sleep(3000);
             return user;
         } else if (stompType.equals(StompType.GAME_CONNECTION)) {
@@ -113,6 +113,12 @@ public class ConnectionController {
             User user = userService.findById(socketDTO.gameConnectionDTO().getUserId());
             return MoveToHandleDTO.builder().connection(socketDTO.gameConnectionDTO().getConnected()).connectionMove(true)
                     .giocoConnection(gioco.getId()).userConnected(user.getId());
+        } else if (stompType.equals(StompType.CONNECTION_REQUEST)) {
+            if (socketDTO.connectionRequestDTO() == null) {
+                throw new BadRequestException("Impossibile determinare a che gioco ci si è connessi.");
+            }
+            User user = userService.findById(socketDTO.connectionRequestDTO().receiverId());
+            return MoveToHandleDTO.builder().inviteState(InviteState.CONNECTION_REQUEST).receiverId(user.getId()).build();
         }
         throw new BadRequestException("Impossibile determinare l'azione!");
     }

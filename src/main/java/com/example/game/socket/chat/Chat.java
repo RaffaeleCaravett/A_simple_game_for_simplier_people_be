@@ -1,6 +1,7 @@
 package com.example.game.socket.chat;
 
 import com.example.game.entityInfos.EntityInfos;
+import com.example.game.enums.ChatType;
 import com.example.game.socket.message.Messaggio;
 import com.example.game.user.User;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +34,13 @@ public class Chat extends EntityInfos {
     @OneToMany(mappedBy = "chat", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Messaggio> messaggi;
     private String title;
+    private byte[] image;
+    @Enumerated(EnumType.STRING)
+    private ChatType chatType;
 
 
     public List<Messaggio> getMessaggi() {
+        if(this.messaggi == null || this.messaggi.isEmpty()) return new ArrayList<>();
         return this.messaggi.stream().filter(Messaggio::isActive).collect(Collectors.toSet()).stream().sorted(Comparator.comparing(Messaggio::getId)).toList();
     }
 

@@ -1,8 +1,8 @@
 package com.example.game.payloads.entities;
 
+import com.example.game.enums.ChatType;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
 
@@ -14,6 +14,8 @@ public record ChatDTO(
         List<Long> userId,
         @Nullable
         @Length(max = 30, message = "Il titolo può aver massimo 30 caratteri.")
-        String title
+        String title,
+        @Nullable
+        String chatType
 ) {
 }
