@@ -139,4 +139,9 @@ public class UserController {
     public User changeVisibility(@AuthenticationPrincipal User user){
         return userService.changeVisibility(user);
     }
+
+    @GetMapping("/amici/{id}/{page}")
+    public Page<User> getAmici(@PathVariable Long id, @PathVariable Integer page){
+        return this.userService.getAmici(id,page);
+    }
 }

@@ -3,7 +3,9 @@ package com.example.game.user;
 import com.cloudinary.Cloudinary;
 import com.example.game.citta.Citta;
 import com.example.game.citta.CittaService;
+import com.example.game.connectionRequest.ConnectionRequest;
 import com.example.game.email.EmailService;
+import com.example.game.enums.EsitoRichiesta;
 import com.example.game.exceptions.*;
 import com.example.game.payloads.entities.DescrizioneDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
@@ -11,10 +13,8 @@ import com.example.game.payloads.entities.UserToPatch;
 import com.example.game.socket.connection.ConnectionController;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -225,5 +226,17 @@ public class UserService {
     public User changeVisibility(User user) {
         user.setOpen(!user.isOpen());
         return userRepository.save(user);
+    }
+
+    public Page<User> getAmici(Long id, Integer page){
+        User user = findById(id);
+        List<User> friends = new ArrayList<>();
+        var friendsFromReceivedConnections = user.getConnectionRequestsReceived().stream().filter(c->c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).map(ConnectionRequest::getSender).toList();
+        var friendsFromSentConnections = user.getConnectionRequestsSent().stream().filter(c->c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).map(ConnectionRequest::getReceiver).toList();
+        friends.addAll(friendsFromReceivedConnections);
+        friends.addAll(friendsFromSentConnections);
+        Pageable pageable = PageRequest.of(page,100);
+        return new PageImpl<>(new HashSet<>(friends.subList(page*100,(page*100)+100)).stream().toList(),pageable,friends.size());
+
     }
 }

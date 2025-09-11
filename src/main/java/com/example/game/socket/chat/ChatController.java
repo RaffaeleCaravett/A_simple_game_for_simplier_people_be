@@ -95,4 +95,12 @@ public class ChatController {
     public ChatOptionsMenuDTO getChatOptionsMenu(@PathVariable long id, @AuthenticationPrincipal User user) {
         return this.chatService.getChatOptionsMenu(id,user);
     }
+
+    @PatchMapping("/{id}")
+    public Chat patchChat(@PathVariable Long id, @RequestBody @Valid ChatDTO chatDTO,BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
+        return chatService.patch(id,chatDTO);
+    }
 }

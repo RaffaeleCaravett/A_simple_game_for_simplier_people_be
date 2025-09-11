@@ -109,4 +109,16 @@ public class ChatService {
             return ChatOptionsMenuDTO.builder().options(optionsArray).build();
         }
     }
+
+    public Chat patch (Long chatId, ChatDTO chatDTO){
+        Chat chat = findById(chatId);
+        if(chatDTO.title()!=null){
+            chat.setTitle(chatDTO.title());
+        }
+        if(chatDTO.chatType()!=null){
+            chat.setChatType(ChatType.valueOf(chatDTO.chatType()));
+        }
+        chat.setUtenti(chatDTO.userId().stream().map(userService::findById).toList());
+        return chatRepository.save(chat);
+    }
 }

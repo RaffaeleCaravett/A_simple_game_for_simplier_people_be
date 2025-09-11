@@ -81,7 +81,6 @@ public class ConnectionRequestService {
         ));
 
         return !connectionRequests.stream().filter(c -> c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).toList().isEmpty();
-
     }
 
     public ConnectionRequest findById(Long id) {
