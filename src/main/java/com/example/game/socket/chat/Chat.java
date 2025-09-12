@@ -38,16 +38,14 @@ public class Chat extends EntityInfos {
     @Enumerated(EnumType.STRING)
     private ChatType chatType;
     @ManyToMany
-    @JoinTable(
-            joinColumns = @JoinColumn(name = "chat_id"),
+    @JoinTable(joinColumns = @JoinColumn(name = "chat_id"),
             inverseJoinColumns = @JoinColumn(name = "administrator_id"),
-            name = "chat_amministratori"
-    )
+            name = "chat_amministratori")
     private List<User> administrators;
 
 
     public List<Messaggio> getMessaggi() {
-        if(this.messaggi == null || this.messaggi.isEmpty()) return new ArrayList<>();
+        if (this.messaggi == null || this.messaggi.isEmpty()) return new ArrayList<>();
         return this.messaggi.stream().filter(Messaggio::isActive).collect(Collectors.toSet()).stream().sorted(Comparator.comparing(Messaggio::getId)).toList();
     }
 

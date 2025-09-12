@@ -59,6 +59,8 @@ public class ChatService {
     }
 
     public Chat save(ChatDTO chatDTO, User user, MultipartFile file) throws IOException {
+        List<User> administrators = new ArrayList<>();
+        administrators.add(user);
         Chat chat = new Chat().builder()
                 .createdAt(LocalDate.now().toString())
                 .createdAtDate(LocalDate.now())
@@ -67,6 +69,7 @@ public class ChatService {
                 .utenti(chatDTO.userId().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList())
                 .title(chatDTO.title())
                 .chatType(chatDTO.chatType() != null ? ChatType.valueOf(chatDTO.chatType()) : null)
+                .administrators(administrators)
                 .build();
 
         if (file != null && !file.isEmpty()) {
@@ -110,17 +113,26 @@ public class ChatService {
         }
     }
 
-    public Chat patch (Long chatId, ChatDTO chatDTO){
+    public Chat patch(Long chatId, ChatDTO chatDTO) {
         Chat chat = findById(chatId);
-        if(chatDTO.title()!=null){
+        if (chatDTO.title() != null) {
             chat.setTitle(chatDTO.title());
         }
-        if(chatDTO.chatType()!=null){
+        if (chatDTO.chatType() != null) {
             chat.setChatType(ChatType.valueOf(chatDTO.chatType()));
         }
         List<User> users = new ArrayList<>();
-        for(Long i : chatDTO.userId()){
+        for (Long i : chatDTO.userId()) {
             users.add(userService.findById(i));
+        }
+        if (null != chatDTO.administrators() && !chatDTO.administrators().isEmpty()) {
+            List<User> administrators = new ArrayList<>();
+            for (Long l : chatDTO.administrators()) {
+                administrators.add(userService.findById(l));
+            }
+            if (!new HashSet<>(chat.getAdministrators().stream().map(User::getId).toList()).containsAll(chatDTO.administrators())) {
+                chat.setAdministrators(administrators);
+            }
         }
         chat.setUtenti(users);
         return chatRepository.save(chat);

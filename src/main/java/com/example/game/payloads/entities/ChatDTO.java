@@ -18,6 +18,8 @@ public record ChatDTO(
         @Length(max = 30, message = "Il titolo può aver massimo 30 caratteri.")
         String title,
         @Nullable
-        String chatType
+        String chatType,
+        @Nullable
+        List<Long> administrators
 ) {
 }
