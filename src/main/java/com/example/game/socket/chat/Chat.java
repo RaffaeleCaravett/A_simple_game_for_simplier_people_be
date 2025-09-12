@@ -37,6 +37,13 @@ public class Chat extends EntityInfos {
     private byte[] image;
     @Enumerated(EnumType.STRING)
     private ChatType chatType;
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "administrator_id"),
+            name = "chat_amministratori"
+    )
+    private List<User> administrators;
 
 
     public List<Messaggio> getMessaggi() {

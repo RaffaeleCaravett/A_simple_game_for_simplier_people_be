@@ -118,7 +118,11 @@ public class ChatService {
         if(chatDTO.chatType()!=null){
             chat.setChatType(ChatType.valueOf(chatDTO.chatType()));
         }
-        chat.setUtenti(chatDTO.userId().stream().map(userService::findById).toList());
+        List<User> users = new ArrayList<>();
+        for(Long i : chatDTO.userId()){
+            users.add(userService.findById(i));
+        }
+        chat.setUtenti(users);
         return chatRepository.save(chat);
     }
 }

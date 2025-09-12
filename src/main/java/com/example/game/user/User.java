@@ -12,6 +12,7 @@ import com.example.game.partita.Partita;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
 import com.example.game.richiesta.Richiesta;
+import com.example.game.socket.chat.Chat;
 import com.example.game.tournament.Tournament;
 import com.example.game.trofeo.Trofeo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,7 +40,7 @@ import java.util.Set;
 @Getter
 @Setter
 @SuperBuilder
-public class User extends EntityInfos implements UserDetails{
+public class User extends EntityInfos implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -72,7 +73,7 @@ public class User extends EntityInfos implements UserDetails{
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Partita> partite;
-    @OneToMany(mappedBy = "user", fetch=FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Preferito> preferiti;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
@@ -93,8 +94,9 @@ public class User extends EntityInfos implements UserDetails{
     @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<ConnectionRequest> connectionRequestsSent;
-
-
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "administrators")
+    @JsonIgnore
+    private List<Chat> chatAdministrated;
 
 
     @Override
@@ -126,25 +128,31 @@ public class User extends EntityInfos implements UserDetails{
     public boolean isEnabled() {
         return true;
     }
-    public void setFullName(String nome, String cognome){
-        this.fullName=String.valueOf(nome.charAt(0)).toUpperCase()+nome.substring(1) + " " +
-                String.valueOf(cognome.charAt(0)).toUpperCase()+cognome.substring(1);
+
+    public void setFullName(String nome, String cognome) {
+        this.fullName = String.valueOf(nome.charAt(0)).toUpperCase() + nome.substring(1) + " " +
+                String.valueOf(cognome.charAt(0)).toUpperCase() + cognome.substring(1);
     }
-    public void setNome(String nome){
-        this.nome = String.valueOf(nome.charAt(0)).toUpperCase()+nome.substring(1).toLowerCase();
+
+    public void setNome(String nome) {
+        this.nome = String.valueOf(nome.charAt(0)).toUpperCase() + nome.substring(1).toLowerCase();
     }
-    public void setCognome(String cognome){
-        this.cognome = String.valueOf(cognome.charAt(0)).toUpperCase()+cognome.substring(1).toLowerCase();
+
+    public void setCognome(String cognome) {
+        this.cognome = String.valueOf(cognome.charAt(0)).toUpperCase() + cognome.substring(1).toLowerCase();
     }
+
     public void addGioco(Gioco gioco) {
-        if(giochi.contains(gioco)) return;
+        if (giochi.contains(gioco)) return;
         giochi.add(gioco);
     }
+
     public void addClassifica(Classifica classifica) {
-        if(classificas.contains(classifica)) return;
+        if (classificas.contains(classifica)) return;
         classificas.add(classifica);
     }
-    public boolean checkIfPreferitiExists(Gioco gioco){
+
+    public boolean checkIfPreferitiExists(Gioco gioco) {
         List<Gioco> giochi = preferiti.stream().map(Preferito::getGioco).toList();
         return giochi.contains(gioco);
     }
