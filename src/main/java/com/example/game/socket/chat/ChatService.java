@@ -47,14 +47,46 @@ public class ChatService {
         }).toList();
     }
 
-    public boolean deleteChat(Long id) {
+    public boolean deleteChat(Long id, User user) {
         try {
             Chat chat = findById(id);
-            chat.setActive(false);
+            if (chat.getChatType().equals(ChatType.GRUPPO) && chat.getAdministrators().stream().map(User::getId).toList().contains(user.getId())) {
+                chat.setActive(false);
+                chat.setDeletedAt(LocalDate.now().toString());
+            } else {
+                User user1 = chat.getUtenti().stream().filter(u -> u.getId() == user.getId()).toList().get(0);
+                var chats = new ArrayList<>(user1.getChats().stream().filter(c -> !c.getId().equals(chat.getId())).toList());
+                user1.setChats(chats);
+                var users = new ArrayList<>(chat.getUtenti().stream().filter(u -> u.getId() != user1.getId()).toList());
+                chat.setUtenti(users);
+                userService.save(user1);
+            }
             chatRepository.save(chat);
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public Chat leaveChat(Long id, User user) {
+        Chat chat = findById(id);
+        if (chat.getChatType().equals(ChatType.GRUPPO) && chat.getUtenti().stream().map(User::getId).toList().contains(user.getId())) {
+            var users = new ArrayList<>(chat.getUtenti().stream().filter(u -> u.getId() != user.getId()).toList());
+            chat.setUtenti(users);
+            var chats = new ArrayList<>(user.getChats().stream().filter(c -> !c.getId().equals(chat.getId())).toList());
+            user.setChats(chats);
+            if (chat.getAdministrators().stream().map(User::getId).toList().contains(user.getId())) {
+                var admins = new ArrayList<>(chat.getAdministrators().stream().filter(u -> u.getId() != user.getId()).toList());
+                chat.setAdministrators(admins);
+                if (chat.getAdministrators().isEmpty()) {
+                    var userAdmins = chat.getUtenti();
+                    chat.setAdministrators(userAdmins);
+                }
+            }
+            userService.save(user);
+            return chatRepository.save(chat);
+        } else {
+            throw new BadRequestException("Non puoi abbandonare una chat di cui non sei partecipante");
         }
     }
 
@@ -69,9 +101,10 @@ public class ChatService {
                 .utenti(chatDTO.userId().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList())
                 .title(chatDTO.title())
                 .chatType(chatDTO.chatType() != null ? ChatType.valueOf(chatDTO.chatType()) : null)
-                .administrators(administrators)
                 .build();
-
+        if (chat.getChatType().equals(ChatType.GRUPPO)) {
+            chat.setAdministrators(administrators);
+        }
         if (file != null && !file.isEmpty()) {
             byte[] fileBytes = file.getBytes();
             chat.setImage(fileBytes);
@@ -107,7 +140,9 @@ public class ChatService {
             return ChatOptionsMenuDTO.builder().options(optionsArray).build();
         } else {
             optionsArray.add("Aggiungi partecipante");
+            optionsArray.add("Aggiungi/rimuovi un admin");
             optionsArray.add("Cambia foto");
+            optionsArray.add("Elimina chat");
             optionsArray.add("Abbandona gruppo");
             return ChatOptionsMenuDTO.builder().options(optionsArray).build();
         }
@@ -136,5 +171,15 @@ public class ChatService {
         }
         chat.setUtenti(users);
         return chatRepository.save(chat);
+    }
+
+    public Chat setChatImage(User user, Long id, MultipartFile multipartFile) throws IOException {
+        Chat chat = findById(id);
+        if (chat.getChatType().equals(ChatType.GRUPPO) && chat.getAdministrators().stream().map(User::getId).toList().contains(user.getId())) {
+            chat.setImage(multipartFile.getBytes());
+            return chatRepository.save(chat);
+        } else {
+            throw new BadRequestException("Impossibile modificare l'immagine");
+        }
     }
 }

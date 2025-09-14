@@ -29,6 +29,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -97,6 +98,16 @@ public class User extends EntityInfos implements UserDetails {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "administrators")
     @JsonIgnore
     private List<Chat> chatAdministrated;
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "utenti")
+    @JsonIgnore
+    private List<Chat> chats;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_id")
+    )
+    @JsonIgnore
+    private List<User> blocked;
 
 
     @Override
@@ -155,5 +166,14 @@ public class User extends EntityInfos implements UserDetails {
     public boolean checkIfPreferitiExists(Gioco gioco) {
         List<Gioco> giochi = preferiti.stream().map(Preferito::getGioco).toList();
         return giochi.contains(gioco);
+    }
+
+    public List<Long> getBlocked() {
+        if (this.blocked == null || this.blocked.isEmpty()) return new ArrayList<>();
+        return this.blocked.stream().map(User::getId).toList();
+    }
+    public List<User> getBlockedUsers() {
+        if (this.blocked == null || this.blocked.isEmpty()) return new ArrayList<>();
+        return this.blocked;
     }
 }

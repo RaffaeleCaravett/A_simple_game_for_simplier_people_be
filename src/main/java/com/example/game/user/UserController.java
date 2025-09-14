@@ -144,4 +144,9 @@ public class UserController {
     public Page<User> getAmici(@PathVariable Long id, @PathVariable Integer page){
         return this.userService.getAmici(id,page);
     }
+
+    @GetMapping("/block/{id}")
+    public User blocca(@PathVariable Long id, @AuthenticationPrincipal User user){
+        return this.userService.blocca(id,user);
+    }
 }

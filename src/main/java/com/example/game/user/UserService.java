@@ -228,15 +228,24 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Page<User> getAmici(Long id, Integer page){
+    public Page<User> getAmici(Long id, Integer page) {
         User user = findById(id);
         List<User> friends = new ArrayList<>();
-        var friendsFromReceivedConnections = user.getConnectionRequestsReceived().stream().filter(c->c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).map(ConnectionRequest::getSender).toList();
-        var friendsFromSentConnections = user.getConnectionRequestsSent().stream().filter(c->c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).map(ConnectionRequest::getReceiver).toList();
+        var friendsFromReceivedConnections = user.getConnectionRequestsReceived().stream().filter(c -> c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).map(ConnectionRequest::getSender).toList();
+        var friendsFromSentConnections = user.getConnectionRequestsSent().stream().filter(c -> c.getEsitoRichiesta().equals(EsitoRichiesta.ACCETTATA)).map(ConnectionRequest::getReceiver).toList();
         friends.addAll(friendsFromReceivedConnections);
         friends.addAll(friendsFromSentConnections);
-        Pageable pageable = PageRequest.of(page,100);
-        return new PageImpl<>(new HashSet<>(friends.subList(page*100,(page*100)+100)).stream().toList(),pageable,friends.size());
+        Pageable pageable = PageRequest.of(page, 100);
+        return new PageImpl<>(new HashSet<>(friends.subList(page * 100, (page * 100) + 100)).stream().toList(), pageable, friends.size());
 
+    }
+
+    public User blocca(Long id, User user) {
+        var blocked = user.getBlockedUsers();
+        if (!blocked.stream().map(User::getId).toList().contains(findById(id).getId())) {
+            blocked.add(findById(id));
+        }
+        user.setBlocked(blocked);
+        return userRepository.save(user);
     }
 }

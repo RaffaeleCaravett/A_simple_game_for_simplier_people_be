@@ -73,9 +73,8 @@ public class ChatController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('Admin')")
-    public boolean delete(@PathVariable Long id) {
-        return chatService.deleteChat(id);
+    public boolean delete(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        return chatService.deleteChat(id, user);
     }
 
     @GetMapping("/params")
@@ -86,6 +85,11 @@ public class ChatController {
         return chatService.findByParams(title, userIdentityNumber, isActive);
     }
 
+    @GetMapping("/leave/{id}")
+    public Chat leave(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        return chatService.leaveChat(id, user);
+    }
+
     @GetMapping("/availableContacts")
     public Set<User> getAvailableContacts(@AuthenticationPrincipal User user) {
         return this.chatService.getAvailableContacts(user);
@@ -93,14 +97,19 @@ public class ChatController {
 
     @GetMapping("/options/{id}")
     public ChatOptionsMenuDTO getChatOptionsMenu(@PathVariable long id, @AuthenticationPrincipal User user) {
-        return this.chatService.getChatOptionsMenu(id,user);
+        return this.chatService.getChatOptionsMenu(id, user);
     }
 
     @PatchMapping("/{id}")
-    public Chat patchChat(@PathVariable Long id, @RequestBody @Valid ChatDTO chatDTO,BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    public Chat patchChat(@PathVariable Long id, @RequestBody @Valid ChatDTO chatDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return chatService.patch(id,chatDTO);
+        return chatService.patch(id, chatDTO);
+    }
+
+    @PutMapping("/updateImage/{id}")
+    public Chat modifyProfileImage(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestPart(name = "chat_image") MultipartFile multipartFile) throws IOException {
+        return chatService.setChatImage(user, id, multipartFile);
     }
 }
