@@ -1,5 +1,6 @@
 package com.example.game.user;
 
+import com.example.game.blocked.Blocked;
 import com.example.game.citta.Citta;
 import com.example.game.classifica.Classifica;
 import com.example.game.connectionRequest.ConnectionRequest;
@@ -109,6 +110,9 @@ public class User extends EntityInfos implements UserDetails {
     @JsonIgnore
     private List<User> blocked;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Blocked> blockeds;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -172,6 +176,7 @@ public class User extends EntityInfos implements UserDetails {
         if (this.blocked == null || this.blocked.isEmpty()) return new ArrayList<>();
         return this.blocked.stream().map(User::getId).toList();
     }
+
     public List<User> getBlockedUsers() {
         if (this.blocked == null || this.blocked.isEmpty()) return new ArrayList<>();
         return this.blocked;
