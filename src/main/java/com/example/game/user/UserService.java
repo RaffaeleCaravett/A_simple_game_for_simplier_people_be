@@ -240,12 +240,4 @@ public class UserService {
 
     }
 
-    public User blocca(Long id, User user) {
-        var blocked = user.getBlockedUsers();
-        if (!blocked.stream().map(User::getId).toList().contains(findById(id).getId())) {
-            blocked.add(findById(id));
-        }
-        user.setBlocked(blocked);
-        return userRepository.save(user);
-    }
 }

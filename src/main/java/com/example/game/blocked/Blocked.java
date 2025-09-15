@@ -2,6 +2,7 @@ package com.example.game.blocked;
 
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -20,5 +21,9 @@ public class Blocked extends EntityInfos {
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User blocked;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "blocker_id")
+    @JsonIgnore
+    private User blocker;
 }

@@ -145,8 +145,4 @@ public class UserController {
         return this.userService.getAmici(id,page);
     }
 
-    @GetMapping("/block/{id}")
-    public User blocca(@PathVariable Long id, @AuthenticationPrincipal User user){
-        return this.userService.blocca(id,user);
-    }
 }

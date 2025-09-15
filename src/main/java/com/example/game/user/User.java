@@ -102,16 +102,10 @@ public class User extends EntityInfos implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "utenti")
     @JsonIgnore
     private List<Chat> chats;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "blocked_id")
-    )
+    @OneToMany(mappedBy = "blocked", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
-    private List<User> blocked;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore
+    private List<Blocked> blockedBy;
+    @OneToMany(mappedBy = "blocker", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Blocked> blockeds;
 
     @Override
@@ -172,13 +166,11 @@ public class User extends EntityInfos implements UserDetails {
         return giochi.contains(gioco);
     }
 
-    public List<Long> getBlocked() {
-        if (this.blocked == null || this.blocked.isEmpty()) return new ArrayList<>();
-        return this.blocked.stream().map(User::getId).toList();
+    public List<Blocked> getBlockeds(){
+        if(null == blockeds || blockeds.isEmpty()){
+            return new ArrayList<>();
+        }
+        return blockeds.stream().filter(EntityInfos::isActive).toList();
     }
 
-    public List<User> getBlockedUsers() {
-        if (this.blocked == null || this.blocked.isEmpty()) return new ArrayList<>();
-        return this.blocked;
-    }
 }
