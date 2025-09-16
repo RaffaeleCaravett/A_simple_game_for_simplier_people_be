@@ -37,14 +37,14 @@ public class ChatService {
 
     public List<Chat> findByParams(String title, Long userId, Boolean active) {
         User user = userService.findById(userId);
-        return chatRepository.findAll(Specification.where(ChatRepository.userIdEqual(userId))
+        List<Chat> chats= chatRepository.findAll(Specification.where(ChatRepository.userIdEqual(userId))
                 .and(ChatRepository.titleLike(title))
-                .and(ChatRepository.isActive(active))).stream().map(chat -> {
+                .and(ChatRepository.isActive(active))).stream().peek(chat -> {
             if (null == chat.getTitle() || chat.getTitle().isEmpty()) {
                 chat.setTitle(chat.getUtenti().stream().filter(u -> !u.getEmail().equals(user.getEmail())).collect(Collectors.toSet()).stream().toList().get(0).getFullName());
             }
-            return chat;
         }).toList();
+        return chats;
     }
 
     public boolean deleteChat(Long id, User user) {
