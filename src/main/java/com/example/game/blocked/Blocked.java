@@ -4,16 +4,15 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "blocked")
 @Getter
 @Setter
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 public class Blocked extends EntityInfos {
     @Id
@@ -21,6 +20,7 @@ public class Blocked extends EntityInfos {
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User blocked;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "blocker_id")

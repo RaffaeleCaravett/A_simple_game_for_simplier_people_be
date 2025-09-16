@@ -1,5 +1,7 @@
 package com.example.game.socket.message;
 
+import com.example.game.blocked.Blocked;
+import com.example.game.enums.ChatType;
 import com.example.game.enums.MessageState;
 import com.example.game.enums.Role;
 import com.example.game.exceptions.BadRequestException;
@@ -37,6 +39,9 @@ public class MessageService {
         Chat chat = chatService.findById(messageDTO.chat());
         User sender = userService.findById(messageDTO.mittente());
         List<User> receivers = messageDTO.riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList();
+        if (chat.getChatType().equals(ChatType.SINGOLA) && sender.getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(receivers.get(0).getId())) {
+            return null;
+        }
         Messaggio messaggio = Messaggio.builder().state(MessageState.SENT).chat(chat)
                 .receivers(receivers).sender(sender).isActive(true).modifiedAt(LocalDate.now().toString())
                 .createdAt(LocalDate.now().toString()).createdAtDate(LocalDate.now()).text(messageDTO.message()).build();
@@ -79,7 +84,7 @@ public class MessageService {
 
     public boolean read(Long chatId, User user) {
         try {
-            List<Messaggio> messaggi = findAll(chatId, user.getId(),MessageState.SENT);
+            List<Messaggio> messaggi = findAll(chatId, user.getId(), MessageState.SENT);
             messaggi.forEach(m -> {
                 if (CollectionUtils.isEmpty(m.getReaders())) {
                     List<User> users = new ArrayList<>();

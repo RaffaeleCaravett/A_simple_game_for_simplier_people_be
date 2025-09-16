@@ -1,5 +1,6 @@
 package com.example.game.socket.connection;
 
+import com.example.game.blocked.Blocked;
 import com.example.game.enums.*;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.gioco.Gioco;
@@ -12,6 +13,7 @@ import com.example.game.payloads.entities.MessageDTO;
 import com.example.game.payloads.entities.MoveDTO;
 import com.example.game.payloads.entities.MoveToHandleDTO;
 import com.example.game.payloads.entities.SocketDTO;
+import com.example.game.socket.chat.Chat;
 import com.example.game.socket.chat.ChatService;
 import com.example.game.socket.message.MessageRepository;
 import com.example.game.socket.message.Messaggio;
@@ -85,9 +87,13 @@ public class ConnectionController {
             if (socketDTO.messageDTO() == null) {
                 throw new BadRequestException("Impossibile salvare e inviare il messaggio");
             }
+
+            User sender = userService.findById(socketDTO.messageDTO().mittente());
+            Chat chat = chatService.findById(socketDTO.messageDTO().chat());
+            List<User> receivers = socketDTO.messageDTO().riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList();
             Messaggio messaggio = Messaggio.builder().createdAt(LocalDate.now().toString()).createdAtDate(LocalDate.now()).chat(
-                            chatService.findById(socketDTO.messageDTO().chat())).isActive(true).state(MessageState.SENT).text(socketDTO.messageDTO().message())
-                    .sender(userService.findById(socketDTO.messageDTO().mittente())).receivers(socketDTO.messageDTO().riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList()).build();
+                            chat).isActive(true).state(MessageState.SENT).text(socketDTO.messageDTO().message())
+                    .sender(sender).receivers(receivers).build();
             List<User> users = messaggio.getReceivers().stream().map(userService::findById).toList();
             users.forEach(u -> {
                 if (!u.getIsConnected()) {
@@ -96,6 +102,9 @@ public class ConnectionController {
                             .createdAt(LocalDate.now().toString()).notificationType(NotificationType.MESSAGE).build());
                 }
             });
+            if (chat.getChatType().equals(ChatType.SINGOLA) && sender.getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(receivers.get(0).getId())) {
+                return null;
+            }
             return messageRepository.save(messaggio);
         } else if (stompType.equals(StompType.CONNECTION)) {
             if (socketDTO.connectionDTO() == null) {
