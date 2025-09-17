@@ -102,7 +102,9 @@ public class ConnectionController {
                             .createdAt(LocalDate.now().toString()).notificationType(NotificationType.MESSAGE).build());
                 }
             });
-            if (chat.getChatType().equals(ChatType.SINGOLA) && sender.getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(receivers.get(0).getId())) {
+            if (chat.getChatType().equals(ChatType.SINGOLA) &&
+                    (sender.getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(receivers.get(0).getId())
+                            || receivers.get(0).getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(sender.getId()))) {
                 return null;
             }
             return messageRepository.save(messaggio);

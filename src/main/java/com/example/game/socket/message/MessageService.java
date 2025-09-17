@@ -39,7 +39,8 @@ public class MessageService {
         Chat chat = chatService.findById(messageDTO.chat());
         User sender = userService.findById(messageDTO.mittente());
         List<User> receivers = messageDTO.riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList();
-        if (chat.getChatType().equals(ChatType.SINGOLA) && sender.getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(receivers.get(0).getId())) {
+        if (chat.getChatType().equals(ChatType.SINGOLA) && (sender.getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(receivers.get(0).getId()))
+        || receivers.get(0).getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(sender.getId())) {
             return null;
         }
         Messaggio messaggio = Messaggio.builder().state(MessageState.SENT).chat(chat)

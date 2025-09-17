@@ -1,4 +1,9 @@
 package com.example.game.socket.message.messageImage;
 
-public class MessageController {
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/messageImage")
+public class MessageImageController {
 }

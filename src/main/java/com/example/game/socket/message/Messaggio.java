@@ -3,6 +3,7 @@ package com.example.game.socket.message;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.MessageState;
 import com.example.game.socket.chat.Chat;
+import com.example.game.socket.message.messageImage.MessageImage;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -43,6 +44,8 @@ public class Messaggio extends EntityInfos {
             joinColumns = @JoinColumn(name = "messaggio_id"),
             inverseJoinColumns = @JoinColumn(name = "reader_id"))
     private List<User> readers;
+    @OneToMany(mappedBy = "messaggio",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE,orphanRemoval = true)
+    private List<MessageImage> messageImages;
 
     public Long getSettedChatId() {
         return chat.getId();

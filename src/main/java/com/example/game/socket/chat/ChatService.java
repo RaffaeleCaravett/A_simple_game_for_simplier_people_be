@@ -84,6 +84,12 @@ public class ChatService {
                 }
             }
             userService.save(user);
+            if(chat.getUtenti().isEmpty()){
+                chat.setActive(false);
+                chat.setDeletedAt(LocalDate.now().toString());
+                chatRepository.save(chat);
+                return new Chat();
+            }
             return chatRepository.save(chat);
         } else {
             throw new BadRequestException("Non puoi abbandonare una chat di cui non sei partecipante");
