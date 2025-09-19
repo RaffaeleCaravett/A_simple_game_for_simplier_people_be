@@ -40,7 +40,7 @@ public class MessageService {
         User sender = userService.findById(messageDTO.mittente());
         List<User> receivers = messageDTO.riceventi().stream().map(userService::findById).collect(Collectors.toSet()).stream().toList();
         if (chat.getChatType().equals(ChatType.SINGOLA) && (sender.getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(receivers.get(0).getId()))
-        || receivers.get(0).getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(sender.getId())) {
+                || receivers.get(0).getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(sender.getId())) {
             return null;
         }
         Messaggio messaggio = Messaggio.builder().state(MessageState.SENT).chat(chat)
@@ -77,15 +77,16 @@ public class MessageService {
         return messageRepository.findById(id).orElseThrow(() -> new BadRequestException("Messaggio non trovato"));
     }
 
-    public List<Messaggio> findAll(Long chatId, Long userId, @Nullable MessageState messageState) {
+    public List<Messaggio> findAll(Long chatId, Long userId, @Nullable MessageState messageState, @Nullable Long imageId) {
         return messageRepository.findAll(Specification.where(MessageRepository.chatIdEquals(chatId))
                 .and(MessageRepository.receiversContain(userId))
-                .and(MessageRepository.stateEquals(messageState)));
+                .and(MessageRepository.stateEquals(messageState))
+                .and(MessageRepository.imageIdEquals(imageId)));
     }
 
     public boolean read(Long chatId, User user) {
         try {
-            List<Messaggio> messaggi = findAll(chatId, user.getId(), MessageState.SENT);
+            List<Messaggio> messaggi = findAll(chatId, user.getId(), MessageState.SENT, null);
             messaggi.forEach(m -> {
                 if (CollectionUtils.isEmpty(m.getReaders())) {
                     List<User> users = new ArrayList<>();

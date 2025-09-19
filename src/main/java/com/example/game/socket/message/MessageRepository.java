@@ -25,6 +25,10 @@ public interface MessageRepository extends JpaRepository<Messaggio, Long>, JpaSp
         if (messageState == null) return null;
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("state"), messageState);
     }
+    static Specification<Messaggio> imageIdEquals(Long id){
+        if(id==null) return null;
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("messageImages").get("id"),id);
+    }
 
     @Modifying
     @Query(value = "update message set state = MessageState.READ "

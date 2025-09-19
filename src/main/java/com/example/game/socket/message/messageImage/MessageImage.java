@@ -1,9 +1,11 @@
 package com.example.game.socket.message.messageImage;
 
+import com.example.game.entityInfos.EntityInfos;
 import com.example.game.socket.message.Messaggio;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "message_image")
@@ -11,8 +13,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class MessageImage {
+@SuperBuilder
+public class MessageImage extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
