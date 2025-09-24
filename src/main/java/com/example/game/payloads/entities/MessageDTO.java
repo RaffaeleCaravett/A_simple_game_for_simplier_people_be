@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
+import java.io.File;
 import java.util.List;
 
 public record MessageDTO(
@@ -15,6 +16,7 @@ public record MessageDTO(
         @NotNull(message = "Manca il mittente")
         Long mittente,
         @NotNull(message = "Chat mancante")
-        Long chat
+        Long chat,
+        List<File> messageImages
 ) {
 }
