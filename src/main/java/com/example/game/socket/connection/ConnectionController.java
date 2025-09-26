@@ -9,21 +9,24 @@ import com.example.game.invito.Invito;
 import com.example.game.invito.InvitoService;
 import com.example.game.notification.Notification;
 import com.example.game.notification.NotificationRepository;
-import com.example.game.payloads.entities.MessageDTO;
-import com.example.game.payloads.entities.MoveDTO;
 import com.example.game.payloads.entities.MoveToHandleDTO;
 import com.example.game.payloads.entities.SocketDTO;
 import com.example.game.socket.chat.Chat;
 import com.example.game.socket.chat.ChatService;
 import com.example.game.socket.message.MessageRepository;
 import com.example.game.socket.message.Messaggio;
+import com.example.game.socket.message.messageImage.MessageImage;
+import com.example.game.socket.message.messageImage.MessageImageRepository;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
+@RequiredArgsConstructor
 public class ConnectionController {
 
     @Autowired
@@ -45,10 +49,11 @@ public class ConnectionController {
     private InvitoService invitoService;
     @Autowired
     private GiocoService giocoService;
+    private final MessageImageRepository messageImageRepository;
 
     @MessageMapping("/send")
     @SendTo("/updates/receive")
-    public Object addMessage(@RequestBody SocketDTO socketDTO) throws InterruptedException {
+    public Object addMessage(@RequestBody SocketDTO socketDTO) throws InterruptedException, IOException {
         var stompType = socketDTO.messageDTO() != null ? StompType.MESSAGE :
                 socketDTO.connectionDTO() != null ? StompType.CONNECTION :
                         socketDTO.gameConnectionDTO() != null ? StompType.GAME_CONNECTION :
@@ -107,7 +112,20 @@ public class ConnectionController {
                             || receivers.get(0).getBlockeds().stream().map(Blocked::getBlocked).map(User::getId).toList().contains(sender.getId()))) {
                 return null;
             }
-            return messageRepository.save(messaggio);
+            messageRepository.save(messaggio);
+            if (!socketDTO.messageDTO().messageImages().isEmpty()) {
+                for (Object f : socketDTO.messageDTO().messageImages()) {
+                    messageImageRepository.save(MessageImage.builder()
+                            .image(((MultipartFile) f).getBytes())
+                            .name(((MultipartFile) f).getName())
+                            .messaggio(messaggio)
+                            .isActive(true)
+                            .createdAtDate(LocalDate.now())
+                            .createdAt(LocalDate.now().toString())
+                            .build());
+                }
+            }
+            return messaggio;
         } else if (stompType.equals(StompType.CONNECTION)) {
             if (socketDTO.connectionDTO() == null) {
                 throw new BadRequestException("Impossibile stabilire quale utente si sia connesso.");

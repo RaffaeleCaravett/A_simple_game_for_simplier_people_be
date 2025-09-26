@@ -17,6 +17,6 @@ public record MessageDTO(
         Long mittente,
         @NotNull(message = "Chat mancante")
         Long chat,
-        List<File> messageImages
+        List<Object> messageImages
 ) {
 }
