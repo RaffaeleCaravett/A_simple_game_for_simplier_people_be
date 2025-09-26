@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public record MessageDTO(
         @NotEmpty(message = "Inserisci il messaggio")
@@ -16,7 +17,6 @@ public record MessageDTO(
         @NotNull(message = "Manca il mittente")
         Long mittente,
         @NotNull(message = "Chat mancante")
-        Long chat,
-        List<Object> messageImages
+        Long chat
 ) {
 }

@@ -28,7 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -113,18 +115,6 @@ public class ConnectionController {
                 return null;
             }
             messageRepository.save(messaggio);
-            if (!socketDTO.messageDTO().messageImages().isEmpty()) {
-                for (Object f : socketDTO.messageDTO().messageImages()) {
-                    messageImageRepository.save(MessageImage.builder()
-                            .image(((MultipartFile) f).getBytes())
-                            .name(((MultipartFile) f).getName())
-                            .messaggio(messaggio)
-                            .isActive(true)
-                            .createdAtDate(LocalDate.now())
-                            .createdAt(LocalDate.now().toString())
-                            .build());
-                }
-            }
             return messaggio;
         } else if (stompType.equals(StompType.CONNECTION)) {
             if (socketDTO.connectionDTO() == null) {

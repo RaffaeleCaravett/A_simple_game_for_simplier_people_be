@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,17 +26,21 @@ public class MessageImageService {
     private final MessageService messageService;
     private final MessageImageRepository messageImageRepository;
 
-    public MessageImage save(MultipartFile multipartFile, Long messaggioId, User user) throws IOException {
+    public List<MessageImage> save(List<MultipartFile> multipartFile, Long messaggioId, User user) throws IOException {
         Messaggio messaggio = messageService.findById(messaggioId);
         if (messaggio.getSender().getId() == user.getId()) {
-            MessageImage messageImage = MessageImage.builder()
-                    .image(multipartFile.getBytes())
-                    .name(multipartFile.getOriginalFilename())
-                    .messaggio(messaggio)
-                    .createdAt(LocalDate.now().toString())
-                    .createdAtDate(LocalDate.now())
-                    .isActive(true).build();
-            return messageImageRepository.save(messageImage);
+            List<MessageImage> messageImages = new ArrayList<>();
+            for (MultipartFile m : multipartFile) {
+                MessageImage messageImage = MessageImage.builder()
+                        .image(m.getBytes())
+                        .name(m.getOriginalFilename())
+                        .messaggio(messaggio)
+                        .createdAt(LocalDate.now().toString())
+                        .createdAtDate(LocalDate.now())
+                        .isActive(true).build();
+                messageImages.add(messageImageRepository.save(messageImage));
+            }
+            return messageImages;
         } else {
             throw new UnauthorizedException("Non hai i permessi per salvare questa immagine");
         }

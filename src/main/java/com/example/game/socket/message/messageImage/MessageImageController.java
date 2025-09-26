@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/messageImage")
@@ -17,7 +18,7 @@ public class MessageImageController {
     private final MessageImageService messageImageService;
 
     @PostMapping("/{id}")
-    public MessageImage save(@RequestPart(name = "image") MultipartFile multipartFile, @PathVariable Long id, @AuthenticationPrincipal User user) throws IOException {
+    public List<MessageImage> save(@RequestPart(name = "images") List<MultipartFile> multipartFile, @PathVariable Long id, @AuthenticationPrincipal User user) throws IOException {
         return messageImageService.save(multipartFile, id, user);
     }
 
