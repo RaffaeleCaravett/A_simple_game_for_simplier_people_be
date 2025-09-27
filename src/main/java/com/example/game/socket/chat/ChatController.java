@@ -10,6 +10,7 @@ import com.example.game.socket.message.MessageRepository;
 import com.example.game.socket.message.Messaggio;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,7 @@ public class ChatController {
     }
 
     @GetMapping("/params")
+    @Transactional
     public List<Chat> findByTitleContaining(@RequestParam(required = false) String title, @RequestParam Long userId, @RequestParam(required = false, defaultValue = "true") Boolean isActive, @AuthenticationPrincipal User user) {
         var userIdentityNumber = 0L;
         if (user.getRole().equals(Role.Admin)) userIdentityNumber = userId;

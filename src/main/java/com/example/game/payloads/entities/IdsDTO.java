@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record NotificationsIdsDTO (
+public record IdsDTO (
         @NotNull(message = "passa almeno un id")
         List<Long> ids
 ){

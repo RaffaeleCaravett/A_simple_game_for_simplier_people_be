@@ -4,6 +4,7 @@ package com.example.game.socket.message.messageImage;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.NotFoundException;
 import com.example.game.exceptions.UnauthorizedException;
+import com.example.game.payloads.entities.IdsDTO;
 import com.example.game.socket.message.MessageService;
 import com.example.game.socket.message.Messaggio;
 import com.example.game.user.User;
@@ -46,21 +47,46 @@ public class MessageImageService {
         }
     }
 
-    public boolean deleteImageMessage(Long id, User user) {
-        List<Messaggio> messaggio = messageService.findAll(null, null, null, id);
-        if (messaggio.isEmpty()) {
+    public List<MessageImage> deleteImageMessage(Long messageId, IdsDTO ids, User user) {
+        Messaggio messaggio = messageService.findById(messageId);
+        if (messaggio.getSender().getId() != user.getId()) {
             throw new NotFoundException("Messaggio non trovato");
         }
-        Messaggio messaggio1 = messaggio.get(0);
         try {
-            MessageImage messageImage = messaggio1.getMessageImages().stream().filter(m -> m.getId().equals(id)).findFirst().get();
-            messageImage.setActive(false);
-            messageImage.setDeletedAt(LocalDate.now().toString());
-            messageImage.setModifiedAt(LocalDate.now().toString());
-            messageImageRepository.save(messageImage);
-            return true;
+            List<MessageImage> messageImages = messaggio.getMessageImages();
+            List<MessageImage> messageImagesToDelete = new ArrayList<>();
+
+            for (Long l : ids.ids()) {
+                messageImagesToDelete.add(findById(l));
+            }
+            boolean contains = false;
+            for (MessageImage messageImage : messageImages) {
+                contains = false;
+                for (MessageImage messageImage1 : messageImagesToDelete) {
+                    if (messageImage.getId().equals(messageImage1.getId())) {
+                        contains = true;
+                        break;
+                    }
+                }
+                if (contains) {
+                    messageImage.setActive(false);
+                    messageImage.setDeletedAt(LocalDate.now().toString());
+                    messageImage.setModifiedAt(LocalDate.now().toString());
+                    messageImageRepository.save(messageImage);
+                }
+            }
+            var messageImagesList = messaggio.getMessageImages();
+            if ((null == messageImagesList || messageImagesList.isEmpty())&& (messaggio.getText().isEmpty() )) {
+                messageService.delete(messaggio.getId(), user);
+                return new ArrayList<>();
+            }
+            return messaggio.getMessageImages();
         } catch (Exception e) {
             throw new BadRequestException("Immagine non trovata");
         }
+    }
+
+    public MessageImage findById(Long id) {
+        return messageImageRepository.findById(id).orElseThrow(() -> new NotFoundException("Immagine non trovata"));
     }
 }

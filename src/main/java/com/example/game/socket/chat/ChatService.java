@@ -17,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,14 +38,19 @@ public class ChatService {
 
     public List<Chat> findByParams(String title, Long userId, Boolean active) {
         User user = userService.findById(userId);
-        List<Chat> chats= chatRepository.findAll(Specification.where(ChatRepository.userIdEqual(userId))
+        List<Chat> chats = chatRepository.findAll(Specification.where(ChatRepository.userIdEqual(userId))
                 .and(ChatRepository.titleLike(title))
-                .and(ChatRepository.isActive(active))).stream().peek(chat -> {
+                .and(ChatRepository.isActive(active)));
+        return chats.stream().peek(chat -> {
             if (null == chat.getTitle() || chat.getTitle().isEmpty()) {
-                chat.setTitle(chat.getUtenti().stream().filter(u -> !u.getEmail().equals(user.getEmail())).collect(Collectors.toSet()).stream().toList().get(0).getFullName());
+                var userList = chat.getUtenti().stream().filter(u -> !u.getEmail().equals(user.getEmail())).collect(Collectors.toSet()).stream().toList();
+                if (userList.isEmpty()) {
+                    chat.setTitle("Nessun utente rimasto ...");
+                } else {
+                    chat.setTitle(userList.get(0).getFullName());
+                }
             }
         }).toList();
-        return chats;
     }
 
     public boolean deleteChat(Long id, User user) {
@@ -84,7 +90,7 @@ public class ChatService {
                 }
             }
             userService.save(user);
-            if(chat.getUtenti().isEmpty()){
+            if (chat.getUtenti().isEmpty()) {
                 chat.setActive(false);
                 chat.setDeletedAt(LocalDate.now().toString());
                 chatRepository.save(chat);
@@ -141,7 +147,11 @@ public class ChatService {
         optionsArray.add("Info chat");
 
         if (chat.getChatType().equals(ChatType.SINGOLA)) {
-            optionsArray.add("Blocca " + chat.getUtenti().stream().filter(u -> u.getId() != user.getId()).toList().get(0).getNome());
+            var utenti = chat.getUtenti().stream().filter(u -> u.getId() != user.getId()).toList();
+
+            if (!utenti.isEmpty()) {
+                optionsArray.add("Blocca " + utenti.get(0).getNome());
+            }
             optionsArray.add("Elimina chat");
             return ChatOptionsMenuDTO.builder().options(optionsArray).build();
         } else {

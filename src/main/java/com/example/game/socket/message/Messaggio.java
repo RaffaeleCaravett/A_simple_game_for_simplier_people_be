@@ -59,4 +59,9 @@ public class Messaggio extends EntityInfos {
         if(this.readers == null ) return null;
         return this.readers.stream().map(User::getId).toList();
     }
+
+    public List<MessageImage> getMessageImages(){
+        if(messageImages == null) return null;
+        return messageImages.stream().filter(MessageImage::isActive).toList();
+    }
 }
