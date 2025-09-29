@@ -57,5 +57,4 @@ public class TournamentController {
         return tournamentService.put(id, tournamentDTO);
     }
 
-
 }
