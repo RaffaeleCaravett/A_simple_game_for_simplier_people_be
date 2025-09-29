@@ -5,6 +5,7 @@ import com.example.game.enums.Esito;
 import com.example.game.enums.GameType;
 import com.example.game.gioco.Gioco;
 import com.example.game.punteggio.Punteggio;
+import com.example.game.tournament.Tournament;
 import com.example.game.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,4 +36,6 @@ public class Partita extends EntityInfos {
     private Punteggio punteggio;
     @Enumerated(EnumType.STRING)
     private GameType gameType;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Tournament tournament;
 }

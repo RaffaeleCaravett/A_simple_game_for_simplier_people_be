@@ -24,9 +24,6 @@ public class Punteggio extends EntityInfos {
     @JsonIgnore
     private Partita partita;
     private String punteggio;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "torneo_id")
-    private Tournament torneo;
 
     public Punteggio (Partita partita, String punteggio){
         this.partita = partita;
