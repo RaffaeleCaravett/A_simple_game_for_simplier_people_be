@@ -25,7 +25,7 @@ public class TournamentService {
     public List<Tournament> getByGiocoId(Long giocoId){
      return new ArrayList<>();
     }
-    public boolean delete(Long id){
+    public boolean deleteById(Long id){
         return true;
     }
     public Tournament put(Long id, TournamentDTO tournamentDTO){
