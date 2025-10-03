@@ -1,5 +1,6 @@
 package com.example.game.categoria;
 
+import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.NotFoundException;
 import com.example.game.gioco.Gioco;
 import com.example.game.gioco.GiocoService;
@@ -21,20 +22,33 @@ public class CategoriaService {
     public Categoria save(CategoriaDTO categoriaDTO) {
         Categoria categoria = new Categoria();
         categoria.setNome(categoriaDTO.nome());
+        Categoria categoria1 = findByNome(categoriaDTO.nome());
+        if (categoria1 != null) {
+            throw new BadRequestException("Categoria con un nome simile già in uso");
+        }
         return categoriaRepository.save(categoria);
     }
+
     public Categoria save(Categoria categoria) {
         return categoriaRepository.save(categoria);
     }
 
     public Categoria putById(CategoriaDTO categoriaDTO, Long id) {
         Categoria categoria = findById(id);
+        Categoria categoria1 = findByNome(categoriaDTO.nome());
+        if (categoria1 != null && !categoria1.getId().equals(categoria.getId())) {
+            throw new BadRequestException("Categoria con un nome simile già in uso");
+        }
         categoria.setNome(categoriaDTO.nome());
         return categoriaRepository.save(categoria);
     }
 
     public Categoria findById(Long id) {
         return categoriaRepository.findById(id).orElseThrow(() -> new NotFoundException("Categoria non trovata con id " + id));
+    }
+
+    public Categoria findByNome(String nome) {
+        return categoriaRepository.findAll(Specification.where(CategoriaRepository.findByName(nome))).stream().findFirst().orElse(null);
     }
 
     public Categoria assignToGame(Long categoriaId, Long giocoId) {
@@ -49,19 +63,20 @@ public class CategoriaService {
         giocoService.save(gioco);
         return categoriaRepository.save(categoria);
     }
+
     public List<Categoria> getAll() {
         return categoriaRepository.findAll();
     }
 
-    public List<Categoria> getByNameContaining(String name){
-       return categoriaRepository.findAll(Specification.where(CategoriaRepository.findByNameLike(name)));
+    public List<Categoria> getByNameContaining(String name) {
+        return categoriaRepository.findAll(Specification.where(CategoriaRepository.findByNameLike(name)));
     }
 
-    public boolean deleteById(Long id){
+    public boolean deleteById(Long id) {
         try {
             categoriaRepository.deleteById(id);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

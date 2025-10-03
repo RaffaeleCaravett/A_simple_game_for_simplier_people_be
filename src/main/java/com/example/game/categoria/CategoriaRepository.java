@@ -11,4 +11,8 @@ public interface CategoriaRepository extends JpaRepository<Categoria,Long>, JpaS
         if(name == null) return null;
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.upper(root.get("nome")),"%"+name.toUpperCase() + "%");
     }
+    static Specification<Categoria> findByName(String name){
+        if(name == null) return null;
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(criteriaBuilder.upper(root.get("nome")),name.toUpperCase());
+    }
 }

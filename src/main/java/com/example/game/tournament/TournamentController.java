@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,8 +33,14 @@ public class TournamentController {
     }
 
     @GetMapping("")
-    public Page<Tournament> getAll(@PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable) {
-        return tournamentService.getAll(pageable);
+    public Page<Tournament> getAll(@PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable,
+                                   @RequestParam(required = false) String nome,
+                                   @RequestParam(required = false) String gioco,
+                                   @RequestParam(required = false) LocalDate creazione,
+                                   @RequestParam(required = false) LocalDate inizio,
+                                   @RequestParam(required = false) LocalDate fine,
+                                   @RequestParam(required = false) String stato) {
+        return tournamentService.getAll(pageable,nome,gioco,creazione,inizio,fine,stato);
     }
 
     @GetMapping("/{giocoId}")

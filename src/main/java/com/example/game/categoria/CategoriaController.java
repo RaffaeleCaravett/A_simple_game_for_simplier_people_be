@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -44,7 +45,7 @@ public class CategoriaController {
 
     @GetMapping("")
     public List<Categoria> getAll(){
-        return categoriaService.getAll();
+        return categoriaService.getAll().stream().sorted(Comparator.comparing(Categoria::getId)).toList();
     }
 
     @GetMapping("/{name}")

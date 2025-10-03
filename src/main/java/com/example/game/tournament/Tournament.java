@@ -1,17 +1,17 @@
 package com.example.game.tournament;
 
+import com.example.game.entityInfos.EntityInfos;
+import com.example.game.enums.TournamentState;
 import com.example.game.gioco.Gioco;
 import com.example.game.partita.Partita;
-import com.example.game.punteggio.Punteggio;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.w3c.dom.stylesheets.LinkStyle;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
 @Entity
 @Table(name = "torneo")
@@ -19,8 +19,8 @@ import java.util.Locale;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Tournament {
+@SuperBuilder
+public class Tournament extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +35,8 @@ public class Tournament {
     private Gioco gioco;
     private LocalDate startDate;
     private LocalDate endDate;
+    @Enumerated(EnumType.STRING)
+    private TournamentState tournamentState;
     @OneToMany(mappedBy = "tournament",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     private List<Partita> partite;
