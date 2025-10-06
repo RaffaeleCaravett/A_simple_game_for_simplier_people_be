@@ -2,6 +2,7 @@ package com.example.game.tournament;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.TournamentDTO;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ public class TournamentController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('Admin')")
+    @Transactional
     public Tournament create(@RequestBody @Valid TournamentDTO tournamentDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -33,14 +35,15 @@ public class TournamentController {
     }
 
     @GetMapping("")
-    public Page<Tournament> getAll(@PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable,
+    public Page<Tournament> getAll(@PageableDefault(page = 0, size = 5, sort = "id") Pageable pageable,
                                    @RequestParam(required = false) String nome,
                                    @RequestParam(required = false) String gioco,
                                    @RequestParam(required = false) LocalDate creazione,
                                    @RequestParam(required = false) LocalDate inizio,
                                    @RequestParam(required = false) LocalDate fine,
-                                   @RequestParam(required = false) String stato) {
-        return tournamentService.getAll(pageable,nome,gioco,creazione,inizio,fine,stato);
+                                   @RequestParam(required = false) String stato,
+                                   @RequestParam(defaultValue = "true", required = false) Boolean isActive) {
+        return tournamentService.getAll(pageable, nome, gioco, creazione, inizio, fine, stato, isActive);
     }
 
     @GetMapping("/{giocoId}")
@@ -54,14 +57,14 @@ public class TournamentController {
         return tournamentService.deleteById(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/{nome}")
     @PreAuthorize("hasAuthority('Admin')")
-    public Tournament putById(@PathVariable Long id, @RequestBody @Valid TournamentDTO tournamentDTO, BindingResult bindingResult) {
+    public Tournament putById(@PathVariable Long id, @RequestBody Object tournamentDTO, BindingResult bindingResult, @PathVariable String nome) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
 
-        return tournamentService.put(id, tournamentDTO);
+        return tournamentService.put(id, tournamentDTO, nome);
     }
 
 }

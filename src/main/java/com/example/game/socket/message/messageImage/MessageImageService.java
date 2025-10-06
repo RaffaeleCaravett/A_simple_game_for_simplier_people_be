@@ -76,7 +76,7 @@ public class MessageImageService {
                 }
             }
             var messageImagesList = messaggio.getMessageImages();
-            if ((null == messageImagesList || messageImagesList.isEmpty())&& (messaggio.getText().isEmpty() )) {
+            if ((null == messageImagesList || messageImagesList.isEmpty()) && (messaggio.getText().isEmpty())) {
                 messageService.delete(messaggio.getId(), user);
                 return new ArrayList<>();
             }

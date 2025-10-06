@@ -14,7 +14,7 @@ public record TournamentDTO(
         @NotNull(message = "Data inizio necessaria")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate dateFrom,
-        @NotNull
+        @NotNull(message = "Data da necessaria")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate dateTo,
         @NotEmpty(message = "Stato necessario")
