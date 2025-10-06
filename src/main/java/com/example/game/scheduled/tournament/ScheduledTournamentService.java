@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class ScheduledTournamentService {
 
     private final TournamentService tournamentService;
 
-    @Scheduled(cron = "0 1 24 * * ?")
+    @Scheduled(cron = "0 1 0 * * ?")
     public void CheckTournamentStatus() {
         log.info("Starting to retrieve tournaments");
         Page<Tournament> announcedTournaments = tournamentService.getAll(PageRequest.of(0, 10000), null, null, null, null, null,
