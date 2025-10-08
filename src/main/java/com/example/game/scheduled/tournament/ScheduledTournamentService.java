@@ -33,14 +33,24 @@ public class ScheduledTournamentService {
 
         for (Tournament t : announcedTournaments.getContent()) {
             if (t.getStartDate().isAfter(todayDate)) {
+                t.setTournamentState(TournamentState.ANNUNCIATO);
+                tournamentService.save(t);
+                log.info("Changed announced : {}", t.getName());
+            }
+            if (t.getStartDate().isBefore(todayDate)) {
                 t.setTournamentState(TournamentState.IN_CORSO);
                 tournamentService.save(t);
                 log.info("Changed announced : {}", t.getName());
             }
         }
         for (Tournament t : runningTournaments.getContent()) {
-            if (t.getEndDate().isAfter(todayDate)) {
+            if (t.getEndDate().isBefore(todayDate)) {
                 t.setTournamentState(TournamentState.TERMINATO);
+                tournamentService.save(t);
+                log.info("Changed running : {}", t.getName());
+            }
+            if (t.getEndDate().isAfter(todayDate)) {
+                t.setTournamentState(TournamentState.IN_CORSO);
                 tournamentService.save(t);
                 log.info("Changed running : {}", t.getName());
             }

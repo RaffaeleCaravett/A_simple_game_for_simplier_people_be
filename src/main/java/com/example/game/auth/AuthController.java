@@ -5,17 +5,16 @@ import com.example.game.citta.CittaService;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.gioco.Gioco;
 import com.example.game.gioco.GiocoRepository;
-import com.example.game.payloads.entities.GoogleUser;
-import com.example.game.payloads.entities.UserLoginDTO;
-import com.example.game.payloads.entities.UserSignupDTO;
-import com.example.game.payloads.entities.UserWithTokenDTO;
+import com.example.game.payloads.entities.*;
 import com.example.game.token.Token;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -55,84 +54,97 @@ public class AuthController {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
 
-        return authService.save(userLoginDTO,multipartFile);
+        return authService.save(userLoginDTO, multipartFile);
     }
 
     @GetMapping("/verifyToken")
-    public User verifyToken(@RequestParam(defaultValue = "") String token){
+    public User verifyToken(@RequestParam(defaultValue = "") String token) {
         return authService.verifyToken(token);
     }
 
     @GetMapping("/verifyRefreshToken")
-    public Token verifyRefreshToken(@RequestParam(defaultValue = "") String refreshToken){
+    public Token verifyRefreshToken(@RequestParam(defaultValue = "") String refreshToken) {
         return authService.verifyRefreshToken(refreshToken);
     }
 
     @GetMapping("/cities")
-    public List<Citta> getCities(){
+    public List<Citta> getCities() {
         return cittaService.findAll();
     }
+
     @GetMapping("/user/{id}")
-    public User getUserById(@PathVariable long id){
+    public User getUserById(@PathVariable long id) {
         return userService.findById(id);
     }
 
     @GetMapping("/allUsers")
-    public ResponseEntity<Integer> getAllUsersCount(){
+    public ResponseEntity<Integer> getAllUsersCount() {
         return ResponseEntity.ok(authService.getAllUsersCount());
     }
 
     @GetMapping("/requestCode/{email}/{validation}")
-    public boolean askCodeByEmail(@PathVariable String email,@PathVariable boolean validation){
-       User user = userService.findByEmail(email);
-       return userService.askForCode(user.getEmail(),validation);
+    public boolean askCodeByEmail(@PathVariable String email, @PathVariable boolean validation) {
+        User user = userService.findByEmail(email);
+        return userService.askForCode(user.getEmail(), validation);
     }
 
     @GetMapping("/verifyPasswordCode/{email}/{code}/{validation}")
-    public boolean verifyCodeByEmail(@PathVariable String email,@PathVariable String code, @PathVariable boolean validation){
-        return userService.verifyChangePasswordCode(email,code,validation);
+    public boolean verifyCodeByEmail(@PathVariable String email, @PathVariable String code, @PathVariable boolean validation) {
+        return userService.verifyChangePasswordCode(email, code, validation);
     }
 
     @GetMapping("/resetPasswordByCode/{newPassword}/{email}/{code}")
-    public User sendCodeByEmail(@PathVariable String newPassword,@PathVariable String email,@PathVariable String code){
-        return authService.changePasswordByCode(email,code,newPassword);
+    public User sendCodeByEmail(@PathVariable String newPassword, @PathVariable String email, @PathVariable String code) {
+        return authService.changePasswordByCode(email, code, newPassword);
     }
 
     @GetMapping("/changePassword/{oldPassword}/{newPassword}")
     public boolean changePassword(@PathVariable String oldPassword,
                                   @PathVariable String newPassword,
-                                  @AuthenticationPrincipal User user){
-        return authService.resetPassword(newPassword,oldPassword,user.getId());
+                                  @AuthenticationPrincipal User user) {
+        return authService.resetPassword(newPassword, oldPassword, user.getId());
     }
 
     @GetMapping("/gioco")
-    public List<Gioco> getAll(){
+    public List<Gioco> getAll() {
         return giocoRepository.findAll();
     }
 
     @PutMapping("/gioco/{id}")
     @PreAuthorize("hasAuthority('Admin')")
-    public Gioco updateGiocoImage(@RequestParam(name = "gioco_image") MultipartFile multipartFile,@PathVariable long id){
+    public Gioco updateGiocoImage(@RequestParam(name = "gioco_image") MultipartFile multipartFile, @PathVariable long id) {
         var gioco = giocoRepository.findById(id).orElseThrow();
         try {
             byte[] fileBytes = multipartFile.getBytes();
             gioco.setImage(fileBytes);
             return giocoRepository.save(gioco);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             return gioco;
         }
     }
+
     @GetMapping("/clear/{email}")
-    public void clear(@PathVariable String email){
+    public void clear(@PathVariable String email) {
         userService.clearCode(email);
     }
 
     @PostMapping("/googleUser")
-    public User signupGoogleUser(@RequestBody @Validated GoogleUser googleUser, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            throw  new BadRequestException(bindingResult.getAllErrors());
+    public User signupGoogleUser(@RequestBody @Validated GoogleUser googleUser, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException(bindingResult.getAllErrors());
         }
         return authService.signupGoogleUser(googleUser);
+    }
+
+    @GetMapping("/stats")
+    @Transactional
+    public StatsDTO getStat() {
+        return authService.getStats();
+    }
+
+    @GetMapping("/gamePreview")
+    public Page<Gioco> getGamePreview() {
+        return authService.getGiocoPrevies();
     }
 }

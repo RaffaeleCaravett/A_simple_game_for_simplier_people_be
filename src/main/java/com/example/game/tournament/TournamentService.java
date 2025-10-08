@@ -22,6 +22,10 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final GiocoService giocoService;
 
+    public List<Tournament> findAll() {
+        return tournamentRepository.findAll();
+    }
+
     public Tournament create(TournamentDTO tournamentDTO) {
         var tornei = findIfExist(tournamentDTO.nome());
         if (!tornei.isEmpty()) {

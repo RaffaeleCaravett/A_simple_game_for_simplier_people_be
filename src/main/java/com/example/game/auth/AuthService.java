@@ -1,23 +1,30 @@
 package com.example.game.auth;
 
+import com.example.game.categoria.Categoria;
+import com.example.game.categoria.CategoriaService;
 import com.example.game.citta.CittaService;
 import com.example.game.email.EmailService;
 import com.example.game.enums.Role;
 import com.example.game.exceptions.*;
+import com.example.game.gioco.Gioco;
+import com.example.game.gioco.GiocoService;
 import com.example.game.jwt.JWTTools;
-import com.example.game.payloads.entities.GoogleUser;
-import com.example.game.payloads.entities.UserLoginDTO;
-import com.example.game.payloads.entities.UserSignupDTO;
-import com.example.game.payloads.entities.UserWithTokenDTO;
+import com.example.game.payloads.entities.*;
 import com.example.game.token.Token;
+import com.example.game.tournament.Tournament;
+import com.example.game.tournament.TournamentService;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Service
 public class AuthService {
     @Autowired
@@ -30,6 +37,12 @@ public class AuthService {
     EmailService emailService;
     @Autowired
     JWTTools jwtTools;
+    @Autowired
+    GiocoService giocoService;
+    @Autowired
+    CategoriaService categoriaService;
+    @Autowired
+    TournamentService tournamentService;
 
     public User save(UserSignupDTO userSignupDTO, MultipartFile multipartFile) {
         User user = new User();
@@ -119,14 +132,15 @@ public class AuthService {
             return false;
         }
     }
-    public User signupGoogleUser(GoogleUser googleUser){
-        try{
+
+    public User signupGoogleUser(GoogleUser googleUser) {
+        try {
             userService.findByEmail(googleUser.email());
             throw new EmailAlreadyInUseException(googleUser.email());
-        }catch (UserWithEmailNotFoundException ex){
+        } catch (UserWithEmailNotFoundException ex) {
             return User.builder()
                     .email(googleUser.email())
-                    .nome(googleUser.fullname().substring(0,googleUser.fullname().indexOf(' ')))
+                    .nome(googleUser.fullname().substring(0, googleUser.fullname().indexOf(' ')))
                     .cognome(googleUser.fullname().substring(googleUser.fullname().indexOf(' ')))
                     .createdAt(LocalDate.now().toString())
                     .modifiedAt(LocalDate.now().toString())
@@ -135,5 +149,21 @@ public class AuthService {
                     .isCompleted(false)
                     .build();
         }
+    }
+
+    public StatsDTO getStats() {
+        List<User> users = userService.findAll();
+        List<Gioco> giocos = giocoService.findAllByIsActive(true);
+        List<Tournament> tournaments = tournamentService.findAll();
+        List<Categoria> categorias = categoriaService.getAll();
+        return StatsDTO.builder().userCount(users.size())
+                .torneiCount(tournaments.size())
+                .gamesCount(giocos.size())
+                .categoriesCount(categorias.size())
+                .build();
+    }
+
+    public Page<Gioco> getGiocoPrevies() {
+        return giocoService.findAllByFilters(null, null, null, null, 0, 10, "nomeGioco", "ASC", true);
     }
 }
