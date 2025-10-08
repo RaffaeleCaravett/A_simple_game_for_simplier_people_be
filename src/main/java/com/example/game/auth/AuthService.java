@@ -95,7 +95,7 @@ public class AuthService {
     }
 
     public Integer getAllUsersCount() {
-        return userService.findAll().size();
+        return userService.findAll(null).size();
     }
 
     public User changePasswordByCode(String email, String code, String newPassword) {
@@ -152,7 +152,7 @@ public class AuthService {
     }
 
     public StatsDTO getStats() {
-        List<User> users = userService.findAll();
+        List<User> users = userService.findAll(null);
         List<Gioco> giocos = giocoService.findAllByIsActive(true);
         List<Tournament> tournaments = tournamentService.findAll();
         List<Categoria> categorias = categoriaService.getAll();

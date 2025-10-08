@@ -11,6 +11,7 @@ import com.example.game.payloads.entities.DescrizioneDTO;
 import com.example.game.payloads.entities.UserSignupDTO;
 import com.example.game.payloads.entities.UserToPatch;
 import com.example.game.socket.connection.ConnectionController;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
@@ -192,8 +193,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<User> findAll(@Nullable Boolean isActive) {
+        return userRepository.findAll(Specification.where(UserRepository.isActive(isActive)));
     }
 
     public void clearCode(String email) {

@@ -59,7 +59,8 @@ public class ConnectionController {
         var stompType = socketDTO.messageDTO() != null ? StompType.MESSAGE :
                 socketDTO.connectionDTO() != null ? StompType.CONNECTION :
                         socketDTO.gameConnectionDTO() != null ? StompType.GAME_CONNECTION :
-                                socketDTO.moveDTO() != null ? StompType.MOVE : socketDTO.connectionRequestDTO() != null ? StompType.CONNECTION_REQUEST : "";
+                                socketDTO.moveDTO() != null ? StompType.MOVE : socketDTO.connectionRequestDTO() != null ?
+                                        StompType.CONNECTION_REQUEST : socketDTO.notification() != null ? StompType.TOURNAMENT : "";
         if (stompType.equals(StompType.MOVE)) {
             if (socketDTO.moveDTO() == null) {
                 throw new BadRequestException("Impossibile determinare il tipo di mossa");
@@ -138,6 +139,11 @@ public class ConnectionController {
             }
             User user = userService.findById(socketDTO.connectionRequestDTO().receiverId());
             return MoveToHandleDTO.builder().inviteState(InviteState.CONNECTION_REQUEST).receiverId(user.getId()).build();
+        } else if (stompType.equals(StompType.TOURNAMENT)) {
+            if (socketDTO.notification() == null) {
+                throw new BadRequestException("Impossibile stabilire il tipo di notifica");
+            }
+            return socketDTO.notification();
         }
         throw new BadRequestException("Impossibile determinare l'azione!");
     }

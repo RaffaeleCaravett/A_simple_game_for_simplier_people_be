@@ -34,11 +34,17 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     Page<User> findByCittaAndIsActive(Citta citta, boolean isActive, Pageable pageable);
 
-     static Specification<User> isConnected(@Nullable Boolean connected) {
+    static Specification<User> isConnected(@Nullable Boolean connected) {
         if (connected == null) return null;
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isConnected"), connected);
     }
- static Specification<User> idNotEqual(@Nullable Long id) {
+
+    static Specification<User> isActive(@Nullable Boolean active) {
+        if (active == null) return null;
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isActive"), active);
+    }
+
+    static Specification<User> idNotEqual(@Nullable Long id) {
         if (id == null) return null;
         return (root, query, criteriaBuilder) -> criteriaBuilder.notEqual(root.get("id"), id);
     }
