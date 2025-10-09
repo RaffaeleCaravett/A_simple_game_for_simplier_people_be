@@ -1,5 +1,6 @@
 package com.example.game.scheduled.tournament;
 
+import com.example.game.enums.NotificationState;
 import com.example.game.enums.NotificationType;
 import com.example.game.enums.TournamentState;
 import com.example.game.notification.Notification;
@@ -12,6 +13,7 @@ import com.example.game.tournament.Tournament;
 import com.example.game.tournament.TournamentRepository;
 import com.example.game.tournament.TournamentService;
 import com.example.game.user.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,7 +33,7 @@ public class ScheduledTournamentService {
     private final NotificationRepository notificationRepository;
     private final UserService userService;
     private final ConnectionController connectionController;
-
+    @Transactional
     @Scheduled(cron = "0 1 0 * * ?")
     public void CheckTournamentStatus() {
         log.info("Starting to retrieve tournaments");
@@ -51,38 +53,55 @@ public class ScheduledTournamentService {
             }
             if (t.getStartDate().isBefore(todayDate)) {
                 t.setTournamentState(TournamentState.IN_CORSO);
-                userService.findAll(true).forEach(u -> {
-                    Notification notification = this.notificationRepository.save(Notification.builder()
-                            .testo("Oggi è iniziato un nuovo torneo : " + t.getName() + "!")
-                            .notificationType(NotificationType.TOURNAMENT_START)
-                            .createdAtDate(LocalDate.now()).isActive(true)
-                            .receiver(u)
-                            .createdAt(LocalDate.now().toString())
-                            .sender(null)
-                            .chat(null).build());
-                    tournamentService.save(t);
-                    try {
-                        connectionController.addMessage(SocketDTO.builder()
-                                .connectionDTO(null).messageDTO(null).gameConnectionDTO(null).connectionRequestDTO(null).notification(notification).build());
-                    } catch (InterruptedException | IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                createNotification(t);
+                tournamentService.save(t);
                 log.info("Changed announced : {}", t.getName());
+            }
+            if (t.getEndDate().isBefore(todayDate)) {
+                t.setTournamentState(TournamentState.TERMINATO);
+                tournamentService.save(t);
             }
         }
         for (Tournament t : runningTournaments.getContent()) {
+            if(t.getStartDate().isBefore(todayDate)){
+                t.setTournamentState(TournamentState.IN_CORSO);
+                createNotification(t);
+                tournamentService.save(t);
+            }
             if (t.getEndDate().isBefore(todayDate)) {
                 t.setTournamentState(TournamentState.TERMINATO);
                 tournamentService.save(t);
                 log.info("Changed running : {}", t.getName());
             }
-            if (t.getEndDate().isAfter(todayDate)) {
-                t.setTournamentState(TournamentState.IN_CORSO);
+            if (t.getStartDate().isAfter(todayDate)) {
+                t.setTournamentState(TournamentState.ANNUNCIATO);
                 tournamentService.save(t);
                 log.info("Changed running : {}", t.getName());
             }
         }
         log.info("Method finished.");
+    }
+
+
+    public void createNotification(Tournament t){
+        userService.findAll(true).forEach(u -> {
+            Notification notification = this.notificationRepository.save(Notification.builder()
+                    .testo("Oggi è iniziato un nuovo torneo : " + t.getName() + "!")
+                    .notificationType(NotificationType.TOURNAMENT_START)
+                    .createdAtDate(LocalDate.now()).isActive(true)
+                    .receiver(u)
+                    .createdAt(LocalDate.now().toString())
+                    .sender(null)
+                    .state(NotificationState.SENT)
+                    .chat(null).build());
+            log.info("Created notification. " + notification.getTesto());
+            tournamentService.save(t);
+            try {
+                connectionController.addMessage(SocketDTO.builder()
+                        .connectionDTO(null).messageDTO(null).gameConnectionDTO(null).connectionRequestDTO(null).notification(notification).build());
+            } catch (InterruptedException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

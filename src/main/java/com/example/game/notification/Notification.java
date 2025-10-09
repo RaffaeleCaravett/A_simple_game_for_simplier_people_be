@@ -36,4 +36,12 @@ public class Notification extends EntityInfos {
     private NotificationState state;
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
+    private Long receiverIdOnly;
+
+
+
+    public Long getReceiverIdOnly(){
+        if(this.receiver == null) return null;
+        return this.receiver.getId();
+    }
 }

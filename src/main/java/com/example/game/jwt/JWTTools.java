@@ -23,7 +23,7 @@ public class JWTTools {
     public Token createTokens(User user){
         String accessToken = Jwts.builder().setSubject(String.valueOf(user.getId()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*5))
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*10))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes())).compact();
 
         String refreshToken = Jwts.builder().setSubject(String.valueOf(user.getId()))
