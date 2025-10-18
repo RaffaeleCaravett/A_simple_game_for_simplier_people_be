@@ -22,9 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Validated
@@ -176,10 +174,26 @@ public class GiocoService {
     }
 
     public Gioco create(GiocoDTO giocoDTO, MultipartFile multipartFile) throws IOException {
+        if (null != giocoDTO.categorie() && giocoDTO.categorie().size() > 3) {
+            throw new BadRequestException("Puoi inserire un massimo di 3 categorie");
+        }
         byte[] fileBytes = multipartFile.getBytes();
-        return
-                giocoRepository.save(Gioco.builder().nomeGioco(giocoDTO.nome()).difficolta(null != giocoDTO.difficolta() ? giocoDTO.difficolta() : 1).categorie(giocoDTO.categorie().stream().map(c -> categoriaRepository.findById(c).orElse(null)).toList())
+        Gioco gioco =
+                giocoRepository.save(Gioco.builder().nomeGioco(giocoDTO.nome()).difficolta(null != giocoDTO.difficolta() ? giocoDTO.difficolta() : 1)
                         .descrizione(giocoDTO.descrizione()).createdAt(LocalDate.now().toString()).createdAtDate(LocalDate.now()).isActive(true).image(fileBytes)
                         .build());
+        giocoRepository.save(gioco);
+        gioco.setCategorie(new ArrayList<>());
+        if (null != giocoDTO.categorie() && !giocoDTO.categorie().isEmpty()) {
+            for (Long c : giocoDTO.categorie()) {
+                Categoria categoria = categoriaRepository.findById(c).orElseThrow(() -> new NotFoundException("Categoria non trovata."));
+                if (gioco.getCategorie().size() < 3) {
+                    gioco.getCategorie().add(categoria);
+                }
+                categoria.getGiochi().add(gioco);
+                categoriaRepository.save(categoria);
+            }
+        }
+        return giocoRepository.save(gioco);
     }
 }

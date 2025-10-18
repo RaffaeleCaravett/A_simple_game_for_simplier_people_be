@@ -48,7 +48,7 @@ public class Gioco extends EntityInfos {
     private List<Trofeo> trofeo;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "giochi_utenti",
-            joinColumns= @JoinColumn(name = "giochi_id"),
+            joinColumns = @JoinColumn(name = "giochi_id"),
             inverseJoinColumns = @JoinColumn(name = "utenti_id"))
     @JsonIgnore
     private List<User> users;
@@ -66,21 +66,25 @@ public class Gioco extends EntityInfos {
     private List<Tournament> tournaments;
     @ManyToMany(mappedBy = "giochi", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Categoria> categorie;
-    public List<Recensione> getRecensione(){
-        if(this.recensione.size()>=2) return this.recensione.stream().filter(Recensione::isActive).toList().subList(0,2);
+
+    public List<Recensione> getRecensione() {
+        if (this.recensione == null) return new ArrayList<>();
+        if (this.recensione.size() >= 2)
+            return this.recensione.stream().filter(Recensione::isActive).toList().subList(0, 2);
         return this.recensione.stream().filter(Recensione::isActive).toList();
     }
 
-    public int getTotalRecensioniNumber(){
-        if (null!=this.recensione) return this.recensione.stream().filter(Recensione::isActive).toList().size();
+    public int getTotalRecensioniNumber() {
+        if (null != this.recensione) return this.recensione.stream().filter(Recensione::isActive).toList().size();
         return 0;
     }
+
     public void addUser(User user) {
-        if(users.contains(user)) return;
+        if (users.contains(user)) return;
         users.add(user);
     }
 
-    public void cleanCategorias(){
+    public void cleanCategorias() {
         this.categorie.clear();
     }
 }

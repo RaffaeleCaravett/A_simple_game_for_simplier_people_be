@@ -113,6 +113,7 @@ public class GiocoController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('Admin')")
+    @Transactional
     public Gioco save(@RequestPart(name = "gioco_image") MultipartFile multipartFile,
                       @RequestPart(name = "gioco") @Validated GiocoDTO giocoDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
