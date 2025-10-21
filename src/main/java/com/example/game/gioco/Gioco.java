@@ -15,10 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +29,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties("hibernateLazyInitializer")
+@SuperBuilder
 public class Gioco extends EntityInfos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

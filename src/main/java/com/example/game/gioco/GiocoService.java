@@ -18,7 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,7 +50,7 @@ public class GiocoService {
                 for (Long c : giocoDTO.categorie()) {
                     if (!gioco.getCategorie().stream().map(Categoria::getId).toList().contains(c)) {
                         Categoria categoria = categoriaRepository.findById(c).orElseThrow(() -> new NotFoundException("Categoria non trovata."));
-                        if(gioco.getCategorie().size()<3) {
+                        if (gioco.getCategorie().size() < 3) {
                             gioco.getCategorie().add(categoria);
                             categoria.getGiochi().add(gioco);
                             categoriaRepository.save(categoria);
@@ -171,5 +173,13 @@ public class GiocoService {
 
         }
         return giocoRepository.save(gioco);
+    }
+
+    public Gioco create(GiocoDTO giocoDTO, MultipartFile multipartFile) throws IOException {
+        byte[] fileBytes = multipartFile.getBytes();
+        return
+                giocoRepository.save(Gioco.builder().nomeGioco(giocoDTO.nome()).difficolta(null != giocoDTO.difficolta() ? giocoDTO.difficolta() : 1).categorie(giocoDTO.categorie().stream().map(c -> categoriaRepository.findById(c).orElse(null)).toList())
+                        .descrizione(giocoDTO.descrizione()).createdAt(LocalDate.now().toString()).createdAtDate(LocalDate.now()).isActive(true).image(fileBytes)
+                        .build());
     }
 }

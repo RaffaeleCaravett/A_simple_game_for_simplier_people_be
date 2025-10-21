@@ -72,7 +72,7 @@ public class GiocoController {
                                                  @RequestParam(defaultValue = "ASC") String sortOrder,
                                                  @RequestParam(defaultValue = "true") Boolean isActive) {
 
-        return giocoService.findAllByFilters(nomeGioco, difficolta, avg, categorie, page, size, orderBy, sortOrder,isActive);
+        return giocoService.findAllByFilters(nomeGioco, difficolta, avg, categorie, page, size, orderBy, sortOrder, isActive);
     }
 
     @GetMapping("/userId")
@@ -92,11 +92,13 @@ public class GiocoController {
     public boolean assignGiocoToUser(@RequestParam long gioco, @RequestParam long user) {
         return giocoService.assignGiocoToUser(gioco, user);
     }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('Admin')")
     public boolean assignGiocoToUser(@PathVariable Long id) {
         return giocoService.delete(id);
     }
+
     @GetMapping("/restore/{id}")
     @PreAuthorize("hasAuthority('Admin')")
     public boolean restoreGioco(@PathVariable Long id) {
@@ -105,7 +107,22 @@ public class GiocoController {
 
     @GetMapping("/categoria/{id}/{categoriaId}")
     @PreAuthorize("hasAuthority('Admin')")
-    public Gioco removeCategoria(@PathVariable  Long id,@PathVariable Long categoriaId){
-        return giocoService.deleteCategoriasFromGame(categoriaId,id);
+    public Gioco removeCategoria(@PathVariable Long id, @PathVariable Long categoriaId) {
+        return giocoService.deleteCategoriasFromGame(categoriaId, id);
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAuthority('Admin')")
+    public Gioco save(@RequestPart(name = "gioco_image") MultipartFile multipartFile,
+                      @RequestPart(name = "gioco") @Validated GiocoDTO giocoDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
+        try {
+            return giocoService.create(giocoDTO, multipartFile);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            throw new BadRequestException(e.getMessage());
+        }
     }
 }

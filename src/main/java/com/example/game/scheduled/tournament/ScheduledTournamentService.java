@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Component
 public class ScheduledTournamentService {
 
     private final TournamentService tournamentService;
@@ -34,7 +36,7 @@ public class ScheduledTournamentService {
     private final UserService userService;
     private final ConnectionController connectionController;
     @Transactional
-    @Scheduled(cron = "0 1 0 * * ?")
+    @Scheduled(cron = "1 0 0 * * ?")
     public void CheckTournamentStatus() {
         log.info("Starting to retrieve tournaments");
         Page<Tournament> announcedTournaments = tournamentService.getAll(PageRequest.of(0, 10000), null, null, null, null, null,
@@ -53,13 +55,17 @@ public class ScheduledTournamentService {
             }
             if (t.getStartDate().isBefore(todayDate)) {
                 t.setTournamentState(TournamentState.IN_CORSO);
-                createNotification(t);
                 tournamentService.save(t);
                 log.info("Changed announced : {}", t.getName());
             }
             if (t.getEndDate().isBefore(todayDate)) {
                 t.setTournamentState(TournamentState.TERMINATO);
                 tournamentService.save(t);
+            }
+            if(t.getStartDate().equals(todayDate)){
+                t.setTournamentState(TournamentState.IN_CORSO);
+                tournamentService.save(t);
+                createNotification(t);
             }
         }
         for (Tournament t : runningTournaments.getContent()) {
@@ -78,6 +84,11 @@ public class ScheduledTournamentService {
                 tournamentService.save(t);
                 log.info("Changed running : {}", t.getName());
             }
+            if(t.getStartDate().equals(todayDate)){
+                t.setTournamentState(TournamentState.IN_CORSO);
+                tournamentService.save(t);
+                createNotification(t);
+            }
         }
         log.info("Method finished.");
     }
@@ -87,7 +98,7 @@ public class ScheduledTournamentService {
         userService.findAll(true).forEach(u -> {
             Notification notification = this.notificationRepository.save(Notification.builder()
                     .testo("Oggi è iniziato un nuovo torneo : " + t.getName() + "!")
-                    .notificationType(NotificationType.TOURNAMENT_START)
+                    .notificationType(NotificationType.TOURNAMENT)
                     .createdAtDate(LocalDate.now()).isActive(true)
                     .receiver(u)
                     .createdAt(LocalDate.now().toString())
