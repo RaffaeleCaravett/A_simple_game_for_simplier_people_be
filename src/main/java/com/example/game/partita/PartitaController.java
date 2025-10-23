@@ -3,6 +3,7 @@ package com.example.game.partita;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.PartitaDTO;
 import com.example.game.user.User;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,8 +39,9 @@ public class PartitaController {
                                      @RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "10") int size,
                                      @RequestParam(defaultValue = "id") String orderBy,
-                                     @RequestParam(defaultValue = "ASC") String sortOrder) {
-        return partitaService.getAllByUserId(id, page, size, orderBy, sortOrder);
+                                     @RequestParam(defaultValue = "ASC") String sortOrder,
+                                     @Nullable @RequestParam(required = false) Long gioco) {
+        return partitaService.getAllByUserId(id, page, size, orderBy, sortOrder,gioco);
     }
 
     @GetMapping("/gioco/{id}")
@@ -61,6 +63,7 @@ public class PartitaController {
                                            @RequestParam(defaultValue = "ASC") String sortOrder) {
         return partitaService.getAllByDateBetweenAndUserId(id, from, to, page, size, orderBy, sortOrder);
     }
+
     @GetMapping("/userAndGioco/{id}/{giocoId}")
     public Page<Partita> getByUserId(@PathVariable long id,
                                      @PathVariable long giocoId,
@@ -68,14 +71,15 @@ public class PartitaController {
                                      @RequestParam(defaultValue = "10") int size,
                                      @RequestParam(defaultValue = "id") String orderBy,
                                      @RequestParam(defaultValue = "ASC") String sortOrder) {
-        return partitaService.getAllByUserAndGiocoId(id,giocoId, page, size, orderBy, sortOrder);
+        return partitaService.getAllByUserAndGiocoId(id, giocoId, page, size, orderBy, sortOrder);
     }
 
     @PutMapping("/{id}")
-    public Partita putById(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestBody @Validated PartitaDTO partitaDTO, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    @Transactional
+    public Partita putById(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestBody @Validated PartitaDTO partitaDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        return partitaService.putById(id,user.getId(),partitaDTO);
+        return partitaService.putById(id, user.getId(), partitaDTO);
     }
 }

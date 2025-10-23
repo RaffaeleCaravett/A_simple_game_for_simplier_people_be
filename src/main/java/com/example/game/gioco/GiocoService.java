@@ -7,6 +7,7 @@ import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.GiocoNotFoundException;
 import com.example.game.exceptions.NotFoundException;
 import com.example.game.payloads.entities.GiocoDTO;
+import com.example.game.payloads.entities.GiocoIdAndNameDTO;
 import com.example.game.user.UserService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -195,5 +196,9 @@ public class GiocoService {
             }
         }
         return giocoRepository.save(gioco);
+    }
+
+    public List<GiocoIdAndNameDTO> getIdsAndNames(){
+        return giocoRepository.findAll(Specification.where(GiocoRepository.isActive(true))).stream().map(g->GiocoIdAndNameDTO.builder().name(g.getNomeGioco()).id(g.getId()).build()).toList();
     }
 }

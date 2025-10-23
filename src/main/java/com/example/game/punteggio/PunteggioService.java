@@ -17,7 +17,7 @@ public class PunteggioService {
     }
 
     public Punteggio update(Partita partita) {
-        Punteggio punteggio = punteggioRepository.findAll(Specification.where(PunteggioRepository.partitaId(partita.getId()))).stream().findFirst().orElse(new Punteggio());
+        Punteggio punteggio = punteggioRepository.findAll(Specification.where(PunteggioRepository.partitaId(partita.getId()))).stream().findFirst().orElse(partita.getPunteggio());
         punteggio.setPunteggio(partita.getPunteggio().getPunteggio());
         if (null == punteggio.getPartita()){
             punteggio.setPartita(partita);

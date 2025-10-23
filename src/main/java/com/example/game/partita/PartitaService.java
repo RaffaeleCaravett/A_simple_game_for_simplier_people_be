@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -83,9 +84,9 @@ public class PartitaService {
     }
 
 
-    public Page<Partita> getAllByUserId(long userId, int page, int size, String orderBy, String sortOrder) {
+    public Page<Partita> getAllByUserId(long userId, int page, int size, String orderBy, String sortOrder,Long gioco) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), orderBy));
-        return partitaRepository.findAllByUser_Id(userId, pageable);
+        return partitaRepository.findAll(Specification.where(PartitaRepository.userId(userId)).and(PartitaRepository.giocoId(gioco)), pageable);
     }
 
     public Page<Partita> getAllByUserAndGiocoId(long userId, long giocoId, int page, int size, String orderBy, String sortOrder) {
@@ -112,7 +113,6 @@ public class PartitaService {
         if (partita.getUser().getId() != userId) {
             throw new UnauthorizedException("Non hai i permessi per modificare questa partita");
         }
-        partita.setPunteggio(new Punteggio(getById(id),partitaDTO.punteggio()));
         partita.setEsito(Esito.valueOf(partitaDTO.esito()));
         partita.setModifiedAt(LocalDate.now().toString());
         punteggioService.update(partita);

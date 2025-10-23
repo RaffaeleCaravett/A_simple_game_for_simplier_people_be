@@ -2,6 +2,7 @@ package com.example.game.gioco;
 
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.GiocoDTO;
+import com.example.game.payloads.entities.GiocoIdAndNameDTO;
 import com.example.game.user.User;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
@@ -125,5 +126,10 @@ public class GiocoController {
             System.err.println(e.getMessage());
             throw new BadRequestException(e.getMessage());
         }
+    }
+
+    @GetMapping("/idAndName")
+    public List<GiocoIdAndNameDTO> get(){
+        return giocoService.getIdsAndNames();
     }
 }
