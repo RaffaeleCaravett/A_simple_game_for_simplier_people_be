@@ -71,7 +71,6 @@ public class ScheduledTournamentService {
         for (Tournament t : runningTournaments.getContent()) {
             if(t.getStartDate().isBefore(todayDate)){
                 t.setTournamentState(TournamentState.IN_CORSO);
-                createNotification(t);
                 tournamentService.save(t);
             }
             if (t.getEndDate().isBefore(todayDate)) {

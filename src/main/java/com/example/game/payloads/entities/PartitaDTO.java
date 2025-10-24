@@ -8,9 +8,9 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 
 public record PartitaDTO(
         @NotNull(message = "user necessario")
-        long userId,
+        Long userId,
         @NotNull(message = "gioco necessario")
-        long giocoId,
+        Long giocoId,
         @NotEmpty(message = "esito necessario")
         String esito,
         @DefaultValue(value = "0")

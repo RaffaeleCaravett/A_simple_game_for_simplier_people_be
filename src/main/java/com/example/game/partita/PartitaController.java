@@ -72,7 +72,10 @@ public class PartitaController {
     }
 
     @PutMapping("/{id}")
-    public Partita putById(@PathVariable Long id, @AuthenticationPrincipal User user, PartitaDTO partitaDTO){
+    public Partita putById(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestBody @Validated PartitaDTO partitaDTO, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
         return partitaService.putById(id,user.getId(),partitaDTO);
     }
 }
