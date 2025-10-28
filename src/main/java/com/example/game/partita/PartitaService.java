@@ -115,7 +115,7 @@ public class PartitaService {
         partita.setPunteggio(new Punteggio(getById(id),partitaDTO.punteggio()));
         partita.setEsito(Esito.valueOf(partitaDTO.esito()));
         partita.setModifiedAt(LocalDate.now().toString());
-        punteggioService.save(partita.getPunteggio());
+        punteggioService.update(partita);
         return partitaRepository.save(partita);
     }
 
