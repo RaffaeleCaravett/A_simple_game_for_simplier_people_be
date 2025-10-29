@@ -2,7 +2,9 @@ package com.example.game.invito;
 
 import com.example.game.enums.InviteState;
 import com.example.game.gioco.Gioco;
+import com.example.game.partita.Partita;
 import com.example.game.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,11 +26,11 @@ public class Invito {
     @JoinColumn(name = "gioco_id")
     private Gioco gioco;
     @ManyToOne
-    @JoinColumn(name = "receiver_id")
-    private User receiver;
-    @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;
     @Enumerated(EnumType.STRING)
     private InviteState inviteState;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Partita partita;
 }

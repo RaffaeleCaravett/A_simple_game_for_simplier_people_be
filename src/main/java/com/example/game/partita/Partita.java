@@ -4,6 +4,7 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.Esito;
 import com.example.game.enums.GameType;
 import com.example.game.gioco.Gioco;
+import com.example.game.invito.Invito;
 import com.example.game.punteggio.Punteggio;
 import com.example.game.tournament.Tournament;
 import com.example.game.user.User;
@@ -38,4 +39,7 @@ public class Partita extends EntityInfos {
     private GameType gameType;
     @ManyToOne(fetch = FetchType.EAGER)
     private Tournament tournament;
+    @OneToOne(mappedBy = "partita", fetch = FetchType.LAZY)
+    @JoinColumn(name = "invito_id")
+    private Invito invito;
 }

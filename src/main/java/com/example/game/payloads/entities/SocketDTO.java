@@ -10,6 +10,7 @@ public record SocketDTO(
         GameConnectionDTO gameConnectionDTO,
         ConnectionDTO connectionDTO,
         ConnectionRequestDTO connectionRequestDTO,
-        Notification notification
+        Notification notification,
+        InvitoDTO invitoDTO
 ) {
 }

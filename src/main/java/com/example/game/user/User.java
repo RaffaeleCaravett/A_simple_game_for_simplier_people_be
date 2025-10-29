@@ -87,7 +87,7 @@ public class User extends EntityInfos implements UserDetails {
     @JsonIgnore
     private List<Tournament> tournaments;
     private boolean isOpen;
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "sender")
     @JsonIgnore
     private List<Invito> inviti;
     @OneToMany(mappedBy = "receiver", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)

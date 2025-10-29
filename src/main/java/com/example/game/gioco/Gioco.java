@@ -3,6 +3,7 @@ package com.example.game.gioco;
 import com.example.game.categoria.Categoria;
 import com.example.game.classifica.Classifica;
 import com.example.game.entityInfos.EntityInfos;
+import com.example.game.invito.Invito;
 import com.example.game.partita.Partita;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
@@ -66,6 +67,9 @@ public class Gioco extends EntityInfos {
     private List<Tournament> tournaments;
     @ManyToMany(mappedBy = "giochi", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Categoria> categorie;
+    @OneToMany(mappedBy = "gioco")
+    @JsonIgnore
+    private List<Invito> inviti;
 
     public List<Recensione> getRecensione() {
         if (this.recensione == null) return new ArrayList<>();
