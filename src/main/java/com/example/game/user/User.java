@@ -10,6 +10,7 @@ import com.example.game.enums.Role;
 import com.example.game.gioco.Gioco;
 import com.example.game.invito.Invito;
 import com.example.game.partita.Partita;
+import com.example.game.partitaDouble.PartitaDouble;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
 import com.example.game.richiesta.Richiesta;
@@ -75,6 +76,12 @@ public class User extends EntityInfos implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Partita> partite;
+    @OneToMany(mappedBy = "partecipanti", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<PartitaDouble> partitaDoubles;
+    @OneToMany(mappedBy = "vincitori", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<PartitaDouble> partitaDouble;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Preferito> preferiti;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -166,8 +173,8 @@ public class User extends EntityInfos implements UserDetails {
         return giochi.contains(gioco);
     }
 
-    public List<Blocked> getBlockeds(){
-        if(null == blockeds || blockeds.isEmpty()){
+    public List<Blocked> getBlockeds() {
+        if (null == blockeds || blockeds.isEmpty()) {
             return new ArrayList<>();
         }
         return blockeds.stream().filter(EntityInfos::isActive).toList();

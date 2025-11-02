@@ -4,6 +4,7 @@ import com.example.game.entityInfos.EntityInfos;
 import com.example.game.enums.TournamentState;
 import com.example.game.gioco.Gioco;
 import com.example.game.partita.Partita;
+import com.example.game.partitaDouble.PartitaDouble;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -40,4 +41,7 @@ public class Tournament extends EntityInfos {
     @OneToMany(mappedBy = "tournament",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     private List<Partita> partite;
+    @OneToMany(mappedBy = "tournament",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    private List<PartitaDouble> partiteDouble;
 }

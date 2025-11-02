@@ -27,19 +27,19 @@ public class PartitaDouble extends EntityInfos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private long id;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "partite_double_partecipanti",
             joinColumns = @JoinColumn(name = "partita_double_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> partecipanti;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "gioco_id")
     private Gioco gioco;
     private String punteggioPerdenti;
     @OneToOne(mappedBy = "partitaDouble")
     private Punteggio punteggioVincenti;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "partite_double_vincenti",
             joinColumns = @JoinColumn(name = "partita_double_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

@@ -5,6 +5,7 @@ import com.example.game.classifica.Classifica;
 import com.example.game.entityInfos.EntityInfos;
 import com.example.game.invito.Invito;
 import com.example.game.partita.Partita;
+import com.example.game.partitaDouble.PartitaDouble;
 import com.example.game.preferito.Preferito;
 import com.example.game.recensione.Recensione;
 import com.example.game.richiesta.Richiesta;
@@ -70,7 +71,9 @@ public class Gioco extends EntityInfos {
     @OneToMany(mappedBy = "gioco")
     @JsonIgnore
     private List<Invito> inviti;
-
+    @OneToMany(mappedBy = "gioco")
+    @JsonIgnore
+    private List<PartitaDouble> partitaDoubles;
     public List<Recensione> getRecensione() {
         if (this.recensione == null) return new ArrayList<>();
         if (this.recensione.size() >= 2)

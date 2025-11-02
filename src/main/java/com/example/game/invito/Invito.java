@@ -3,6 +3,7 @@ package com.example.game.invito;
 import com.example.game.enums.InviteState;
 import com.example.game.gioco.Gioco;
 import com.example.game.partita.Partita;
+import com.example.game.partitaDouble.PartitaDouble;
 import com.example.game.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -33,4 +34,7 @@ public class Invito {
     @OneToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     private Partita partita;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    private PartitaDouble partitaDouble;
 }

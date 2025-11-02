@@ -12,6 +12,7 @@ import com.example.game.user.User;
 import com.example.game.user.UserService;
 import jakarta.annotation.Nullable;
 import jakarta.mail.Part;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -74,6 +75,7 @@ public class PartitaDoubleService {
         return partitaDoubleRepository.findById(id).orElseThrow(() -> new NotFoundException("Partita non trovata"));
     }
 
+    @Transactional
     public PartitaDouble save(PartitaDouble partitaDouble) {
         return partitaDoubleRepository.save(partitaDouble);
     }

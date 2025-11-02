@@ -5,6 +5,7 @@ import com.example.game.exceptions.BadRequestException;
 import com.example.game.exceptions.NotFoundException;
 import com.example.game.gioco.GiocoService;
 import com.example.game.payloads.entities.InvitoDTO;
+import com.example.game.payloads.entities.InvitoSentDTO;
 import com.example.game.user.User;
 import com.example.game.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,12 @@ public class InvitoService {
     private final UserService userService;
     private final GiocoService giocoService;
 
+    public Invito persist(Invito invito) {
+        return invitoRepository.save(invito);
+    }
 
-    public Invito save(InvitoDTO invitoDTO, User user) {
-        if (!findByParams(user.getId(), InviteState.SENT, null, null, PageRequest.of(0,1)).getContent().isEmpty()) {
+    public Invito save(InvitoSentDTO invitoDTO, User user) {
+        if (!findByParams(user.getId(), InviteState.SENT, null, null, PageRequest.of(0, 1)).getContent().isEmpty()) {
             throw new BadRequestException("Hai già un invito attivo! Aspetta che scada l'invito per invitare qualcuno!");
         }
 
@@ -66,16 +70,17 @@ public class InvitoService {
         return invitoRepository.findAll(Specification.where(InvitoRepository.stateEquals(inviteState))
                 .and(InvitoRepository.isValid(instant))
                 .and(InvitoRepository.giocoIdEquals(giocoId))
-                .and(InvitoRepository.senderIdEquals(userId)),pageable);
+                .and(InvitoRepository.senderIdEquals(userId)), pageable);
     }
-  public List<Invito> findAllByParams(Long userId, InviteState inviteState, Long giocoId, Instant instant) {
+
+    public List<Invito> findAllByParams(Long userId, InviteState inviteState, Long giocoId, Instant instant) {
         return invitoRepository.findAll(Specification.where(InvitoRepository.stateEquals(inviteState))
                 .and(InvitoRepository.isValid(instant))
                 .and(InvitoRepository.giocoIdEquals(giocoId))
                 .and(InvitoRepository.senderIdEquals(userId)));
     }
 
-    public void update(Invito invito){
+    public void update(Invito invito) {
         invitoRepository.save(invito);
     }
 }

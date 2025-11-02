@@ -152,11 +152,14 @@ public class ConnectionController {
             Boolean inviteState = socketDTO.invitoDTO().status().equals("ACCETTATO");
             if (inviteState) {
                 var invito = socketDTO.invitoDTO();
+                var invitoEntity = invitoService.findById(invito.invitoId());
                 var partecipanti = new HashSet<User>();
                 partecipanti.add(userService.findById(invito.senderId()));
                 partecipanti.add(userService.findById(invito.accepterId()));
-
-                return partitaDoubleService.save(PartitaDouble.builder().gioco(giocoService.findById(invito.giocoId()))
+                invitoEntity.setInviteState(InviteState.ACCEPTED);
+                invitoService.persist(invitoEntity);
+                Gioco gioco = giocoService.findById(invito.giocoId());
+                return partitaDoubleService.save(PartitaDouble.builder().gioco(gioco)
                         .tournament(null != invito.torneo() ? tournamentService.findById(invito.torneo()) : null)
                         .invito(invitoService.findById(invito.invitoId())).isActive(true).createdAt(LocalDate.now().toString())
                         .createdAtDate(LocalDate.now()).partecipanti(partecipanti).build());

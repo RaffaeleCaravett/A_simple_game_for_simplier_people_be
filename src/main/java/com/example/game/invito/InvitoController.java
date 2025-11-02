@@ -3,6 +3,7 @@ package com.example.game.invito;
 import com.example.game.enums.InviteState;
 import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.InvitoDTO;
+import com.example.game.payloads.entities.InvitoSentDTO;
 import com.example.game.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class InvitoController {
     private final InvitoService invitoService;
 
     @PostMapping("")
-    public Invito crea(@RequestBody @Valid InvitoDTO invitoDTO, BindingResult bindingResult, @AuthenticationPrincipal User user) {
+    public Invito crea(@RequestBody @Valid InvitoSentDTO invitoDTO, BindingResult bindingResult, @AuthenticationPrincipal User user) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
