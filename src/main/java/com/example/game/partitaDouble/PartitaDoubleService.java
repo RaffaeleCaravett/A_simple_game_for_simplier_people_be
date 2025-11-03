@@ -79,4 +79,15 @@ public class PartitaDoubleService {
     public PartitaDouble save(PartitaDouble partitaDouble) {
         return partitaDoubleRepository.save(partitaDouble);
     }
+
+    public PartitaDouble put(Long id, PartitaDoubleDTO partitaDoubleDTO) {
+        PartitaDouble partitaDouble = findById(id);
+        Punteggio punteggio = Punteggio.builder().partitaDouble(partitaDouble).createdAt(LocalDate.now().toString()).punteggio(partitaDoubleDTO.punteggioVincenti())
+                .createdAtDate(LocalDate.now()).isActive(true).build();
+        punteggioService.save(punteggio);
+        partitaDouble.setPunteggioVincenti(punteggio);
+        partitaDouble.setPunteggioPerdenti(partitaDoubleDTO.punteggioPerdenti());
+        partitaDouble.setVincitori(partitaDoubleDTO.vincitori().stream().map(userService::findById).collect(Collectors.toSet()));
+        return partitaDoubleRepository.save(partitaDouble);
+    }
 }

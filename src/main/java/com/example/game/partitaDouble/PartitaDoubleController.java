@@ -1,5 +1,6 @@
 package com.example.game.partitaDouble;
 
+import com.example.game.exceptions.BadRequestException;
 import com.example.game.payloads.entities.PartitaDoubleDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,5 +41,13 @@ public class PartitaDoubleController {
     @GetMapping("/win/{id}/{loserPoints}/{winnerPoints}")
     public PartitaDouble win(@PathVariable Long id, @PathVariable String loserPoints, @PathVariable String winnerPoints, @RequestParam List<Long> vincenti) {
         return partitaDoubleService.win(id, vincenti, loserPoints, winnerPoints);
+    }
+
+    @PutMapping("/{id}")
+    public PartitaDouble put(@PathVariable Long id, @RequestBody @Validated PartitaDoubleDTO partitaDoubleDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException(bindingResult.getAllErrors());
+        }
+        return partitaDoubleService.put(id, partitaDoubleDTO);
     }
 }

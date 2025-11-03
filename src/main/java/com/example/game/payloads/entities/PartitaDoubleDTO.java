@@ -13,6 +13,9 @@ public record PartitaDoubleDTO(
         @NotNull(message = "Inserisci i partecipanti.")
         @Size(min = 2, message = "Minimo 2 persone.")
         List<Long> partecipanti,
-        Long torneo
+        Long torneo,
+        String punteggioVincenti,
+        String punteggioPerdenti,
+        List<Long> vincitori
 ) {
 }

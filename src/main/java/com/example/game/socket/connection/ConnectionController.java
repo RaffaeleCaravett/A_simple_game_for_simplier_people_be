@@ -3,6 +3,7 @@ package com.example.game.socket.connection;
 import com.example.game.blocked.Blocked;
 import com.example.game.enums.*;
 import com.example.game.exceptions.BadRequestException;
+import com.example.game.exceptions.PayloadHasErrorException;
 import com.example.game.gioco.Gioco;
 import com.example.game.gioco.GiocoService;
 import com.example.game.invito.Invito;
@@ -61,8 +62,11 @@ public class ConnectionController {
         var stompType = socketDTO.messageDTO() != null ? StompType.MESSAGE :
                 socketDTO.connectionDTO() != null ? StompType.CONNECTION :
                         socketDTO.gameConnectionDTO() != null ? StompType.GAME_CONNECTION :
-                                socketDTO.moveDTO() != null ? StompType.MOVE : socketDTO.connectionRequestDTO() != null ?
-                                        StompType.CONNECTION_REQUEST : socketDTO.notification() != null ? StompType.TOURNAMENT : socketDTO.invitoDTO() != null ? StompType.INVITO : "";
+                                socketDTO.moveDTO() != null ? StompType.MOVE :
+                                        socketDTO.connectionRequestDTO() != null ? StompType.CONNECTION_REQUEST :
+                                                socketDTO.notification() != null ? StompType.TOURNAMENT :
+                                                        socketDTO.invitoDTO() != null ? StompType.INVITO :
+                                                                socketDTO.scopaHand() != null ? StompType.SCOPA : "";
         if (stompType.equals(StompType.MOVE)) {
             if (socketDTO.moveDTO() == null) {
                 throw new BadRequestException("Impossibile determinare il tipo di mossa");
@@ -163,6 +167,18 @@ public class ConnectionController {
                         .tournament(null != invito.torneo() ? tournamentService.findById(invito.torneo()) : null)
                         .invito(invitoService.findById(invito.invitoId())).isActive(true).createdAt(LocalDate.now().toString())
                         .createdAtDate(LocalDate.now()).partecipanti(partecipanti).build());
+            }
+        } else if (stompType.equals(StompType.SCOPA)) {
+            if (socketDTO.scopaHand().isItStart().equals(true)) {
+                if (null == socketDTO.scopaHand().enemysCards() || socketDTO.scopaHand().enemysCards().isEmpty()
+                        || null == socketDTO.scopaHand().yourCards() || socketDTO.scopaHand().yourCards().isEmpty()
+                        || null == socketDTO.scopaHand().tableCards() || socketDTO.scopaHand().tableCards().isEmpty()) {
+                    throw new PayloadHasErrorException("Il gioco sta iniziando e le carte " +
+                            (null == socketDTO.scopaHand().tableCards() || socketDTO.scopaHand().tableCards().isEmpty() ? " del tavolo" :
+                                    null == socketDTO.scopaHand().yourCards() || socketDTO.scopaHand().yourCards().isEmpty() ? " tue" : " dell'avversario") +
+                            " non sono presenti.");
+                }
+                return socketDTO.scopaHand();
             }
         }
         throw new BadRequestException("Impossibile determinare l'azione!");
