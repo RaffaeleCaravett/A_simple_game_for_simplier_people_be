@@ -1,6 +1,5 @@
-package com.example.game.payloads.entities.scopaHand;
+package com.example.game.payloads.entities.scopa;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

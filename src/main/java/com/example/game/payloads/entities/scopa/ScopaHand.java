@@ -1,4 +1,4 @@
-package com.example.game.payloads.entities.scopaHand;
+package com.example.game.payloads.entities.scopa;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

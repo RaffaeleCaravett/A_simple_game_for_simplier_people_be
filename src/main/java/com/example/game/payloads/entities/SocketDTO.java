@@ -1,9 +1,9 @@
 package com.example.game.payloads.entities;
 
 import com.example.game.notification.Notification;
-import com.example.game.payloads.entities.scopaHand.ScopaHand;
+import com.example.game.payloads.entities.scopa.ScopaDone;
+import com.example.game.payloads.entities.scopa.ScopaHand;
 import lombok.Builder;
-import org.springframework.stereotype.Component;
 
 @Builder
 public record SocketDTO(
@@ -14,6 +14,8 @@ public record SocketDTO(
         ConnectionRequestDTO connectionRequestDTO,
         Notification notification,
         InvitoDTO invitoDTO,
-        ScopaHand scopaHand
+        ScopaHand scopaHand,
+        GameEnd gameEnd,
+        ScopaDone scopaDone
 ) {
 }
