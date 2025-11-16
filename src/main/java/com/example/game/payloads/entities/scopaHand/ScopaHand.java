@@ -22,6 +22,7 @@ public record ScopaHand(
         @NotNull(message = "Bisogna passare true o false come parametro per isItStart")
         Boolean isItStart,
         @NotEmpty(message = "Di chi è il turno?")
-        String tourn
+        String tourn,
+        Long partitaId
 ) {
 }

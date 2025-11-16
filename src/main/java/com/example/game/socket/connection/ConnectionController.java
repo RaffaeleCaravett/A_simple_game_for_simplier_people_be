@@ -178,8 +178,8 @@ public class ConnectionController {
                                     null == socketDTO.scopaHand().yourCards() || socketDTO.scopaHand().yourCards().isEmpty() ? " tue" : " dell'avversario") +
                             " non sono presenti.");
                 }
-                return socketDTO.scopaHand();
             }
+            return socketDTO.scopaHand();
         }
         throw new BadRequestException("Impossibile determinare l'azione!");
     }
