@@ -11,6 +11,7 @@ public record ScopaHand(
         List<ScopaCard> tableCards,
         List<ScopaCard> enemysCardsTaken,
         List<ScopaCard> yourCardsTaken,
+        List<ScopaCard> allCards,
         @NotNull(message = "Bisogna passare le scope")
         int enemysScopas,
         @NotNull(message = "Bisogna passare le scope")
